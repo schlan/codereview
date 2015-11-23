@@ -47,4 +47,6 @@ dependencies {
 
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile files('libs/JavaPrettify-1.2.1.jar')
+    compile 'org.lucasr.twowayview:twowayview:0.1.4'
+
 }

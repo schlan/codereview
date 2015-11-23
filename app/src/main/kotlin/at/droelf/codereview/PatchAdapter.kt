@@ -2,26 +2,49 @@ package at.droelf.codereview
 
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import at.droelf.codereview.patch.Patch
-import syntaxhighlight.ParseResult
+import java.util.*
 
-class PatchAdapter(val patch: Patch.Patch, val rawFile: List<SpannableString>) : RecyclerView.Adapter<PatchViewHolder>() {
+class PatchAdapter(val patch: Patch.Patch, val rawFile: List<SpannableString>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    val lines: List<Patch.Line> = patch.patchSegments.map { it.lines }.flatten()
+    val viewHolderWrapper: List<ViewHolderWrapper>
 
-    override fun getItemCount(): Int = rawFile.size
+    init {
+        viewHolderWrapper = patch.patchSegments.map { seg ->
+            listOf(ViewHolderWrapperHeader(seg.header, seg.method)) + seg.lines.map { l ->
+                val lineString = when(l.type){
+                    Patch.Type.Delete -> l.line
+                    else -> {
+                        SpannableStringBuilder()
+                                .append("+")
+                                .append(rawFile.get(l.modifiedNum!! - 1))
 
-    override fun getItemViewType(position: Int): Int = 0//rawFile.get(position).type.id
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PatchViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.row_patchadapter, parent, false)
-        return PatchViewHolder(view)
+                    }
+                }
+                ViewHolderLine(Patch.Line(SpannableString(lineString), l.type, l.originalNum, l.modifiedNum))
+                //ViewHolderLine(l)
+            }
+        }.flatten()
     }
 
-    override fun onBindViewHolder(holder: PatchViewHolder, position: Int) {
-        holder.bind(rawFile.get(position), position + 1)
+    override fun getItemCount(): Int {
+        return viewHolderWrapper.size
     }
 
+    override fun getItemViewType(position: Int): Int  {
+        return viewHolderWrapper.get(position).viewType()
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
+        val type = PatchListType.fromViewType(viewType) ?: return null
+        return object : RecyclerView.ViewHolder(LayoutInflater.from(parent.context).inflate(type.layoutId, parent, false)){}
+
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        viewHolderWrapper.get(position).bind(holder)
+    }
 }

@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
         object : AsyncTask<Void, Void, List<SpannableString>>() {
             override fun doInBackground(vararg params: Void?): List<SpannableString> {
                 return benchmark {
-                    PrettyfyHighlighter.highlight(Constants.patch, "java")
+                    PrettyfyHighlighter.highlight(Constants.rawFile, "java")
                 }
             }
 
