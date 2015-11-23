@@ -19,7 +19,7 @@ class PatchAdapter(val patch: Patch.Patch, val rawFile: List<SpannableString>) :
                     Patch.Type.Delete -> l.line
                     else -> {
                         SpannableStringBuilder()
-                                .append("+")
+                                .append(if(l.type == Patch.Type.Add) "+" else " ")
                                 .append(rawFile.get(l.modifiedNum!! - 1))
 
                     }

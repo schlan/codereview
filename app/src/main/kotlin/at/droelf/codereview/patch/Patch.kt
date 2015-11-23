@@ -26,7 +26,7 @@ object Patch{
         val headerIndex = lines.filter { headerRegex.containsMatchIn(it.trim()) }.map { lines.indexOf(it) }
         if(headerIndex.isEmpty()) return null
 
-        val range: List<Pair<Int, Int>> = headerIndex.subList(0, headerIndex.lastIndex).zip(headerIndex.subList(1, headerIndex.lastIndex + 1))
+        val range: List<Pair<Int, Int>> = headerIndex.subList(0, headerIndex.lastIndex).zip(headerIndex.subList(1, headerIndex.lastIndex + 1)) + Pair(headerIndex.last(), lines.lastIndex + 1)
         val patchesRaw: List<List<SpannableString>> = range.map { lines.subList(it.first, it.second) }
         return Patch( patchesRaw.map { parsePatchSegment(it)} )
     }
