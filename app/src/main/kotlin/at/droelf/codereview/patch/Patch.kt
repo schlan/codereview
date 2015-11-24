@@ -46,7 +46,6 @@ object Patch{
             }
             Line(s, lineType, lineNumber.first, lineNumber.second)
         }
-
         return PatchSegment(r.first, r.second, parsedLines, header.value, list.first().toString().replace(header.value, ""))
     }
 

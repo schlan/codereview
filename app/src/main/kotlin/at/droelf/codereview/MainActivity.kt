@@ -8,17 +8,16 @@ import android.text.SpannableString
 import android.view.View
 import at.droelf.codereview.network.RetrofitHelper
 import at.droelf.codereview.patch.Patch
+import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
+import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
 import kotlinx.android.synthetic.activity_main.*
-import syntaxhighlight.ParseResult
 
 class MainActivity : AppCompatActivity(), RetrofitHelper {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-
         loadCode()
-        println()
     }
 
 
@@ -37,7 +36,9 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
 
                 if(patch != null) {
                     recyclerView.layoutManager = LinearLayoutManager(applicationContext)
-                    recyclerView.adapter = PatchAdapter(patch, result)
+                    recyclerView.itemAnimator = SlideInLeftAnimator()
+                    recyclerView.itemAnimator.setAddDuration(2000)
+                    recyclerView.adapter = PatchAdapter(PatchAdapterControllerImpl(patch, result))
                 }
             }
         }.execute()

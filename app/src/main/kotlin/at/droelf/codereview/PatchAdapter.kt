@@ -8,34 +8,18 @@ import android.view.ViewGroup
 import at.droelf.codereview.patch.Patch
 import java.util.*
 
-class PatchAdapter(val patch: Patch.Patch, val rawFile: List<SpannableString>) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-
-    val viewHolderWrapper: List<ViewHolderWrapper>
+class PatchAdapter(val patchController: PatchAdapterController) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), PatchAdapterControllerImpl.PatchAdapterInterface {
 
     init {
-        viewHolderWrapper = patch.patchSegments.map { seg ->
-            listOf(ViewHolderWrapperHeader(seg.header, seg.method)) + seg.lines.map { l ->
-                val lineString = when(l.type){
-                    Patch.Type.Delete -> l.line
-                    else -> {
-                        SpannableStringBuilder()
-                                .append(if(l.type == Patch.Type.Add) "+" else " ")
-                                .append(rawFile.get(l.modifiedNum!! - 1))
-
-                    }
-                }
-                ViewHolderLine(Patch.Line(SpannableString(lineString), l.type, l.originalNum, l.modifiedNum))
-                //ViewHolderLine(l)
-            }
-        }.flatten()
+        patchController.patchAdapter = this
     }
 
     override fun getItemCount(): Int {
-        return viewHolderWrapper.size
+        return patchController.totalItemCount()
     }
 
     override fun getItemViewType(position: Int): Int  {
-        return viewHolderWrapper.get(position).viewType()
+        return patchController.viewHolderWrapper(position).viewType()
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder? {
@@ -45,6 +29,10 @@ class PatchAdapter(val patch: Patch.Patch, val rawFile: List<SpannableString>) :
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        viewHolderWrapper.get(position).bind(holder)
+        patchController.viewHolderWrapper(position).bind(holder, patchController, position)
+    }
+
+    override fun update(range: Pair<Int, Int>) {
+        notifyDataSetChanged()
     }
 }
