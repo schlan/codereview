@@ -6,11 +6,12 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.text.SpannableString
 import android.view.View
+import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.network.RetrofitHelper
 import at.droelf.codereview.patch.Patch
 import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
-import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
 import kotlinx.android.synthetic.activity_main.*
+import kotlin.text.Regex
 
 class MainActivity : AppCompatActivity(), RetrofitHelper {
 
@@ -22,23 +23,30 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
 
 
     fun loadCode() {
-        object : AsyncTask<Void, Void, List<SpannableString>>() {
-            override fun doInBackground(vararg params: Void?): List<SpannableString> {
+        object : AsyncTask<Void, Void, Pair<List<SpannableString>, Patch.Patch>>() {
+            override fun doInBackground(vararg params: Void?): Pair<List<SpannableString>, Patch.Patch> {
+                val pull = GithubService.githubClient().pullRequestFiles(Constants.owner, Constants.repo, 200)
+                val data = pull.execute()
+                val gitHubFile = data.body().get(1)
+                val fileType = gitHubFile.filename.split(Regex("\\.")).last()
+                val patch = Patch.parse(gitHubFile.patch)
+
+                val file = GithubService.githubClient().file(gitHubFile.contentsUrl, "application/vnd.github.VERSION.raw+json")
+                val rawFile = file.execute()
+
                 return benchmark {
-                    PrettyfyHighlighter.highlight(Constants.rawFile, "java")
+                    Pair(PrettyfyHighlighter.highlight(rawFile.body().string(), fileType), patch!!)
                 }
             }
 
-            override fun onPostExecute(result: List<SpannableString>) {
+            override fun onPostExecute(result: Pair<List<SpannableString>, Patch.Patch>) {
                 progressbar.visibility = View.GONE
 
                 val patch = Patch.parse(Constants.patch)
 
                 if(patch != null) {
                     recyclerView.layoutManager = LinearLayoutManager(applicationContext)
-                    recyclerView.itemAnimator = SlideInLeftAnimator()
-                    recyclerView.itemAnimator.setAddDuration(2000)
-                    recyclerView.adapter = PatchAdapter(PatchAdapterControllerImpl(patch, result))
+                    recyclerView.adapter = PatchAdapter(PatchAdapterControllerImpl(result.second, result.first))
                 }
             }
         }.execute()

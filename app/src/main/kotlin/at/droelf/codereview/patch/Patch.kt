@@ -7,12 +7,12 @@ import kotlin.text.Regex
 
 object Patch{
 
-    val headerRegex = Regex("^\\s*@@\\ \\-\\d+\\,\\d+\\ \\+\\d+\\,\\d+\\ @@")
+    private val parser: PatchParser = PatchParser()
 
     data class Patch(val patchSegments: List<PatchSegment>)
     data class PatchSegment(val originalRange: Range, val newRange: Range, val lines: List<Line>, val header: String, val method: String?)
 
-    data class Line(val line: SpannableString, val type: Type, val originalNum: Int?, val modifiedNum: Int?)
+    data class Line(val line: CharSequence, val type: Type, val originalNum: Int?, val modifiedNum: Int?)
     data class Range(val start: Int, val numLines: Int)
 
     enum class Type(val id: Int) {
@@ -20,51 +20,76 @@ object Patch{
     }
 
     fun parse(data: String): Patch? {
-        val lines = PrettyfyHighlighter.highlight(data, "java")
+        return parser.parse(data)
+    }
+}
+
+class PatchParser {
+    val headerRegex = Regex("^@@\\ \\-\\d+\\,\\d+\\ \\+\\d+\\,\\d+\\ @@")
+    val rangeRegex = Regex("^[-,+]\\d+,\\d+$")
+
+    fun parse(data: String): Patch.Patch? {
+        val lines = PrettyfyHighlighter.highlight(data, null)
         if(lines.isEmpty()) return null
 
-        val headerIndex = lines.filter { headerRegex.containsMatchIn(it.trim()) }.map { lines.indexOf(it) }
+        val headerIndex = lines.filter { isHeader(it) }.map { lines.indexOf(it) }
         if(headerIndex.isEmpty()) return null
 
         val range: List<Pair<Int, Int>> = headerIndex.subList(0, headerIndex.lastIndex).zip(headerIndex.subList(1, headerIndex.lastIndex + 1)) + Pair(headerIndex.last(), lines.lastIndex + 1)
         val patchesRaw: List<List<SpannableString>> = range.map { lines.subList(it.first, it.second) }
-        return Patch( patchesRaw.map { parsePatchSegment(it)} )
+
+        return Patch.Patch(patchesRaw.map { parsePatchSegment(it) ?: return null })
     }
 
-    private fun parsePatchSegment(list: List<SpannableString>): PatchSegment {
-        val header = headerRegex.find(list.first())
-        val r: Pair<Range, Range> = parseHeader(header!!.value) //FIXME
+    fun parsePatchSegment(list: List<SpannableString>): Patch.PatchSegment? {
+        val header = headerRegex.find(list.first())?.value ?: return null
+        val r: Pair<Patch.Range, Patch.Range> = parseHeader(header) ?: return null
+        val parsedLines: List<Patch.Line> = parseCodeLines(list.subList(1, list.lastIndex + 1), r)
+        return Patch.PatchSegment(r.first, r.second, parsedLines, header, list.first().toString().replace(header, ""))
+    }
 
+    // tested
+    fun parseCodeLines(list: List<CharSequence>, r: Pair<Patch.Range, Patch.Range>): List<Patch.Line> {
         var iOri = r.first.start
         var iMod = r.second.start
-        val parsedLines: List<Line> = list.subList(1, list.lastIndex + 1).mapIndexed { i, s ->
+        return list.mapIndexed { i, s ->
             val lineType = parseLineType(s)
-            val lineNumber = when(lineType){
-                Type.Neutral -> Pair(iOri++, iMod++)
-                Type.Add -> Pair(null, iMod++)
-                Type.Delete -> Pair(iOri++, null)
+            val lineNumber = when (lineType) {
+                Patch.Type.Neutral -> Pair(iOri++, iMod++)
+                Patch.Type.Add -> Pair(null, iMod++)
+                Patch.Type.Delete -> Pair(iOri++, null)
             }
-            Line(s, lineType, lineNumber.first, lineNumber.second)
+            Patch.Line(s, lineType, lineNumber.first, lineNumber.second)
         }
-        return PatchSegment(r.first, r.second, parsedLines, header.value, list.first().toString().replace(header.value, ""))
     }
 
-
-    private fun parseHeader(header: String): Pair<Range, Range> {
+    // tested
+    fun parseHeader(header: String): Pair<Patch.Range, Patch.Range>? {
         val strippedHeader: List<String> = header.replace("@", "").trim().split(" ")
-        return Pair(parseRange(strippedHeader.first()), parseRange(strippedHeader.last()))
+        val start = parseRange(strippedHeader.first()) ?: return null
+        val end = parseRange(strippedHeader.last()) ?: return null
+        return Pair(start, end)
     }
 
-    private fun parseRange(range: String): Range {
+    //tested
+    fun parseRange(range: String): Patch.Range? {
+        if(!rangeRegex.matches(range)) return null
         val r: List<String> = range.substring(1).split(",")
-        return Range(r.first().toInt(), r.last().toInt())
+        if(r.size != 2) return null
+        return Patch.Range(r.first().toInt(), r.last().toInt())
     }
 
-    private fun parseLineType(s: SpannableString): Type {
+    //tested
+    fun isHeader(line: CharSequence): Boolean {
+        return headerRegex.containsMatchIn(line)
+    }
+
+    //tested
+    fun parseLineType(s: CharSequence): Patch.Type {
         when {
-            s.trim().startsWith("+") -> return Type.Add
-            s.trim().startsWith("-") -> return Type.Delete
-            else -> return Type.Neutral
+            s.startsWith("+") -> return Patch.Type.Add
+            s.startsWith("-") -> return Patch.Type.Delete
+            else -> return Patch.Type.Neutral
         }
     }
 }

@@ -1,31 +1,36 @@
 package at.droelf.codereview.network
 
 import com.google.gson.FieldNamingPolicy
-import com.google.gson.FieldNamingStrategy
+import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.squareup.okhttp.Interceptor
 import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.ResponseBody
 import com.squareup.okhttp.logging.HttpLoggingInterceptor
+import retrofit.Converter
 import retrofit.Retrofit
 import retrofit.GsonConverterFactory
+import java.lang.reflect.Type
 
 object GithubService {
 
     private val baseUrl: String = "https://api.github.com"
     private val token: String = "e7cf96ea81ebca1445411b49ebea514f25592641"
+
+    private val gson: Gson
+    private val okHttp: OkHttpClient
     private val retrofit: Retrofit
 
     init {
-
-        val gson = GsonBuilder()
-            .setFieldNamingStrategy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-            .create()
+        gson = GsonBuilder()
+                .setFieldNamingStrategy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
+                .create()
 
         val httpLogging = HttpLoggingInterceptor()
         httpLogging.setLevel(HttpLoggingInterceptor.Level.BODY)
 
-        val okHttpClient = OkHttpClient()
-        okHttpClient.interceptors().add(Interceptor { chain ->
+        okHttp = OkHttpClient()
+        okHttp.interceptors().add(Interceptor { chain ->
 
             val builder = chain.request().newBuilder()
             builder.addHeader("Authorization", "token $token")
@@ -35,14 +40,25 @@ object GithubService {
 
             chain.proceed(builder.build())
         })
-        okHttpClient.interceptors().add(httpLogging)
+        okHttp.interceptors().add(httpLogging)
 
         retrofit = Retrofit.Builder()
-                .client(okHttpClient)
+                .client(okHttp)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .baseUrl(baseUrl)
                 .build()
     }
 
-    fun githubClient(): GithubApi = retrofit.create(GithubApi::class.java)
+
+
+    fun githubClient(): GithubApi {
+        return retrofit.create(GithubApi::class.java)
+    }
+
+
+    class Bla : Converter.Factory() {
+        override fun fromResponseBody(type: Type?, annotations: Array<out Annotation>?): Converter<ResponseBody, String>? {
+            return Converter { i -> i.string() }
+        }
+    }
 }

@@ -3,9 +3,11 @@ package at.droelf.codereview
 import android.graphics.Color
 import android.text.Spannable
 import android.text.SpannableString
+import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import prettify.PrettifyParser
 import syntaxhighlight.Parser
+import kotlin.text.Regex
 
 object PrettyfyHighlighter {
 
@@ -23,7 +25,11 @@ object PrettyfyHighlighter {
             "com" to "969896",
             "str" to "183691",
             "pun" to "333333",
-            "pln" to "333333"
+            "pln" to "333333",
+            "tag" to "63a35c",
+            "atn" to "795da3",
+            "atv" to "183691"
+
     )
 
     private val parser: Parser = PrettifyParser()
@@ -31,8 +37,20 @@ object PrettyfyHighlighter {
     fun highlight(sourceCode: String, fileExtension: String?): List<SpannableString> {
         val prettyCode = prettyfyCode(sourceCode, fileExtension)
         val newlinesIndex = prettyCode.mapIndexed { i, c ->  if(c.equals('\n')) i else Int.MIN_VALUE }.filter { it != Int.MIN_VALUE }
-        val ranges: List<Pair<Int,Int>> = newlinesIndex.subList(0, newlinesIndex.lastIndex).zip(newlinesIndex.subList(1, newlinesIndex.lastIndex + 1))
-        return ranges.map { SpannableString(prettyCode.subSequence(it.first+1, it.second)) }
+
+        var ranges: List<Pair<Int,Int>> = newlinesIndex.subList(0, newlinesIndex.lastIndex).zip(newlinesIndex.subList(1, newlinesIndex.lastIndex + 1))
+        if(newlinesIndex.first() != 0) {
+            ranges = listOf(Pair(0, newlinesIndex.first())) + ranges
+        }
+        if(newlinesIndex.last() != sourceCode.lastIndex) {
+            ranges += listOf(Pair(newlinesIndex.last(), sourceCode.lastIndex))
+        }
+        return ranges.map { i ->
+
+            val start = if(prettyCode.get(i.first) == '\n') i.first + 1 else i.first
+
+            SpannableString(prettyCode.subSequence(start, i.second))
+        }
     }
 
     private fun prettyfyCode(sourceCode: String, fileExtension: String?): SpannableString {
@@ -51,7 +69,7 @@ object PrettyfyHighlighter {
             colors.containsKey(keyWord) -> Color.parseColor("#${colors.get(keyWord)}")
             else -> {
                 println("------- Not found: $keyWord")
-                Color.parseColor("#{${colors.get("pln")}}")
+                Color.parseColor("#${colors.get("pln")}")
             }
         }
     }

@@ -67,7 +67,7 @@ interface PatchAdapterController {
 }
 
 
-class PatchSegmentController(val patchSegment: Patch.PatchSegment, val rawCode: List<SpannableString>, val offset: Int) {
+class PatchSegmentController(val patchSegment: Patch.PatchSegment, val rawCode: List<SpannableString>, val offset: Int) : SpannableStringHelper {
 
     var viewHolderWrapper: List<ViewHolderWrapper> = initWrapper()
 
@@ -76,9 +76,12 @@ class PatchSegmentController(val patchSegment: Patch.PatchSegment, val rawCode: 
                 val lineString = when(l.type){
                     Patch.Type.Delete -> l.line
                     else -> {
-                        SpannableStringBuilder()
-                                .append(if(l.type == Patch.Type.Add) "+" else " ")
-                                .append(rawCode.get(l.modifiedNum!! - 1 - offset))
+                        try {
+                            rawCode.get(l.modifiedNum!! - 1 - offset).prefix(if(l.type == Patch.Type.Add) "+" else " ")
+                        } catch(e: Exception){
+                            println()
+                            SpannableString("moep")
+                        }
                     }
                 }
                 ViewHolderLine(SpannableString(lineString), ViewHolderLine.LineType.fromPatchType(l.type), l.originalNum, l.modifiedNum)
@@ -102,8 +105,7 @@ class PatchSegmentController(val patchSegment: Patch.PatchSegment, val rawCode: 
 
             val codeToAdd = rawCode.subList(0, patchSegment.newRange.start - 1 - offset)
             val newList = codeToAdd.mapIndexed { i, spannableString ->
-                val newString = SpannableString(SpannableStringBuilder().append(" ").append(spannableString))
-                ViewHolderLine(newString, ViewHolderLine.LineType.Expanded, oStart - codeToAdd.size + i, mStart - codeToAdd.size + i)
+                ViewHolderLine(spannableString.prefix(" "), ViewHolderLine.LineType.Expanded, oStart - codeToAdd.size + i, mStart - codeToAdd.size + i)
             }
             viewHolderWrapper = newList + viewHolderWrapper.subList(1, viewHolderWrapper.lastIndex + 1)
 
@@ -113,4 +115,10 @@ class PatchSegmentController(val patchSegment: Patch.PatchSegment, val rawCode: 
         return Pair(pos, pos)
     }
 
+}
+
+interface SpannableStringHelper {
+    fun SpannableString.prefix(prefix: String): SpannableString {
+        return SpannableString(SpannableStringBuilder().append(prefix).append(this))
+    }
 }
