@@ -42,14 +42,30 @@ object PrettyfyHighlighter {
         if(newlinesIndex.first() != 0) {
             ranges = listOf(Pair(0, newlinesIndex.first())) + ranges
         }
-        if(newlinesIndex.last() != sourceCode.lastIndex) {
-            ranges += listOf(Pair(newlinesIndex.last(), sourceCode.lastIndex))
+        if(newlinesIndex.last() != prettyCode.lastIndex) {
+            ranges += listOf(Pair(newlinesIndex.last(), prettyCode.lastIndex))
         }
         return ranges.map { i ->
-
             val start = if(prettyCode.get(i.first) == '\n') i.first + 1 else i.first
 
-            SpannableString(prettyCode.subSequence(start, i.second))
+            val end: Int
+
+
+            if(prettyCode.get(i.second) != '\n'){
+                end = i.second + 1
+            } else {
+                end = i.second
+            }
+
+//            if(prettyCode.length >= (i.second + 1)){
+//                end = i.second
+//            } else if(prettyCode.get(i.second + 1) == '\n'){
+//                end = i.second
+//            } else {
+//                end = i.second + 1
+//            }
+
+            SpannableString(prettyCode.subSequence(start, end))
         }
     }
 

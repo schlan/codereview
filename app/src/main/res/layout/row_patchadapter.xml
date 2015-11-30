@@ -52,6 +52,7 @@
             android:typeface="monospace"
             android:paddingTop="2dp"
             android:paddingBottom="2dp"
+            android:textIsSelectable="true"
             android:textSize="10sp"
             android:layout_marginLeft="4dp"/>
         

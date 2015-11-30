@@ -11,6 +11,26 @@ class PatchAdapterControllerImpl(val patch: Patch.Patch, val rawCode: List<Spann
     val patchSegmentController: List<PatchSegmentController> = patchSegmentController()
 
     fun patchSegmentController(): List<PatchSegmentController> {
+
+        val lastSegment = patch.patchSegments.last()
+        val lastLineNew = lastSegment.newRange.start + lastSegment.newRange.numLines
+        val lastLineOld = lastSegment.originalRange.start + lastSegment.originalRange.numLines
+
+        var lastSegmentController = listOf<PatchSegmentController>()
+        if(lastLineNew > 0 && lastLineNew < rawCode.size){
+            val numLinesToEnd = rawCode.size - lastLineNew
+
+            val endSegment = Patch.PatchSegment(
+                    Patch.Range(lastLineOld + numLinesToEnd + 1, 0),
+                    Patch.Range(lastLineNew + numLinesToEnd + 1, 0),
+                    listOf(),
+                    "end",
+                    "method"
+                    )
+
+            lastSegmentController = listOf(PatchSegmentController(endSegment, rawCode.subList(lastLineNew - 1, rawCode.lastIndex + 1), lastLineNew - 1))
+        }
+
         return patch.patchSegments.mapIndexed { i, patchSegment ->
             val rawCodeRange: Pair<Int, Int> = when {
                 0 == patch.patchSegments.lastIndex  && 0 == i -> {
@@ -29,8 +49,7 @@ class PatchAdapterControllerImpl(val patch: Patch.Patch, val rawCode: List<Spann
                 }
             }
             PatchSegmentController(patchSegment, rawCode.subList(rawCodeRange.first, rawCodeRange.second), rawCodeRange.first)
-        }
-
+        } + lastSegmentController
     }
 
     fun patchSegmentForPos(pos: Int): Pair<PatchSegmentController, Int> {
