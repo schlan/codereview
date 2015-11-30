@@ -9,7 +9,6 @@ import android.view.View
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.network.RetrofitHelper
 import at.droelf.codereview.patch.Patch
-import jp.wasabeef.recyclerview.animators.SlideInLeftAnimator
 import kotlinx.android.synthetic.activity_main.*
 import kotlin.text.Regex
 
@@ -18,20 +17,22 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        loadCode()
+        loadCode(
+                getIntent().extras.getString("url"),
+                getIntent().extras.getString("patch"),
+                getIntent().extras.getString("fname")
+        )
     }
 
 
-    fun loadCode() {
+    fun loadCode(contentUrl: String, p: String, filename: String) {
         object : AsyncTask<Void, Void, Pair<List<SpannableString>, Patch.Patch>>() {
             override fun doInBackground(vararg params: Void?): Pair<List<SpannableString>, Patch.Patch> {
-                val pull = GithubService.githubClient().pullRequestFiles(Constants.owner, Constants.repo, 200)
-                val data = pull.execute()
-                val gitHubFile = data.body().get(1)
-                val fileType = gitHubFile.filename.split(Regex("\\.")).last()
-                val patch = Patch.parse(gitHubFile.patch)
 
-                val file = GithubService.githubClient().file(gitHubFile.contentsUrl, "application/vnd.github.VERSION.raw+json")
+                val fileType = filename.split(Regex("\\.")).last()
+                val patch = Patch.parse(p)
+
+                val file = GithubService.githubClient().file(contentUrl, "application/vnd.github.VERSION.raw+json")
                 val rawFile = file.execute()
 
                 return benchmark {
@@ -58,5 +59,4 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
         println("-------- Benchmark Call: ${System.currentTimeMillis() - long}")
         return result
     }
-
 }

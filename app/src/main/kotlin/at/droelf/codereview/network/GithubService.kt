@@ -54,11 +54,4 @@ object GithubService {
     fun githubClient(): GithubApi {
         return retrofit.create(GithubApi::class.java)
     }
-
-
-    class Bla : Converter.Factory() {
-        override fun fromResponseBody(type: Type?, annotations: Array<out Annotation>?): Converter<ResponseBody, String>? {
-            return Converter { i -> i.string() }
-        }
-    }
 }

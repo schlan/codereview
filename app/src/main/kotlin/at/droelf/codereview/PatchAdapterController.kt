@@ -30,6 +30,7 @@ class PatchAdapterControllerImpl(val patch: Patch.Patch, val rawCode: List<Spann
             }
             PatchSegmentController(patchSegment, rawCode.subList(rawCodeRange.first, rawCodeRange.second), rawCodeRange.first)
         }
+
     }
 
     fun patchSegmentForPos(pos: Int): Pair<PatchSegmentController, Int> {
@@ -75,14 +76,7 @@ class PatchSegmentController(val patchSegment: Patch.PatchSegment, val rawCode: 
         return listOf(ViewHolderHeader(patchSegment.header, patchSegment.method, patchSegment.originalRange, patchSegment.newRange)) + patchSegment.lines.map { l ->
                 val lineString = when(l.type){
                     Patch.Type.Delete -> l.line
-                    else -> {
-                        try {
-                            rawCode.get(l.modifiedNum!! - 1 - offset).prefix(if(l.type == Patch.Type.Add) "+" else " ")
-                        } catch(e: Exception){
-                            println()
-                            SpannableString("moep")
-                        }
-                    }
+                    else -> rawCode.get(l.modifiedNum!! - 1 - offset).prefix(if(l.type == Patch.Type.Add) "+" else " ")
                 }
                 ViewHolderLine(SpannableString(lineString), ViewHolderLine.LineType.fromPatchType(l.type), l.originalNum, l.modifiedNum)
             }

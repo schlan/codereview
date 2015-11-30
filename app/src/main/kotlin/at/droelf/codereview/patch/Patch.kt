@@ -30,10 +30,16 @@ class PatchParser {
 
     fun parse(data: String): Patch.Patch? {
         val lines = PrettyfyHighlighter.highlight(data, null)
-        if(lines.isEmpty()) return null
+        if(lines.isEmpty()) {
+            println("Prettyfy failed")
+            return null
+        }
 
         val headerIndex = lines.filter { isHeader(it) }.map { lines.indexOf(it) }
-        if(headerIndex.isEmpty()) return null
+        if(headerIndex.isEmpty()) {
+            println("Unable to find patch header")
+            return null
+        }
 
         val range: List<Pair<Int, Int>> = headerIndex.subList(0, headerIndex.lastIndex).zip(headerIndex.subList(1, headerIndex.lastIndex + 1)) + Pair(headerIndex.last(), lines.lastIndex + 1)
         val patchesRaw: List<List<SpannableString>> = range.map { lines.subList(it.first, it.second) }
@@ -50,9 +56,18 @@ class PatchParser {
 
     // tested
     fun parseCodeLines(list: List<CharSequence>, r: Pair<Patch.Range, Patch.Range>): List<Patch.Line> {
+
+        val newList: List<CharSequence>
+        if(list.last().startsWith("\\ No newline")) {
+            newList = list.subList(0, list.lastIndex)
+        }else {
+            newList = list
+        }
+
         var iOri = r.first.start
         var iMod = r.second.start
-        return list.mapIndexed { i, s ->
+
+        return newList.mapIndexed { i, s ->
             val lineType = parseLineType(s)
             val lineNumber = when (lineType) {
                 Patch.Type.Neutral -> Pair(iOri++, iMod++)
