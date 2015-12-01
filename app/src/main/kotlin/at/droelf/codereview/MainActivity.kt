@@ -1,5 +1,7 @@
 package at.droelf.codereview
 
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.os.AsyncTask
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -25,7 +27,6 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
         )
     }
 
-
     fun loadCode(contentUrl: String, p: String, filename: String) {
         object : AsyncTask<Void, Void, Pair<List<SpannableString>, Patch.Patch>>() {
             override fun doInBackground(vararg params: Void?): Pair<List<SpannableString>, Patch.Patch> {
@@ -43,13 +44,23 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
                 progressbar.visibility = View.GONE
 
                 val patch = Patch.parse(Constants.patch)
+                val maxLengthLine = result.first.maxBy { it.length }
+                recyclerViewBounds.layoutParams.width = maxLengthLine!!.lengthInPixel() + applicationContext.resources.getDimensionPixelOffset(R.dimen.code_text_margin_left)
 
                 if(patch != null) {
-                    recyclerView.layoutManager = LinearLayoutManager(applicationContext)
+
+                    recyclerView.layoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
                     recyclerView.adapter = PatchAdapter(PatchAdapterControllerImpl(result.second, result.first))
                 }
             }
         }.execute()
+    }
+
+    fun SpannableString.lengthInPixel(): Int {
+        val p = Paint();
+        p.setTypeface(Typeface.MONOSPACE)
+        p.textSize = applicationContext.resources.getDimension(R.dimen.code_text_size)
+        return p.measureText(this, 0, length).toInt()
     }
 
     fun <T> benchmark(call: () -> T): T {
