@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
               xmlns:tools="http://schemas.android.com/tools"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:layout_height="match_parent"
+              android:layout_height="wrap_content"
     >
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_alignParentLeft="true"
+        android:id="@+id/lineNumberHolder"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        android:layout_alignBottom="@+id/row_patch_text">
         
         <TextView
             android:layout_width="24dp"
@@ -45,18 +49,19 @@
             android:layout_height="match_parent"
             android:background="#333"/>
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/row_patch_text"
-            android:typeface="monospace"
-            android:paddingTop="2dp"
-            android:paddingBottom="2dp"
-            android:textIsSelectable="true"
-            android:textSize="10sp"
-            android:layout_marginLeft="4dp"/>
-        
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/row_patch_text"
+        android:typeface="monospace"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:textIsSelectable="true"
+        android:textSize="10sp"
+        android:layout_toRightOf="@+id/lineNumberHolder"
+        android:text="tet asdfasd asdf asd sd fadasdfa sdf asd fasdf asdfasdf asdf asdf asdf asdfasdasdfasdfas"/>
 
-</LinearLayout>
+
+</RelativeLayout>

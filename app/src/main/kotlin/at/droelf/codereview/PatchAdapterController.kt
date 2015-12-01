@@ -25,7 +25,7 @@ class PatchAdapterControllerImpl(val patch: Patch.Patch, val rawCode: List<Spann
                     Patch.Range(lastLineNew + numLinesToEnd + 1, 0),
                     listOf(),
                     "end",
-                    "method"
+                    ""
                     )
 
             lastSegmentController = listOf(PatchSegmentController(endSegment, rawCode.subList(lastLineNew - 1, rawCode.lastIndex + 1), lastLineNew - 1))

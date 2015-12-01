@@ -42,6 +42,7 @@ class ViewHolderHeader(val header: String, val method: String?, val originalRang
 }
 
 class ViewHolderLine(val line: SpannableString, val lineType: LineType, val originalNum: Int?, val modifiedNum: Int?): ViewHolderWrapper(PatchListType.Line){
+
     override fun bind(viewholder: RecyclerView.ViewHolder, patchController: PatchAdapterController, pos: Int) {
         val view = viewholder.itemView
         val lineNumberOriginal = view.findViewById(R.id.row_patch_number_original) as TextView
