@@ -19,9 +19,9 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         loadCode(
-                getIntent().extras.getString("url"),
-                getIntent().extras.getString("patch"),
-                getIntent().extras.getString("fname")
+                intent.extras.getString("url"),
+                intent.extras.getString("patch"),
+                intent.extras.getString("fname")
         )
     }
 
@@ -30,13 +30,11 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
         object : AsyncTask<Void, Void, Pair<List<SpannableString>, Patch.Patch>>() {
             override fun doInBackground(vararg params: Void?): Pair<List<SpannableString>, Patch.Patch> {
 
-                val fileType = filename.split(Regex("\\.")).last()
                 val patch = Patch.parse(p)
-
-                val file = GithubService.githubClient().file(contentUrl, "application/vnd.github.VERSION.raw+json")
-                val rawFile = file.execute()
+                val rawFile = GithubService.githubClient().file(contentUrl, "application/vnd.github.VERSION.raw+json").execute()
 
                 return benchmark {
+                    val fileType = filename.split(Regex("\\.")).last()
                     Pair(PrettyfyHighlighter.highlight(rawFile.body().string(), fileType), patch!!)
                 }
             }
