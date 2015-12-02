@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
-import android.view.View
+import android.view.*
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.network.RetrofitHelper
 import at.droelf.codereview.patch.Patch
@@ -16,6 +16,10 @@ import kotlinx.android.synthetic.activity_main.*
 import kotlin.text.Regex
 
 class MainActivity : AppCompatActivity(), RetrofitHelper {
+
+    var maxWidth: Int = -1
+    var minWidth: Int = -1
+    var hscrollEnabled: Boolean = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +29,35 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
                 intent.extras.getString("patch"),
                 intent.extras.getString("fname")
         )
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_code, menu);
+        return true;
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.menu_code_hscroll -> {
+                hscroll(!hscrollEnabled)
+                return true
+            }
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    fun hscroll(active: Boolean) {
+        if(active && maxWidth != -1){
+            recyclerViewBounds.layoutParams.width = maxWidth
+            horizontalScrollView.enableScrolling = true
+            hscrollEnabled = true
+        } else {
+            recyclerViewBounds.layoutParams.width = minWidth
+            horizontalScrollView.enableScrolling = false
+            hscrollEnabled = false
+        }
+        recyclerView.requestLayout()
     }
 
     fun loadCode(contentUrl: String, p: String, filename: String) {
@@ -45,7 +78,13 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
 
                 val patch = Patch.parse(Constants.patch)
                 val maxLengthLine = result.first.maxBy { it.length }
-                recyclerViewBounds.layoutParams.width = maxLengthLine!!.lengthInPixel() + applicationContext.resources.getDimensionPixelOffset(R.dimen.code_text_margin_left)
+                maxWidth = maxLengthLine!!.lengthInPixel() + applicationContext.resources.getDimensionPixelOffset(R.dimen.code_text_margin_left)
+                minWidth = main.width
+
+                hscroll(hscrollEnabled)
+
+//                recyclerViewBounds.layoutParams.width = main.width//if(main.width > width) main.width else width
+//                horizontalScrollView.enableScrolling = false
 
                 if(patch != null) {
 

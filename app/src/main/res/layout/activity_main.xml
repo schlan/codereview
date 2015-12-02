@@ -3,29 +3,37 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:id="@+id/main"
               android:background="#fff">
 
-    <HorizontalScrollView
+    <at.droelf.codereview.HScrollView
         android:layout_width="wrap_content"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/horizontalScrollView"
+        android:splitMotionEvents="true">
+
         <LinearLayout
-            android:layout_width="1000dp"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
             <LinearLayout
-                android:layout_width="10dp"
+                android:layout_width="1337dp"
                 android:id="@+id/recyclerViewBounds"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <android.support.v7.widget.RecyclerView
+                <at.droelf.codereview.MyRecycler
                     android:id="@+id/recyclerView"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:splitMotionEvents="true"
                     />
+
             </LinearLayout>
         </LinearLayout>
-    </HorizontalScrollView>
+    </at.droelf.codereview.HScrollView>
 
     <ProgressBar
         android:layout_width="wrap_content"
