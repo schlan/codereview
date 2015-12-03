@@ -4,16 +4,19 @@ import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
 import android.view.View
 import android.widget.TextView
+import butterknife.Bind
+import butterknife.ButterKnife
 
-class PatchViewHolderHeader(view: View) : RecyclerView.ViewHolder(view) {
+class PatchViewHolderHeader(val view: View) : RecyclerView.ViewHolder(view) {
 
-    val header: TextView?
+    @Bind(R.id.row_patch_header)
+    lateinit var text: TextView
 
-    init {
-        header = view.findViewById(R.id.row_patch_header) as? TextView
+    init{
+        ButterKnife.bind(view)
     }
 
     fun bind(line: SpannableString) {
-        header?.text = line
+        text.text = line
     }
 }

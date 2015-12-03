@@ -13,6 +13,9 @@ import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.network.RetrofitHelper
 import at.droelf.codereview.patch.Patch
 import kotlinx.android.synthetic.activity_main.*
+import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import kotlin.text.Regex
 
 class MainActivity : AppCompatActivity(), RetrofitHelper {
@@ -43,8 +46,33 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
                 return true
             }
         }
-
         return super.onOptionsItemSelected(item)
+    }
+
+    fun loadCode(contentUrl: String, p: String, filename: String) {
+
+        val patchO = Patch.parse(p)
+        val contentO = GithubService.githubClient().fileRx(contentUrl, "application/vnd.github.VERSION.raw+json").map {
+            PrettyfyHighlighter.highlight(it.string(), filename.split(Regex("\\.")).last())
+        }
+
+        Observable.combineLatest(patchO, contentO, { patch, fileContent -> Pair(fileContent, patch)})
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.newThread())
+            .subscribe({ result ->
+                progressbar.visibility = View.GONE
+
+                val maxLengthLine = result.first.maxBy { it.length }
+                maxWidth = maxLengthLine!!.lengthInPixel() + applicationContext.resources.getDimensionPixelOffset(R.dimen.code_text_margin_left)
+                minWidth = main.width
+
+                hscroll(hscrollEnabled)
+
+                recyclerView.layoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
+                recyclerView.adapter = PatchAdapter(PatchAdapterControllerImpl(result.second, result.first))
+            },{ error ->
+                println(error)
+            })
     }
 
     fun hscroll(active: Boolean) {
@@ -58,41 +86,6 @@ class MainActivity : AppCompatActivity(), RetrofitHelper {
             hscrollEnabled = false
         }
         recyclerView.requestLayout()
-    }
-
-    fun loadCode(contentUrl: String, p: String, filename: String) {
-        object : AsyncTask<Void, Void, Pair<List<SpannableString>, Patch.Patch>>() {
-            override fun doInBackground(vararg params: Void?): Pair<List<SpannableString>, Patch.Patch> {
-
-                val patch = Patch.parse(p)
-                val rawFile = GithubService.githubClient().file(contentUrl, "application/vnd.github.VERSION.raw+json").execute()
-
-                return benchmark {
-                    val fileType = filename.split(Regex("\\.")).last()
-                    Pair(PrettyfyHighlighter.highlight(rawFile.body().string(), fileType), patch!!)
-                }
-            }
-
-            override fun onPostExecute(result: Pair<List<SpannableString>, Patch.Patch>) {
-                progressbar.visibility = View.GONE
-
-                val patch = Patch.parse(Constants.patch)
-                val maxLengthLine = result.first.maxBy { it.length }
-                maxWidth = maxLengthLine!!.lengthInPixel() + applicationContext.resources.getDimensionPixelOffset(R.dimen.code_text_margin_left)
-                minWidth = main.width
-
-                hscroll(hscrollEnabled)
-
-//                recyclerViewBounds.layoutParams.width = main.width//if(main.width > width) main.width else width
-//                horizontalScrollView.enableScrolling = false
-
-                if(patch != null) {
-
-                    recyclerView.layoutManager = LinearLayoutManager(applicationContext, LinearLayoutManager.VERTICAL, false)
-                    recyclerView.adapter = PatchAdapter(PatchAdapterControllerImpl(result.second, result.first))
-                }
-            }
-        }.execute()
     }
 
     fun SpannableString.lengthInPixel(): Int {

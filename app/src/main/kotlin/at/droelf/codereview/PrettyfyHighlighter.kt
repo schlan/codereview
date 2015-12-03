@@ -29,7 +29,6 @@ object PrettyfyHighlighter {
             "tag" to "63a35c",
             "atn" to "795da3",
             "atv" to "183691"
-
     )
 
     private val parser: Parser = PrettifyParser()
@@ -47,23 +46,10 @@ object PrettyfyHighlighter {
         }
         return ranges.map { i ->
             val start = if(prettyCode.get(i.first) == '\n') i.first + 1 else i.first
-
-            val end: Int
-
-
-            if(prettyCode.get(i.second) != '\n'){
-                end = i.second + 1
-            } else {
-                end = i.second
+            val end: Int = when(prettyCode.get(i.second)){
+                '\n' -> i.second
+                else -> i.second + 1
             }
-
-//            if(prettyCode.length >= (i.second + 1)){
-//                end = i.second
-//            } else if(prettyCode.get(i.second + 1) == '\n'){
-//                end = i.second
-//            } else {
-//                end = i.second + 1
-//            }
 
             SpannableString(prettyCode.subSequence(start, end))
         }

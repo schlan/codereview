@@ -7,7 +7,7 @@ import retrofit.http.GET
 import retrofit.http.Header
 import retrofit.http.Path
 import retrofit.http.Url
-import java.util.*
+import rx.Observable
 
 interface GithubApi {
 
@@ -24,10 +24,30 @@ interface GithubApi {
         @Path("number") number: Int
     ): Call<Array<GithubModel.PullRequestFile>>
 
+    @GET("/repos/{owner}/{repo}/pulls/{number}/files")
+    fun pullRequestFilesRx(
+            @Path("owner") owner: String,
+            @Path("repo") repo: String,
+            @Path("number") number: Int
+    ): Observable<Array<GithubModel.PullRequestFile>>
+
     @GET
     fun file(
             @Url url: String,
             @Header("Content-Type") contentType: String
     ): Call<ResponseBody>
+
+    @GET
+    fun fileRx(
+            @Url url: String,
+            @Header("Content-Type") contentType: String
+    ): Observable<ResponseBody>
+
+    @GET("/repos/{owner}/{repo}/issues/{number}/comments")
+    fun comments(
+        @Path("owner") owner: String,
+        @Path("repo") repo: String,
+        @Path("number") number: Int
+    ): Call<Array<GithubModel.Comment>>
 
 }

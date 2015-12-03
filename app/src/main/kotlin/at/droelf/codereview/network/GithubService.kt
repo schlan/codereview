@@ -5,12 +5,10 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.squareup.okhttp.Interceptor
 import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.ResponseBody
 import com.squareup.okhttp.logging.HttpLoggingInterceptor
-import retrofit.Converter
 import retrofit.Retrofit
 import retrofit.GsonConverterFactory
-import java.lang.reflect.Type
+import retrofit.RxJavaCallAdapterFactory
 
 object GithubService {
 
@@ -45,6 +43,7 @@ object GithubService {
         retrofit = Retrofit.Builder()
                 .client(okHttp)
                 .addConverterFactory(GsonConverterFactory.create(gson))
+                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
                 .baseUrl(baseUrl)
                 .build()
     }

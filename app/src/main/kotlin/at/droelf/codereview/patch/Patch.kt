@@ -2,6 +2,7 @@ package at.droelf.codereview.patch
 
 import android.text.SpannableString
 import at.droelf.codereview.PrettyfyHighlighter
+import rx.Observable
 import kotlin.text.Regex
 
 
@@ -19,8 +20,12 @@ object Patch{
         Add(1), Delete(2), Neutral(3);
     }
 
-    fun parse(data: String): Patch? {
-        return parser.parse(data)
+    fun parse(data: String): Observable<Patch> {
+        return Observable.defer{
+            val parsedPatch = parser.parse(data)
+            if(parsedPatch != null) Observable.just(parsedPatch)
+            else Observable.error(Throwable("Unable to parse patch"))
+        }
     }
 }
 
