@@ -6,6 +6,7 @@ import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import prettify.PrettifyParser
+import rx.Observable
 import syntaxhighlight.Parser
 import kotlin.text.Regex
 
@@ -33,25 +34,27 @@ object PrettyfyHighlighter {
 
     private val parser: Parser = PrettifyParser()
 
-    fun highlight(sourceCode: String, fileExtension: String?): List<SpannableString> {
-        val prettyCode = prettyfyCode(sourceCode, fileExtension)
-        val newlinesIndex = prettyCode.mapIndexed { i, c ->  if(c.equals('\n')) i else Int.MIN_VALUE }.filter { it != Int.MIN_VALUE }
+    fun highlight(sourceCode: String, fileExtension: String?): Observable<List<SpannableString>> {
+        return Observable.create<List<SpannableString>> { subscriber ->
+            val prettyCode = prettyfyCode(sourceCode, fileExtension)
+            val newlinesIndex = prettyCode.mapIndexed { i, c ->  if(c.equals('\n')) i else Int.MIN_VALUE }.filter { it != Int.MIN_VALUE }
 
-        var ranges: List<Pair<Int,Int>> = newlinesIndex.subList(0, newlinesIndex.lastIndex).zip(newlinesIndex.subList(1, newlinesIndex.lastIndex + 1))
-        if(newlinesIndex.first() != 0) {
-            ranges = listOf(Pair(0, newlinesIndex.first())) + ranges
-        }
-        if(newlinesIndex.last() != prettyCode.lastIndex) {
-            ranges += listOf(Pair(newlinesIndex.last(), prettyCode.lastIndex))
-        }
-        return ranges.map { i ->
-            val start = if(prettyCode.get(i.first) == '\n') i.first + 1 else i.first
-            val end: Int = when(prettyCode.get(i.second)){
-                '\n' -> i.second
-                else -> i.second + 1
+            var ranges: List<Pair<Int,Int>> = newlinesIndex.subList(0, newlinesIndex.lastIndex).zip(newlinesIndex.subList(1, newlinesIndex.lastIndex + 1))
+            if(newlinesIndex.first() != 0) {
+                ranges = listOf(Pair(0, newlinesIndex.first())) + ranges
+            }
+            if(newlinesIndex.last() != prettyCode.lastIndex) {
+                ranges += listOf(Pair(newlinesIndex.last(), prettyCode.lastIndex))
             }
 
-            SpannableString(prettyCode.subSequence(start, end))
+            val data = ranges.map { i ->
+                val start = if(prettyCode.get(i.first) == '\n') i.first + 1 else i.first
+                val end: Int = if(prettyCode.get(i.second) ==  '\n') i.second else i.second + 1
+                SpannableString(prettyCode.subSequence(start, end))
+            }
+
+            subscriber.onNext(data)
+            subscriber.onCompleted()
         }
     }
 

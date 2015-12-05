@@ -5,7 +5,10 @@ import android.text.SpannableStringBuilder
 import at.droelf.codereview.patch.Patch
 
 
-class PatchAdapterControllerImpl(val patch: Patch.Patch, val rawCode: List<SpannableString>) : PatchAdapterController {
+class PatchAdapterControllerImpl(githuDataSet: MainActivity.GithubDataSet) : PatchAdapterController {
+
+    val patch: Patch.Patch = githuDataSet.patch
+    val rawCode: List<SpannableString> = githuDataSet.fileContent
 
     override var patchAdapter: PatchAdapterInterface? = null
     val patchSegmentController: List<PatchSegmentController> = patchSegmentController()

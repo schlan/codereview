@@ -1,56 +1,47 @@
 package at.droelf.codereview.network
 
+import at.droelf.codereview.model.GithubModel
+import at.droelf.codereview.model.Model
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.squareup.okhttp.Interceptor
 import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.ResponseBody
 import com.squareup.okhttp.logging.HttpLoggingInterceptor
+import retrofit.Call
 import retrofit.Retrofit
 import retrofit.GsonConverterFactory
 import retrofit.RxJavaCallAdapterFactory
+import retrofit.http.GET
+import retrofit.http.Header
+import retrofit.http.Path
+import retrofit.http.Url
+import rx.Observable
 
-object GithubService {
+class GithubService(val auth: Model.GithubAuth, val retrofit: Retrofit) {
 
-    private val baseUrl: String = "https://api.github.com"
-    private val token: String = "e7cf96ea81ebca1445411b49ebea514f25592641"
+    val githubApi: GithubApi = retrofit.create(GithubApi::class.java)
 
-    private val gson: Gson
-    private val okHttp: OkHttpClient
-    private val retrofit: Retrofit
-
-    init {
-        gson = GsonBuilder()
-                .setFieldNamingStrategy(FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES)
-                .create()
-
-        val httpLogging = HttpLoggingInterceptor()
-        httpLogging.setLevel(HttpLoggingInterceptor.Level.BODY)
-
-        okHttp = OkHttpClient()
-        okHttp.interceptors().add(Interceptor { chain ->
-
-            val builder = chain.request().newBuilder()
-            builder.addHeader("Authorization", "token $token")
-            builder.addHeader("User-Agent", "CodeReview @dr03lf")
-            builder.addHeader("Content-Type", "application/json; charset=utf-8")
-            builder.addHeader("Accept", "application/vnd.github.VERSION.raw+json")
-
-            chain.proceed(builder.build())
-        })
-        okHttp.interceptors().add(httpLogging)
-
-        retrofit = Retrofit.Builder()
-                .client(okHttp)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-                .baseUrl(baseUrl)
-                .build()
+    fun pullRequestFilesRx(owner: String, repo: String, number: Int): Observable<Array<GithubModel.PullRequestFile>> {
+        return githubApi.pullRequestFilesRx(owner, repo, number, token())
     }
 
-
-
-    fun githubClient(): GithubApi {
-        return retrofit.create(GithubApi::class.java)
+    fun pullRequestFiles(owner: String, repo: String, number: Int): Call<Array<GithubModel.PullRequestFile>> {
+        return githubApi.pullRequestFiles(owner, repo, number, token())
     }
+
+    fun fileRx(url: String, contentType: String): Observable<ResponseBody> {
+        return githubApi.fileRx(url, contentType, token())
+    }
+
+    fun commentsRx(owner: String, repo: String, number: Int): Observable<Array<GithubModel.Comment>> {
+        return githubApi.commentsRx(owner, repo, number, token())
+    }
+
+    fun reviewCommentsRx(owner: String, repo: String, number: Int): Observable<Array<GithubModel.ReviewComment>> {
+        return githubApi.reviewCommentsRx(owner, repo, number, token())
+    }
+
+    fun token() = "token ${auth.token}"
 }

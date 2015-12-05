@@ -21,9 +21,9 @@ object Patch{
     }
 
     fun parse(data: String): Observable<Patch> {
-        return Observable.defer{
-            val parsedPatch = parser.parse(data)
-            if(parsedPatch != null) Observable.just(parsedPatch)
+        return PrettyfyHighlighter.highlight(data, null).flatMap {
+            val parsedPatch = parser.parse(it)
+            if (parsedPatch != null) Observable.just(parsedPatch)
             else Observable.error(Throwable("Unable to parse patch"))
         }
     }
@@ -33,13 +33,7 @@ class PatchParser {
     val headerRegex = Regex("^@@\\ \\-\\d+\\,\\d+\\ \\+\\d+\\,\\d+\\ @@")
     val rangeRegex = Regex("^[-,+]\\d+,\\d+$")
 
-    fun parse(data: String): Patch.Patch? {
-        val lines = PrettyfyHighlighter.highlight(data, null)
-        if(lines.isEmpty()) {
-            println("Prettyfy failed")
-            return null
-        }
-
+    fun parse(lines: List<SpannableString>): Patch.Patch? {
         val headerIndex = lines.filter { isHeader(it) }.map { lines.indexOf(it) }
         if(headerIndex.isEmpty()) {
             println("Unable to find patch header")

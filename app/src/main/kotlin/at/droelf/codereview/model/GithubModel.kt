@@ -14,6 +14,10 @@ object GithubModel {
             val id: Long, val url: String, val htmlUrl: String, val body: String, val user: User
     )
 
+    data class ReviewComment(
+            val id: Long, val body: String, val user: User, val position: Long, val originalPosition: Long, val diffHunk: String
+    )
+
     data class User(
             val login: String, val id: Long, val avatarUrl: String, val gravatarId: String, val url: String,
             val htmlUrl: String, val followersUrl: String, val followingUrl: String, val type: String, val siteAdmin: Boolean

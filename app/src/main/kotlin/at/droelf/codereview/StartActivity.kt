@@ -10,20 +10,30 @@ import android.widget.AdapterView
 import android.widget.BaseAdapter
 import android.widget.ListView
 import android.widget.TextView
+import at.droelf.codereview.dagger.activity.ActivityScope
+import at.droelf.codereview.dagger.activity.StartActivityModule
 import at.droelf.codereview.model.GithubModel
+import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.network.RetrofitHelper
+import javax.inject.Inject
 
 class StartActivity : AppCompatActivity(), RetrofitHelper {
+
+    @Inject
+    lateinit var githubService: GithubService
 
     var list: ListView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Global.get(this).createUserComponent(Model.GithubAuth("e7cf96ea81ebca1445411b49ebea514f25592641"))
+        setupDagger()
+
         setContentView(R.layout.activity_start)
         list = findViewById(R.id.listview) as? ListView
 
-        GithubService.githubClient().pullRequestFiles(Constants.owner, Constants.repo, Constants.pullRequest).enqueue({ repos ->
+        githubService.pullRequestFiles(Constants.owner, Constants.repo, Constants.pullRequest).enqueue({ repos ->
             list?.adapter = Adapter(repos.body())
             list?.onItemClickListener = AdapterView.OnItemClickListener { adapter, view, pos, id ->
                 val file = (adapter.adapter as Adapter).getItem(pos)
@@ -37,6 +47,11 @@ class StartActivity : AppCompatActivity(), RetrofitHelper {
         },{ error ->
 
         })
+    }
+
+
+    fun setupDagger(){
+        Global.get(this).userComponent().plus(StartActivityModule(this)).inject(this)
     }
 
     class Adapter(val list: Array<GithubModel.PullRequestFile>) : BaseAdapter(){
