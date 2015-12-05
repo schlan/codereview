@@ -19,9 +19,7 @@ import retrofit.http.Path
 import retrofit.http.Url
 import rx.Observable
 
-class GithubService(val auth: Model.GithubAuth, val retrofit: Retrofit) {
-
-    val githubApi: GithubApi = retrofit.create(GithubApi::class.java)
+class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi) {
 
     fun pullRequestFilesRx(owner: String, repo: String, number: Int): Observable<Array<GithubModel.PullRequestFile>> {
         return githubApi.pullRequestFilesRx(owner, repo, number, token())

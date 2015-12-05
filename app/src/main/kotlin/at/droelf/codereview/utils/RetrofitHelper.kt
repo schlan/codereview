@@ -1,4 +1,4 @@
-package at.droelf.codereview.network
+package at.droelf.codereview.utils
 
 import retrofit.Call
 import retrofit.Callback

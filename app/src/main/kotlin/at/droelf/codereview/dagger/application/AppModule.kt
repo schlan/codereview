@@ -1,7 +1,8 @@
-package at.droelf.codereview.dagger
+package at.droelf.codereview.dagger.application
 
 import android.app.Application
 import android.content.Context
+import at.droelf.codereview.dagger.services.SquareModule
 import at.droelf.codereview.dagger.user.UserComponent
 import at.droelf.codereview.dagger.user.UserModule
 import dagger.Component
@@ -17,15 +18,4 @@ class AppModule(private val app: Application) {
     fun provideApplicationContext(): Context {
         return app.applicationContext
     }
-}
-
-@Singleton
-@Component(
-        modules = arrayOf(
-                AppModule::class,
-                SquareModule::class
-        )
-)
-interface AppComponent {
-    fun plus(userModule: UserModule): UserComponent
 }

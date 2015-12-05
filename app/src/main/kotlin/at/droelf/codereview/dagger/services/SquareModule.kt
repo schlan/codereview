@@ -1,4 +1,4 @@
-package at.droelf.codereview.dagger
+package at.droelf.codereview.dagger.services
 
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson

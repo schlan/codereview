@@ -2,10 +2,12 @@ package at.droelf.codereview
 
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import at.droelf.codereview.model.Model
 import at.droelf.codereview.patch.Patch
+import at.droelf.codereview.ui.PatchActivity
 
 
-class PatchAdapterControllerImpl(githuDataSet: MainActivity.GithubDataSet) : PatchAdapterController {
+class PatchAdapterControllerImpl(githuDataSet: Model.GithubDataSet) : PatchAdapterController {
 
     val patch: Patch.Patch = githuDataSet.patch
     val rawCode: List<SpannableString> = githuDataSet.fileContent
