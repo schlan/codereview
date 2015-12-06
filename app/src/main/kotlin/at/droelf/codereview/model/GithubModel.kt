@@ -23,4 +23,11 @@ object GithubModel {
             val htmlUrl: String, val followersUrl: String, val followingUrl: String, val type: String, val siteAdmin: Boolean
     )
 
+
+    data class Subscription(
+            val id: Long, val owner: User, val name: String, val fullName: String, val description: String, val private: Boolean,
+            val fork: Boolean, val language: String, val forkCounts: Int, val stargazersCount: Int, val watchersCount: Int,
+            val size: Int, val defaultBranch: String, val openIssueCount: Int, val hasIssues: Boolean
+    )
+
 }

@@ -21,24 +21,24 @@ import rx.Observable
 
 class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi) {
 
-    fun pullRequestFilesRx(owner: String, repo: String, number: Int): Observable<Array<GithubModel.PullRequestFile>> {
+    fun pullRequestFilesRx(owner: String, repo: String, number: Int): Observable<MutableList<GithubModel.PullRequestFile>> {
         return githubApi.pullRequestFilesRx(owner, repo, number, token())
-    }
-
-    fun pullRequestFiles(owner: String, repo: String, number: Int): Call<Array<GithubModel.PullRequestFile>> {
-        return githubApi.pullRequestFiles(owner, repo, number, token())
     }
 
     fun fileRx(url: String, contentType: String): Observable<ResponseBody> {
         return githubApi.fileRx(url, contentType, token())
     }
 
-    fun commentsRx(owner: String, repo: String, number: Int): Observable<Array<GithubModel.Comment>> {
+    fun commentsRx(owner: String, repo: String, number: Int): Observable<MutableList<GithubModel.Comment>> {
         return githubApi.commentsRx(owner, repo, number, token())
     }
 
-    fun reviewCommentsRx(owner: String, repo: String, number: Int): Observable<Array<GithubModel.ReviewComment>> {
+    fun reviewCommentsRx(owner: String, repo: String, number: Int): Observable<MutableList<GithubModel.ReviewComment>> {
         return githubApi.reviewCommentsRx(owner, repo, number, token())
+    }
+
+    fun subscriptionsRx(): Observable<MutableList<GithubModel.Subscription>> {
+        return githubApi.subscriptionsRx(token())
     }
 
     fun token() = "token ${auth.token}"

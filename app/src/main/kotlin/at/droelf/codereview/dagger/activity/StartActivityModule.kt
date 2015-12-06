@@ -2,7 +2,7 @@ package at.droelf.codereview.dagger.activity
 
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.ui.StartActivity
-import at.droelf.codereview.ui.StartActivityRx
+import at.droelf.codereview.ui.StartActivityController
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -17,7 +17,7 @@ class StartActivityModule(private val startActivity: StartActivity) {
 
     @Provides
     @ActivityScope
-    fun provideStartActivityController(githubService: GithubService): StartActivityRx {
-        return StartActivityRx(githubService)
+    fun provideStartActivityController(githubService: GithubService): StartActivityController {
+        return StartActivityController(githubService)
     }
 }

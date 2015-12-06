@@ -6,6 +6,7 @@ import at.droelf.codereview.dagger.*
 import at.droelf.codereview.dagger.application.AppComponent
 import at.droelf.codereview.dagger.application.AppModule
 import at.droelf.codereview.dagger.application.DaggerAppComponent
+import at.droelf.codereview.dagger.services.DbModule
 import at.droelf.codereview.dagger.services.GithubServiceModule
 import at.droelf.codereview.dagger.services.SquareModule
 import at.droelf.codereview.dagger.user.UserComponent
@@ -33,6 +34,7 @@ class Global: Application() {
                 .appModule(AppModule(this))
                 .squareModule(SquareModule())
                 .githubServiceModule(GithubServiceModule())
+                .dbModule(DbModule())
                 .build()
     }
 

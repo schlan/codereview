@@ -26,7 +26,7 @@ import javax.inject.Inject
 class StartActivity : BaseActivity<StartActivityComponent>(), RetrofitHelper {
 
     @Inject
-    lateinit var controller: StartActivityRx
+    lateinit var controller: StartActivityController
 
     var list: ListView? = null
 
@@ -61,7 +61,7 @@ class StartActivity : BaseActivity<StartActivityComponent>(), RetrofitHelper {
         return Global.get(this).userComponent().plus(StartActivityModule(this))
     }
 
-    class Adapter(val list: Array<GithubModel.PullRequestFile>) : BaseAdapter() {
+    class Adapter(val list: List<GithubModel.PullRequestFile>) : BaseAdapter() {
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val view = convertView ?: LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent, false)

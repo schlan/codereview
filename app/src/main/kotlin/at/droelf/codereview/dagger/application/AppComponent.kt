@@ -1,5 +1,6 @@
 package at.droelf.codereview.dagger.application
 
+import at.droelf.codereview.dagger.services.DbModule
 import at.droelf.codereview.dagger.services.GithubServiceModule
 import at.droelf.codereview.dagger.services.SquareModule
 import at.droelf.codereview.dagger.user.UserComponent
@@ -12,7 +13,8 @@ import javax.inject.Singleton
         modules = arrayOf(
                 AppModule::class,
                 SquareModule::class,
-                GithubServiceModule::class
+                GithubServiceModule::class,
+                DbModule::class
         )
 )
 interface AppComponent {
