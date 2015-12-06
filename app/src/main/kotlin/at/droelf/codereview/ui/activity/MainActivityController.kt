@@ -38,15 +38,15 @@ class MainActivityController(val mainActivity: MainActivity) {
     }
 
     fun displayLoginFragment(){
-        fragmentTransaction { LoginFragment() }
+        fragmentTransaction(false) { LoginFragment() }
     }
 
     fun displayFilesFragment(){
-        fragmentTransaction { StartFragment() }
+        fragmentTransaction(false) { StartFragment() }
     }
 
     fun displayFileDiffFragment(contentsUrl: String?, patch: String?, filename: String?){
-        fragmentTransaction {
+        fragmentTransaction(true) {
             val fragment = PatchFragment()
             val bundle = Bundle()
             bundle.putString("url", contentsUrl)
@@ -57,9 +57,14 @@ class MainActivityController(val mainActivity: MainActivity) {
         }
     }
 
-    fun fragmentTransaction(fragment: () -> Fragment) {
-        mainActivity.supportFragmentManager.beginTransaction()
-                .replace(R.id.main_container, fragment())
+    fun fragmentTransaction(backstack: Boolean, fragment: () -> Fragment) {
+        val transaction = mainActivity.supportFragmentManager.beginTransaction()
+
+        if(backstack) {
+            transaction.addToBackStack("fooBar")
+        }
+
+        transaction.replace(R.id.main_container, fragment())
                 .commit()
     }
 }
