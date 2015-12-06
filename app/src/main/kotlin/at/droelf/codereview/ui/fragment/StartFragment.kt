@@ -28,7 +28,8 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         controller.loadData(Constants.owner, Constants.repo, Constants.pullRequest).subscribe ({ repos ->
             listView.adapter = Adapter(repos)
             listView.onItemClickListener = AdapterView.OnItemClickListener { adapter, view, pos, id ->
-//                val file = (adapter.adapter as Adapter).getItem(pos)
+                val file = (adapter.adapter as Adapter).getItem(pos)
+                controller.showFile(file?.contentsUrl, file?.patch, file?.filename)
 //                val intent = Intent(context, PatchFragment::class.java)
 //                intent.putExtra("url", file?.contentsUrl)
 //                intent.putExtra("patch", file?.patch)
@@ -56,8 +57,8 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         component.inject(this)
     }
 
-    override fun createComponent(context: Context): StartFragmentComponent {
-        return (context as MainActivity).controller.userComponent().plus(StartFragmentModule(this))
+    override fun createComponent(mainActivity: MainActivity): StartFragmentComponent {
+        return mainActivity.controller.userComponent().plus(StartFragmentModule(this))
     }
 
     class Adapter(val list: List<GithubModel.PullRequestFile>) : BaseAdapter() {

@@ -10,6 +10,7 @@ import android.view.*
 import at.droelf.codereview.PatchAdapter
 import at.droelf.codereview.PatchAdapterControllerImpl
 import at.droelf.codereview.R
+import at.droelf.codereview.dagger.activity.MainActivityComponent
 import at.droelf.codereview.dagger.fragment.PatchFragmentComponent
 import at.droelf.codereview.dagger.fragment.PatchFragmentModule
 import at.droelf.codereview.ui.activity.MainActivity
@@ -36,8 +37,8 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
         component.inject(this)
     }
 
-    override fun createComponent(context: Context): PatchFragmentComponent {
-        return (context as MainActivity).controller.userComponent().plus(PatchFragmentModule(this))
+    override fun createComponent(mainActivity: MainActivity): PatchFragmentComponent {
+        return mainActivity.controller.userComponent().plus(PatchFragmentModule(this))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
@@ -54,7 +55,8 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
         return super.onOptionsItemSelected(item)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
+    override fun onStart() {
+        super.onStart()
         loadCode(
                 arguments.getString("url"),
                 arguments.getString("patch"),

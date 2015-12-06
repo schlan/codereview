@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import at.droelf.codereview.dagger.activity.MainActivityComponent
 import butterknife.ButterKnife
 
 
@@ -26,6 +27,10 @@ abstract class BaseActivity<E> : AppCompatActivity() {
     override fun setContentView(layoutResID: Int) {
         super.setContentView(layoutResID)
         ButterKnife.bind(this)
+    }
+
+    fun mainComponent(): E {
+        return fragment.data!!
     }
 
     abstract fun injectComponent(component: E): Unit

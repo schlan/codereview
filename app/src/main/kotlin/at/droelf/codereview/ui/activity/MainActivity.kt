@@ -24,12 +24,12 @@ class MainActivity : BaseActivity<MainActivityComponent>(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
-        controller.createUserComponent(fragment.data!!, Model.GithubAuth("e7cf96ea81ebca1445411b49ebea514f25592641"))
+        //controller.createUserComponent(fragment.data!!, Model.GithubAuth("e7cf96ea81ebca1445411b49ebea514f25592641"))
 
         if(controller.accountInstalled()){
-            displayFilesFragment()
+            controller.displayFilesFragment()
         } else {
-            displayLoginFragment()
+            controller.displayLoginFragment()
         }
     }
 
@@ -39,21 +39,6 @@ class MainActivity : BaseActivity<MainActivityComponent>(){
 
     override fun createComponent(): MainActivityComponent {
         return Global.get(this).appComponent.plus(MainActivityModule(this))
-    }
-
-
-    fun displayLoginFragment(){
-        fragmentTransaction { LoginFragment() }
-    }
-
-    fun displayFilesFragment(){
-        fragmentTransaction { StartFragment() }
-    }
-
-    fun fragmentTransaction(fragment: () -> Fragment) {
-        supportFragmentManager.beginTransaction()
-            .replace(R.id.main_container, fragment())
-            .commit()
     }
 
 }

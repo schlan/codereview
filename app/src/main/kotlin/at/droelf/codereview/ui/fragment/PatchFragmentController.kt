@@ -6,12 +6,13 @@ import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.patch.Patch
 import at.droelf.codereview.ui.activity.MainActivity
+import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
 import kotlin.text.Regex
 
 
-class PatchFragmentController(val mainActivity: MainActivity, val githubService: GithubService) : RxHelper {
+class PatchFragmentController(val mainActivityController: MainActivityController, val githubService: GithubService) : RxHelper {
 
     var observable: Observable<Model.GithubDataSet>? = null
 

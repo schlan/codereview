@@ -4,10 +4,11 @@ import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.ui.activity.MainActivity
+import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
 
-class StartFragmentController(val mainActivity: MainActivity, val githubService: GithubService) : RxHelper {
+class StartFragmentController(val mainActivityController: MainActivityController, val githubService: GithubService) : RxHelper {
 
     var observable: Observable<List<GithubModel.PullRequestFile>>? = null
 
@@ -19,5 +20,9 @@ class StartFragmentController(val mainActivity: MainActivity, val githubService:
         }
 
         return observable!!
+    }
+
+    fun showFile(contentsUrl: String?, patch: String?, filename: String?) {
+        mainActivityController.showFileFragment(contentsUrl, patch, filename)
     }
 }
