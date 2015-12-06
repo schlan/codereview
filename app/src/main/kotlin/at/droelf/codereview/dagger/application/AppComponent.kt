@@ -1,5 +1,9 @@
 package at.droelf.codereview.dagger.application
 
+import at.droelf.codereview.dagger.activity.MainActivityComponent
+import at.droelf.codereview.dagger.activity.MainActivityModule
+import at.droelf.codereview.dagger.fragment.LoginFragmentComponent
+import at.droelf.codereview.dagger.fragment.LoginFragmentModule
 import at.droelf.codereview.dagger.services.DbModule
 import at.droelf.codereview.dagger.services.GithubServiceModule
 import at.droelf.codereview.dagger.services.SquareModule
@@ -18,5 +22,6 @@ import javax.inject.Singleton
         )
 )
 interface AppComponent {
-    fun plus(userModule: UserModule): UserComponent
+    //fun plus(userModule: UserModule): UserComponent
+    fun plus(mainActivityModule: MainActivityModule): MainActivityComponent
 }

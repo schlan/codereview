@@ -1,18 +1,17 @@
-package at.droelf.codereview.ui
+package at.droelf.codereview.ui.fragment
 
 import at.droelf.codereview.Constants
 import at.droelf.codereview.PrettyfyHighlighter
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.patch.Patch
+import at.droelf.codereview.ui.activity.MainActivity
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
 import kotlin.text.Regex
 
 
-class PatchActivityController(val githubService: GithubService) : RxHelper{
+class PatchFragmentController(val mainActivity: MainActivity, val githubService: GithubService) : RxHelper {
 
     var observable: Observable<Model.GithubDataSet>? = null
 

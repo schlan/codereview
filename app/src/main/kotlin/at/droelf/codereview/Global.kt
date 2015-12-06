@@ -16,7 +16,7 @@ import at.droelf.codereview.model.Model
 class Global: Application() {
 
     lateinit var appComponent: AppComponent
-    private var userComponent: UserComponent? = null
+    //private var userComponent: UserComponent? = null
 
     companion object Factory {
         fun get(context: Context): Global {
@@ -36,18 +36,5 @@ class Global: Application() {
                 .githubServiceModule(GithubServiceModule())
                 .dbModule(DbModule())
                 .build()
-    }
-
-    fun createUserComponent(data: Model.GithubAuth): UserComponent {
-        userComponent = appComponent.plus(UserModule(data))
-        return userComponent ?: throw RuntimeException("it's dead jim")
-    }
-
-    fun releaseUserComponent() {
-        userComponent = null
-    }
-
-    fun userComponent(): UserComponent {
-        return userComponent ?: throw RuntimeException("it's dead jim 2")
     }
 }

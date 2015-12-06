@@ -4,7 +4,6 @@ import android.text.SpannableString
 import android.text.SpannableStringBuilder
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.patch.Patch
-import at.droelf.codereview.ui.PatchActivity
 
 
 class PatchAdapterControllerImpl(githuDataSet: Model.GithubDataSet) : PatchAdapterController {

@@ -1,16 +1,17 @@
-package at.droelf.codereview.ui
+package at.droelf.codereview.ui.fragment
 
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubService
+import at.droelf.codereview.ui.activity.MainActivity
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
 
-class StartActivityController(val githubService: GithubService) : RxHelper {
+class StartFragmentController(val mainActivity: MainActivity, val githubService: GithubService) : RxHelper {
 
     var observable: Observable<List<GithubModel.PullRequestFile>>? = null
 
-    fun loadData(owner: String, repo: String, pullRequest: Int): Observable<List<GithubModel.PullRequestFile>>{
+    fun loadData(owner: String, repo: String, pullRequest: Int): Observable<List<GithubModel.PullRequestFile>> {
         if(observable == null){
             observable = githubService.pullRequestFilesRx(owner, repo, pullRequest)
                     .compose(transformObservable<List<GithubModel.PullRequestFile>>())
@@ -18,14 +19,5 @@ class StartActivityController(val githubService: GithubService) : RxHelper {
         }
 
         return observable!!
-    }
-
-    fun loadSubscriptions(){
-        githubService.subscriptionsRx()
-            .compose(transformObservable<List<GithubModel.Subscription>>())
-            .subscribe { data ->
-                val d = data
-                println()
-            }
     }
 }

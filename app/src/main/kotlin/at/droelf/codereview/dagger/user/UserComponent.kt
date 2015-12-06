@@ -1,9 +1,9 @@
 package at.droelf.codereview.dagger.user
 
-import at.droelf.codereview.dagger.activity.PatchActivityComponent
-import at.droelf.codereview.dagger.activity.PatchActivityModule
-import at.droelf.codereview.dagger.activity.StartActivityComponent
-import at.droelf.codereview.dagger.activity.StartActivityModule
+import at.droelf.codereview.dagger.fragment.PatchFragmentComponent
+import at.droelf.codereview.dagger.fragment.PatchFragmentModule
+import at.droelf.codereview.dagger.fragment.StartFragmentComponent
+import at.droelf.codereview.dagger.fragment.StartFragmentModule
 import dagger.Subcomponent
 
 @UserScope
@@ -13,6 +13,6 @@ import dagger.Subcomponent
         )
 )
 interface UserComponent {
-    fun plus(patchActivityModule: PatchActivityModule): PatchActivityComponent
-    fun plus(startActivityModule: StartActivityModule): StartActivityComponent
+    fun plus(patchFragmentModule: PatchFragmentModule): PatchFragmentComponent
+    fun plus(startFragmentModule: StartFragmentModule): StartFragmentComponent
 }

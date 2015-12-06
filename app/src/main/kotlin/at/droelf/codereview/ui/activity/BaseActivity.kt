@@ -1,4 +1,4 @@
-package at.droelf.codereview.ui
+package at.droelf.codereview.ui.activity
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import butterknife.ButterKnife
 
 
 abstract class BaseActivity<E> : AppCompatActivity() {
@@ -20,6 +21,11 @@ abstract class BaseActivity<E> : AppCompatActivity() {
             fragment.data = createComponent()
         }
         injectComponent(fragment.data!!)
+    }
+
+    override fun setContentView(layoutResID: Int) {
+        super.setContentView(layoutResID)
+        ButterKnife.bind(this)
     }
 
     abstract fun injectComponent(component: E): Unit
