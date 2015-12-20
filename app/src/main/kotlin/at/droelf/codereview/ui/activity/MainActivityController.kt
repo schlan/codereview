@@ -2,6 +2,7 @@ package at.droelf.codereview.ui.activity
 
 import android.os.Bundle
 import android.support.v4.app.Fragment
+import android.support.v4.app.FragmentManager
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.activity.MainActivityComponent
 import at.droelf.codereview.dagger.user.UserComponent
@@ -11,12 +12,12 @@ import at.droelf.codereview.ui.fragment.LoginFragment
 import at.droelf.codereview.ui.fragment.PatchFragment
 import at.droelf.codereview.ui.fragment.StartFragment
 
-class MainActivityController(val mainActivity: MainActivity) {
+class MainActivityController {
 
     private var userComponent: UserComponent? = null
 
-    fun createUserComponent(data: Model.GithubAuth): UserComponent {
-        userComponent = mainActivity.fragment.data!!.plus(UserModule(data))
+    fun createUserComponent(appComponent: MainActivityComponent, data: Model.GithubAuth): UserComponent {
+        userComponent = appComponent.plus(UserModule(data))
         return userComponent ?: throw RuntimeException("it's dead jim")
     }
 
@@ -32,21 +33,20 @@ class MainActivityController(val mainActivity: MainActivity) {
         return userComponent ?: throw RuntimeException("it's dead jim 2")
     }
 
-
-    fun showFileFragment(contentsUrl: String?, patch: String?, filename: String?) {
-        displayFileDiffFragment(contentsUrl, patch, filename)
+    fun showFileFragment(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?) {
+        displayFileDiffFragment(fm, contentsUrl, patch, filename)
     }
 
-    fun displayLoginFragment(){
-        fragmentTransaction(false) { LoginFragment() }
+    fun displayLoginFragment(fm: FragmentManager){
+        fragmentTransaction(fm, false) { LoginFragment() }
     }
 
-    fun displayFilesFragment(){
-        fragmentTransaction(false) { StartFragment() }
+    fun displayFilesFragment(fm: FragmentManager){
+        fragmentTransaction(fm, false) { StartFragment() }
     }
 
-    fun displayFileDiffFragment(contentsUrl: String?, patch: String?, filename: String?){
-        fragmentTransaction(true) {
+    fun displayFileDiffFragment(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?){
+        fragmentTransaction(fm, true) {
             val fragment = PatchFragment()
             val bundle = Bundle()
             bundle.putString("url", contentsUrl)
@@ -57,8 +57,8 @@ class MainActivityController(val mainActivity: MainActivity) {
         }
     }
 
-    fun fragmentTransaction(backstack: Boolean, fragment: () -> Fragment) {
-        val transaction = mainActivity.supportFragmentManager.beginTransaction()
+    fun fragmentTransaction(fragmentManager: FragmentManager, backstack: Boolean, fragment: () -> Fragment) {
+        val transaction = fragmentManager.beginTransaction()
 
         if(backstack) {
             transaction.addToBackStack("fooBar")

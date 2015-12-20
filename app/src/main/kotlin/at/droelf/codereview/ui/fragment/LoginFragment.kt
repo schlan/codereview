@@ -25,7 +25,7 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         login_submitbutton.setOnClickListener({ view ->
-            controller.initLogin(login_api_token.text.toString())
+            controller.initLogin((activity as MainActivity).mainComponent(), fragmentManager, login_api_token.text.toString())
         })
     }
 

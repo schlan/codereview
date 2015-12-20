@@ -29,7 +29,7 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
             listView.adapter = Adapter(repos)
             listView.onItemClickListener = AdapterView.OnItemClickListener { adapter, view, pos, id ->
                 val file = (adapter.adapter as Adapter).getItem(pos)
-                controller.showFile(file?.contentsUrl, file?.patch, file?.filename)
+                controller.showFile(fragmentManager, file?.contentsUrl, file?.patch, file?.filename)
 //                val intent = Intent(context, PatchFragment::class.java)
 //                intent.putExtra("url", file?.contentsUrl)
 //                intent.putExtra("patch", file?.patch)

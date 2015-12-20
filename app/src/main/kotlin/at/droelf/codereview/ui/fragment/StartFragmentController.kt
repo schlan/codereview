@@ -1,5 +1,6 @@
 package at.droelf.codereview.ui.fragment
 
+import android.support.v4.app.FragmentManager
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubService
@@ -22,7 +23,7 @@ class StartFragmentController(val mainActivityController: MainActivityController
         return observable!!
     }
 
-    fun showFile(contentsUrl: String?, patch: String?, filename: String?) {
-        mainActivityController.showFileFragment(contentsUrl, patch, filename)
+    fun showFile(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?) {
+        mainActivityController.showFileFragment(fm, contentsUrl, patch, filename)
     }
 }

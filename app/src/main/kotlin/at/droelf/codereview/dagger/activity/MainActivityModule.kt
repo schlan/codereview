@@ -1,23 +1,16 @@
 package at.droelf.codereview.dagger.activity
 
-import at.droelf.codereview.ui.activity.MainActivity
 import at.droelf.codereview.ui.activity.MainActivityController
 import dagger.Module
 import dagger.Provides
 
 @Module
-class MainActivityModule(private val activity: MainActivity) {
+class MainActivityModule {
 
     @ActivityScope
     @Provides
-    fun provideMainActivity(): MainActivity{
-        return activity
-    }
-
-    @ActivityScope
-    @Provides
-    fun provideMainActivityController(mainActivity: MainActivity): MainActivityController{
-        return MainActivityController(mainActivity)
+    fun provideMainActivityController(): MainActivityController{
+        return MainActivityController()
     }
 
 }

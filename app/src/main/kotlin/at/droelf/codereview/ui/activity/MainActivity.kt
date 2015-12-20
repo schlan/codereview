@@ -27,9 +27,12 @@ class MainActivity : BaseActivity<MainActivityComponent>(){
         //controller.createUserComponent(fragment.data!!, Model.GithubAuth("e7cf96ea81ebca1445411b49ebea514f25592641"))
 
         if(controller.accountInstalled()){
-            controller.displayFilesFragment()
+            if(savedInstanceState == null) {
+                println("Install fragment")
+                controller.displayFilesFragment(supportFragmentManager)
+            }
         } else {
-            controller.displayLoginFragment()
+            controller.displayLoginFragment(supportFragmentManager)
         }
     }
 
@@ -38,7 +41,6 @@ class MainActivity : BaseActivity<MainActivityComponent>(){
     }
 
     override fun createComponent(): MainActivityComponent {
-        return Global.get(this).appComponent.plus(MainActivityModule(this))
+        return Global.get(this).appComponent.plus(MainActivityModule())
     }
-
 }
