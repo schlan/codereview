@@ -59,7 +59,9 @@ dependencies {
     compile files('libs/JavaPrettify-1.2.1.jar')
     compile 'org.lucasr.twowayview:twowayview:0.1.4'
     compile 'jp.wasabeef:recyclerview-animators:2.1.0'
+
     compile 'com.jakewharton:butterknife:7.0.1'
+    kapt 'com.jakewharton:butterknife:7.0.1'
 
     compile 'io.reactivex:rxjava:1.0.17'
     compile 'io.reactivex:rxandroid:1.0.1'
@@ -72,7 +74,7 @@ dependencies {
 
 buildscript {
     ext{
-        kotlin_version = '1.0.0-beta-2423'
+        kotlin_version = '1.0.0-beta-3595'
     }
 
     repositories {

@@ -24,7 +24,6 @@ class MainActivity : BaseActivity<MainActivityComponent>(){
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
-        //controller.createUserComponent(fragment.data!!, Model.GithubAuth("e7cf96ea81ebca1445411b49ebea514f25592641"))
 
         if(controller.accountInstalled()){
             if(savedInstanceState == null) {

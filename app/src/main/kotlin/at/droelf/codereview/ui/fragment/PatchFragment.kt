@@ -5,23 +5,30 @@ import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
 import android.view.*
+import android.widget.ProgressBar
+import at.droelf.codereview.HScrollView
 import at.droelf.codereview.PatchAdapter
 import at.droelf.codereview.PatchAdapterControllerImpl
 import at.droelf.codereview.R
-import at.droelf.codereview.dagger.activity.MainActivityComponent
 import at.droelf.codereview.dagger.fragment.PatchFragmentComponent
 import at.droelf.codereview.dagger.fragment.PatchFragmentModule
 import at.droelf.codereview.ui.activity.MainActivity
+import butterknife.Bind
 import butterknife.ButterKnife
-import kotlinx.android.synthetic.fragment_main.*
 import javax.inject.Inject
 
 class PatchFragment : BaseFragment<PatchFragmentComponent>() {
 
-    @Inject
-    lateinit var controller: PatchFragmentController
+    @Inject lateinit var controller: PatchFragmentController
+
+    @Bind(R.id.main) lateinit var main: ViewGroup
+    @Bind(R.id.recyclerView) lateinit var recyclerView: RecyclerView
+    @Bind(R.id.recyclerViewBounds) lateinit var recyclerViewBounds: ViewGroup
+    @Bind(R.id.horizontalScrollView) lateinit var horizontalScrollView: HScrollView
+    @Bind(R.id.progressbar) lateinit var progressbar: ProgressBar
 
     var maxWidth: Int = -1
     var minWidth: Int = -1
@@ -30,7 +37,12 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
         ButterKnife.bind(this, view)
+        setHasOptionsMenu(true)
         return view
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
     }
 
     override fun injectComponent(component: PatchFragmentComponent) {
@@ -57,12 +69,15 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
 
     override fun onStart() {
         super.onStart()
-        loadCode(
-                arguments.getString("url"),
-                arguments.getString("patch"),
-                arguments.getString("fname"),
-                activity
-        )
+        if(recyclerView.adapter == null) {
+            loadCode(
+                    arguments.getString("url"),
+                    arguments.getString("patch"),
+                    arguments.getString("fname"),
+                    activity
+            )
+        }
+        println("Load code")
     }
 
     fun loadCode(contentUrl: String, p: String, filename: String, context: Context) {
