@@ -6,15 +6,17 @@ import at.droelf.codereview.model.Model
 import at.droelf.codereview.patch.Patch
 
 
-class PatchAdapterControllerImpl(githuDataSet: Model.GithubDataSet) : PatchAdapterController {
+class PatchAdapterControllerImpl(val githubDataSet: Model.GithubDataSet) : PatchAdapterController {
 
-    val patch: Patch.Patch = githuDataSet.patch
-    val rawCode: List<SpannableString> = githuDataSet.fileContent
+    val patch: Patch.Patch = githubDataSet.patch
+    val rawCode: List<SpannableString> = githubDataSet.fileContent
 
     override var patchAdapter: PatchAdapterInterface? = null
     val patchSegmentController: List<PatchSegmentController> = patchSegmentController()
 
     fun patchSegmentController(): List<PatchSegmentController> {
+
+        val commentsForSegment = githubDataSet.reviewComments.filter { it.path.equals(githubDataSet.fileName) }
 
         val lastSegment = patch.patchSegments.last()
         val lastLineNew = lastSegment.newRange.start + lastSegment.newRange.numLines
@@ -31,9 +33,10 @@ class PatchAdapterControllerImpl(githuDataSet: Model.GithubDataSet) : PatchAdapt
                     "end",
                     ""
                     )
-
-            lastSegmentController = listOf(PatchSegmentController(endSegment, rawCode.subList(lastLineNew - 1, rawCode.lastIndex + 1), lastLineNew - 1))
+            lastSegmentController = listOf(PatchSegmentController(endSegment, rawCode.subList(lastLineNew - 1, rawCode.lastIndex + 1), lastLineNew - 1, 0, commentsForSegment))
         }
+
+        var numVisibleLines = 0
 
         return patch.patchSegments.mapIndexed { i, patchSegment ->
             val rawCodeRange: Pair<Int, Int> = when {
@@ -52,7 +55,11 @@ class PatchAdapterControllerImpl(githuDataSet: Model.GithubDataSet) : PatchAdapt
                     Pair(prevRange.start + prevRange.numLines - 1, patchSegment.newRange.start + patchSegment.newRange.numLines - 1)
                 }
             }
-            PatchSegmentController(patchSegment, rawCode.subList(rawCodeRange.first, rawCodeRange.second), rawCodeRange.first)
+
+            val patchSegController = PatchSegmentController(patchSegment, rawCode.subList(rawCodeRange.first, rawCodeRange.second), rawCodeRange.first, numVisibleLines, commentsForSegment)
+            numVisibleLines += patchSegment.lines.size + 1
+            patchSegController
+
         } + lastSegmentController
     }
 
@@ -91,18 +98,44 @@ interface PatchAdapterController {
 }
 
 
-class PatchSegmentController(val patchSegment: Patch.PatchSegment, val rawCode: List<SpannableString>, val offset: Int) : SpannableStringHelper {
+class PatchSegmentController(
+        val patchSegment: Patch.PatchSegment,
+        val rawCode: List<SpannableString>,
+        val offset: Int,
+        val visibleOffset: Int,
+        val reviewComments: List<Model.ReviewComment>
+) : SpannableStringHelper {
 
     var viewHolderWrapper: List<ViewHolderWrapper> = initWrapper()
 
     fun initWrapper(): List<ViewHolderWrapper> {
-        return listOf(ViewHolderHeader(patchSegment.header, patchSegment.method, patchSegment.originalRange, patchSegment.newRange)) + patchSegment.lines.map { l ->
-                val lineString = when(l.type){
-                    Patch.Type.Delete -> l.line
-                    else -> rawCode.get(l.modifiedNum!! - 1 - offset).prefix(if(l.type == Patch.Type.Add) "+" else " ")
+        val codeLines = listOf(
+                ViewHolderHeader(patchSegment.header, patchSegment.method, patchSegment.originalRange, patchSegment.newRange)) +
+                patchSegment.lines.map { l ->
+                    val lineString = when(l.type){
+                        Patch.Type.Delete -> l.line
+                        else -> rawCode.get(l.modifiedNum!! - 1 - offset).prefix(if(l.type == Patch.Type.Add) "+" else " ")
+                    }
+                    ViewHolderLine(SpannableString(lineString), ViewHolderLine.LineType.fromPatchType(l.type), l.originalNum, l.modifiedNum)
                 }
-                ViewHolderLine(SpannableString(lineString), ViewHolderLine.LineType.fromPatchType(l.type), l.originalNum, l.modifiedNum)
+
+
+        val comments = reviewComments.filter { comment ->
+            val pos = comment.position!!
+            pos > visibleOffset && pos < (visibleOffset + patchSegment.lines.size)
+        }
+
+        val wrapper: MutableList<ViewHolderWrapper> = arrayListOf()
+
+        codeLines.forEachIndexed { i, viewHolderWrapper ->
+            val c = comments.filter { (it.position - visibleOffset) == i }
+            wrapper.add(viewHolderWrapper)
+            if(c.isNotEmpty()) {
+                wrapper.add(ViewHolderLine.ViewHolderComment(c))
             }
+        }
+
+        return wrapper
     }
 
 
@@ -124,7 +157,7 @@ class PatchSegmentController(val patchSegment: Patch.PatchSegment, val rawCode: 
             val newList = codeToAdd.mapIndexed { i, spannableString ->
                 ViewHolderLine(spannableString.prefix(" "), ViewHolderLine.LineType.Expanded, oStart - codeToAdd.size + i, mStart - codeToAdd.size + i)
             }
-            viewHolderWrapper = newList + viewHolderWrapper.subList(1, viewHolderWrapper.lastIndex + 1)
+            viewHolderWrapper = newList + viewHolderWrapper.subList(1, viewHolderWrapper.size)
 
             return Pair(pos, pos + codeToAdd.size - 1) // FIXME
         }

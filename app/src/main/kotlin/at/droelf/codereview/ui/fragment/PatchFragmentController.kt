@@ -25,10 +25,25 @@ class PatchFragmentController(val mainActivityController: MainActivityController
 
             val commentsO = githubService.commentsRx(Constants.owner, Constants.repo, Constants.pullRequest)
             val commentsReviewO = githubService.reviewCommentsRx(Constants.owner, Constants.repo, Constants.pullRequest)
-
+                    .flatMap { comment ->
+                        val pairPatch = comment.map { c ->
+                            Observable.combineLatest(
+                                    Observable.just(c),
+                                    Patch.parse(c.diffHunk), { a, b ->
+                                Pair(a, b)
+                            })
+                        }
+                    Observable.concat(Observable.from(pairPatch)).toList().map { list ->
+                        list.filter { it.first.position != null }
+                            .map { pair ->
+                                val c = pair.first
+                                Model.ReviewComment(c.id, c.body, c.user, c.position!!.toInt(), c.originalPosition.toInt(), pair.second, c.path)
+                        }
+                    }
+            }
 
             observable = Observable.combineLatest(patchO, contentO, commentsO, commentsReviewO,  { patch, fileContent, comments, reviewComments ->
-                Model.GithubDataSet(patch, fileContent, comments.toList(), reviewComments.toList())
+                Model.GithubDataSet(patch, fileContent, comments.toList(), reviewComments, filename)
             })
                     .cache()
                     .compose(transformObservable<Model.GithubDataSet?>())

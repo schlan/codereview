@@ -92,8 +92,10 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
 
             recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             recyclerView.adapter = PatchAdapter(PatchAdapterControllerImpl(result))
+
         }, { error ->
             println(error)
+            error.printStackTrace()
         })
     }
 

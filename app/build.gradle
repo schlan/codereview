@@ -56,12 +56,13 @@ dependencies {
     compile 'com.couchbase.lite:couchbase-lite-android:1.1.0'
 
     compile 'com.android.support:recyclerview-v7:23.1.1'
+    compile 'com.android.support:cardview-v7:23.1.1'
+
     compile files('libs/JavaPrettify-1.2.1.jar')
-    compile 'org.lucasr.twowayview:twowayview:0.1.4'
-    compile 'jp.wasabeef:recyclerview-animators:2.1.0'
 
     compile 'com.jakewharton:butterknife:7.0.1'
     kapt 'com.jakewharton:butterknife:7.0.1'
+    compile 'com.squareup.picasso:picasso:2.5.2'
 
     compile 'io.reactivex:rxjava:1.0.17'
     compile 'io.reactivex:rxandroid:1.0.1'

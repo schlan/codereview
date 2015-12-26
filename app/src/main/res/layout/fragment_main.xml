@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
@@ -9,8 +9,7 @@
     <at.droelf.codereview.HScrollView
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
-        android:id="@+id/horizontalScrollView"
-        android:splitMotionEvents="true">
+        android:id="@+id/horizontalScrollView">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -18,7 +17,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:layout_width="1337dp"
+                android:layout_width="100dp"
                 android:id="@+id/recyclerViewBounds"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
@@ -39,7 +38,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/progressbar"
-        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:background="#f00"
         />
 
-</RelativeLayout>
+</FrameLayout>

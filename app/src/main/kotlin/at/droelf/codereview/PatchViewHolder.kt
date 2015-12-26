@@ -5,9 +5,18 @@ import android.graphics.drawable.ColorDrawable
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
 import android.view.View
+import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import at.droelf.codereview.ViewHolderLine.LineType
+import at.droelf.codereview.model.GithubModel
+import at.droelf.codereview.model.Model
 import at.droelf.codereview.patch.Patch
+import at.droelf.codereview.ui.view.CommentView
+import at.droelf.codereview.utils.CircleTransform
+import butterknife.Bind
+import butterknife.ButterKnife
+import com.squareup.picasso.Picasso
 
 //////////
 abstract class ViewHolderWrapper(val type: PatchListType) {
@@ -17,7 +26,9 @@ abstract class ViewHolderWrapper(val type: PatchListType) {
 
 enum class PatchListType(val layoutId: Int, val viewType: Int, val holder: (view: View) -> RecyclerView.ViewHolder){
     Head(R.layout.row_patchadapter_header, 1, { viewholder(it) }),
-    Line(R.layout.row_patchadapter, 2, { viewholder(it) });
+    Line(R.layout.row_patchadapter, 2, { viewholder(it) }),
+    Comment(R.layout.row_patchadapter_comment, 3, { viewholder(it) })
+    ;
 
     companion object{
         fun fromViewType(viewType: Int): PatchListType? {
@@ -61,8 +72,23 @@ class ViewHolderLine(val line: SpannableString, val lineType: LineType, val orig
         }
     }
 
+    class ViewHolderComment(val reviewComment: List<Model.ReviewComment>): ViewHolderWrapper(PatchListType.Comment){
+
+        lateinit var container: LinearLayout
+
+        override fun bind(viewholder: RecyclerView.ViewHolder, patchController: PatchAdapterController, pos: Int) {
+            container = viewholder.itemView.findViewById(R.id.row_patch_comment_container) as LinearLayout
+            container.removeAllViews()
+            val commentViews = reviewComment.map { CommentView(it, viewholder.itemView.context) }
+            commentViews.first().first()
+            commentViews.last().last()
+            commentViews.forEach { container.addView(it) }
+        }
+
+    }
+
     public enum class LineType{
-        Add, Delete, Unmodified, Expanded;
+        Add, Delete, Unmodified, Expanded, Comment;
 
         companion object {
             fun fromPatchType(patchType: Patch.Type): LineType {
