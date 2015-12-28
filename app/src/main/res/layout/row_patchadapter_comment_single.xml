@@ -15,7 +15,7 @@
     card_view:cardCornerRadius="0dp">
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/row_patch_comment_card_container"
         android:orientation="horizontal"
@@ -32,7 +32,7 @@
             android:layout_marginTop="2dp"/>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
@@ -42,16 +42,17 @@
                 android:layout_height="wrap_content"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:textAppearance="@android:style/TextAppearance.Small"
                 tools:text="Bla bla bla bla"
                 />
 
-            <TextView
+            <org.sufficientlysecure.htmltextview.HtmlTextView
                 android:id="@+id/row_patch_comment"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:minHeight="14dp"
                 android:textSize="14sp"
-                tools:text="Bla bla bla bla asd asdf asdl lkajsd klajsd flkajsdflkajs ;laksj fl;aksdj l;aksdj f;laksjdfal;kdjs laksjd lkasjd ;lajksfl;kj"
-                />
+                android:textAppearance="@android:style/TextAppearance.Small" />
 
         </LinearLayout>
 

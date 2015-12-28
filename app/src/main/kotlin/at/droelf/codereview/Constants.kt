@@ -3,12 +3,20 @@ package at.droelf.codereview
 object Constants{
 
     val owner: String = "zendesk"
-//    val repo: String = "zendesk_sdk_android"
 
-    val repo: String = "zendesk_mobile_ios_sdk"
-    val pullRequest: Int = 670
+//    val repo: String = "zendesk_sdk_android"
+//    val pullRequest: Int = 654
+
+//    val repo: String = "zendesk_mobile_ios_sdk"
+//    val pullRequest: Int = 670
 
     //zendesk_mobile_ios_sdk/pull/670
+
+
+    val repo: String = "ZendeskAndroidClient"
+    val pullRequest: Int = 537
+
+    //https://github.com/zendesk/ZendeskAndroidClient/pull/537
 
 
     val rawFile: String =

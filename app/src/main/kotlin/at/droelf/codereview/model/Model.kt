@@ -16,6 +16,6 @@ object Model {
 
     data class ReviewComment(
             val id: Long, val body: String, val user: GithubModel.User, val position: Int, val originalPosition: Int, val diffHunk: Patch.Patch,
-            val path: String
+            val path: String, val bodyHtml: String, val bodyText: String
     )
 }

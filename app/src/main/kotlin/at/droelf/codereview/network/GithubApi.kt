@@ -40,7 +40,8 @@ interface GithubApi {
             @Path("owner") owner: String,
             @Path("repo") repo: String,
             @Path("number") number: Int,
-            @Header("Authorization") auth: String
+            @Header("Authorization") auth: String,
+            @Header("Accept") contentType: String
     ): Observable<MutableList<GithubModel.ReviewComment>>
 
 

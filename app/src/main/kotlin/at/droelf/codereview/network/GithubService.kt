@@ -34,7 +34,7 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi) {
     }
 
     fun reviewCommentsRx(owner: String, repo: String, number: Int): Observable<MutableList<GithubModel.ReviewComment>> {
-        return githubApi.reviewCommentsRx(owner, repo, number, token())
+        return githubApi.reviewCommentsRx(owner, repo, number, token(), "application/vnd.github.VERSION.full+json")
     }
 
     fun subscriptionsRx(): Observable<MutableList<GithubModel.Subscription>> {
