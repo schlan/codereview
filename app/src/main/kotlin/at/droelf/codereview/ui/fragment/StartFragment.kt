@@ -1,6 +1,5 @@
 package at.droelf.codereview.ui.fragment
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,17 +23,12 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
     @Inject lateinit var controller: StartFragmentController
     @Bind(R.id.listview) lateinit var listView: ListView
 
-    private fun loadFiles(context: Context) {
-        controller.loadData(Constants.owner, Constants.repo, Constants.pullRequest).subscribe ({ repos ->
+    private fun loadFiles(owner: String, repo: String, id: Long) {
+        controller.loadData(owner, repo, id).subscribe ({ repos ->
             listView.adapter = Adapter(repos)
             listView.onItemClickListener = AdapterView.OnItemClickListener { adapter, view, pos, id ->
                 val file = (adapter.adapter as Adapter).getItem(pos)
                 controller.showFile(fragmentManager, file?.contentsUrl, file?.patch, file?.filename)
-//                val intent = Intent(context, PatchFragment::class.java)
-//                intent.putExtra("url", file?.contentsUrl)
-//                intent.putExtra("patch", file?.patch)
-//                intent.putExtra("fname", file?.filename)
-//                startActivity(intent)
             }
         }, { error ->
             error.printStackTrace()
@@ -43,7 +37,11 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
 
     override fun onStart() {
         super.onStart()
-        loadFiles(activity)
+        loadFiles(
+                arguments.getString("owner"),
+                arguments.getString("repo"),
+                arguments.getLong("id", -1)
+        )
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {

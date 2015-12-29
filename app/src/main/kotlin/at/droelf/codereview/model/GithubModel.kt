@@ -1,5 +1,7 @@
 package at.droelf.codereview.model
 
+import java.util.*
+
 
 object GithubModel {
 
@@ -24,11 +26,24 @@ object GithubModel {
             val htmlUrl: String, val followersUrl: String, val followingUrl: String, val type: String, val siteAdmin: Boolean
     )
 
-
-    data class Subscription(
-            val id: Long, val owner: User, val name: String, val fullName: String, val description: String, val private: Boolean,
-            val fork: Boolean, val language: String, val forkCounts: Int, val stargazersCount: Int, val watchersCount: Int,
-            val size: Int, val defaultBranch: String, val openIssueCount: Int, val hasIssues: Boolean
+    data class Repository(
+            val id: Long, val name: String, val fullName: String, val owner: User, val private: Boolean, val htmlUrl: String, val description: String,
+            val fork: Boolean, val createdAt: Date, val updatedAt: Date, val pushedAt: Date, val gitUrl: String, val sshUrl: String, val cloneUrl: String,
+            val svnUrl: String, val homepage: String, val size: Long, val stargazersCount: Int, val watchersCount: Int, val language: String, val hasIssues: Boolean,
+            val hasDownloads: Boolean, val hasWiki: Boolean, val forksCount: Int, val mirrorUrl: String, val openIssueCount: Int, val forks: Int, val watchers: Int,
+            val defaultBranch: String, val permissions: Permissions
     )
 
+    data class Permissions(
+            val admin: Boolean, val push: Boolean, val pull: Boolean
+    )
+
+    data class Subject(
+            val title: String, val url: String, val latestCommitUrl: String, val type: String
+    )
+
+    data class Notification (
+            val id: Long, val unread: Boolean, val reason: String, val updatedAt: Date, val lastReadAt: Date, val subject: Subject,
+            val repository: Repository, val url: String
+    )
 }

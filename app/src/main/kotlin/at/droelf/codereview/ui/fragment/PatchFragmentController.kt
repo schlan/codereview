@@ -19,7 +19,7 @@ class PatchFragmentController(val mainActivityController: MainActivityController
     fun data(contentUrl: String, p: String, filename: String): Observable<Model.GithubDataSet> {
         if(observable == null) {
             val patchO = Patch.parse(p)
-            val contentO = githubService.fileRx(contentUrl, "").flatMap {
+            val contentO = githubService.fileRx(contentUrl, "application/vnd.github.v3.raw").flatMap {
                 PrettyfyHighlighter.highlight(it.string(), filename.split(Regex("\\.")).last())
             }
 

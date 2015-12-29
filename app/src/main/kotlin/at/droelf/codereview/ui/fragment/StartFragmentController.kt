@@ -13,7 +13,7 @@ class StartFragmentController(val mainActivityController: MainActivityController
 
     var observable: Observable<List<GithubModel.PullRequestFile>>? = null
 
-    fun loadData(owner: String, repo: String, pullRequest: Int): Observable<List<GithubModel.PullRequestFile>> {
+    fun loadData(owner: String, repo: String, pullRequest: Long): Observable<List<GithubModel.PullRequestFile>> {
         if(observable == null){
             observable = githubService.pullRequestFilesRx(owner, repo, pullRequest)
                     .compose(transformObservable<List<GithubModel.PullRequestFile>>())

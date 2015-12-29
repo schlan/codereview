@@ -6,11 +6,9 @@ import android.graphics.Canvas
 import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
-import android.media.Image
 import android.support.v7.widget.CardView
 import android.text.Html
 import android.view.LayoutInflater
-import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -19,7 +17,6 @@ import at.droelf.codereview.R
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.utils.CircleTransform
 import com.squareup.picasso.Picasso
-import org.jsoup.Jsoup
 import org.sufficientlysecure.htmltextview.HtmlTagHandler
 import org.sufficientlysecure.htmltextview.HtmlTextView
 import org.sufficientlysecure.htmltextview.LocalLinkMovementMethod

@@ -8,9 +8,7 @@ import at.droelf.codereview.dagger.activity.MainActivityComponent
 import at.droelf.codereview.dagger.user.UserComponent
 import at.droelf.codereview.dagger.user.UserModule
 import at.droelf.codereview.model.Model
-import at.droelf.codereview.ui.fragment.LoginFragment
-import at.droelf.codereview.ui.fragment.PatchFragment
-import at.droelf.codereview.ui.fragment.StartFragment
+import at.droelf.codereview.ui.fragment.*
 
 class MainActivityController {
 
@@ -33,16 +31,35 @@ class MainActivityController {
         return userComponent ?: throw RuntimeException("it's dead jim 2")
     }
 
+
     fun showFileFragment(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?) {
         displayFileDiffFragment(fm, contentsUrl, patch, filename)
+    }
+
+    fun displayRepositoryFragment(fm: FragmentManager){
+        fragmentTransaction(fm, false) { RepositoryFragment() }
     }
 
     fun displayLoginFragment(fm: FragmentManager){
         fragmentTransaction(fm, false) { LoginFragment() }
     }
 
-    fun displayFilesFragment(fm: FragmentManager){
-        fragmentTransaction(fm, false) { StartFragment() }
+    fun displayFilesFragment(fm: FragmentManager, owner: String, repo: String, id: Long){
+        fragmentTransaction(fm, true) {
+            val fragment = StartFragment()
+            val bundle = Bundle()
+            bundle.putString("owner", owner)
+            bundle.putString("repo", repo)
+            bundle.putLong("id", id)
+            fragment.arguments = bundle
+            fragment
+        }
+    }
+
+    fun displayNotificationFragment(fm: FragmentManager){
+        fragmentTransaction(fm, false){
+            NotificationFragment()
+        }
     }
 
     fun displayFileDiffFragment(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?){
@@ -59,12 +76,13 @@ class MainActivityController {
 
     fun fragmentTransaction(fragmentManager: FragmentManager, backstack: Boolean, fragment: () -> Fragment) {
         val transaction = fragmentManager.beginTransaction()
+        val f = fragment()
 
         if(backstack) {
-            transaction.addToBackStack("fooBar")
+            transaction.addToBackStack(f.javaClass.simpleName)
         }
 
-        transaction.replace(R.id.main_container, fragment())
+        transaction.replace(R.id.main_container, f)
                 .commit()
     }
 }

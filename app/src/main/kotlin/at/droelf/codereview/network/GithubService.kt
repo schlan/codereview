@@ -21,12 +21,12 @@ import rx.Observable
 
 class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi) {
 
-    fun pullRequestFilesRx(owner: String, repo: String, number: Int): Observable<MutableList<GithubModel.PullRequestFile>> {
+    fun pullRequestFilesRx(owner: String, repo: String, number: Long): Observable<MutableList<GithubModel.PullRequestFile>> {
         return githubApi.pullRequestFilesRx(owner, repo, number, token())
     }
 
-    fun fileRx(url: String, contentType: String): Observable<ResponseBody> {
-        return githubApi.fileRx(url, contentType, token())
+    fun fileRx(url: String, accept: String): Observable<ResponseBody> {
+        return githubApi.fileRx(url, accept, token())
     }
 
     fun commentsRx(owner: String, repo: String, number: Int): Observable<MutableList<GithubModel.Comment>> {
@@ -34,12 +34,17 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi) {
     }
 
     fun reviewCommentsRx(owner: String, repo: String, number: Int): Observable<MutableList<GithubModel.ReviewComment>> {
-        return githubApi.reviewCommentsRx(owner, repo, number, token(), "application/vnd.github.VERSION.full+json")
+        return githubApi.reviewCommentsRx(owner, repo, number, token())
     }
 
-    fun subscriptionsRx(): Observable<MutableList<GithubModel.Subscription>> {
-        return githubApi.subscriptionsRx(token())
+    fun subscriptionsRx(participating: Boolean): Observable<List<GithubModel.Repository>> {
+        return githubApi.subscriptionsRx(token(), participating).map { it.toList() }
     }
+
+    fun notificationsRx(): Observable<List<GithubModel.Notification>> {
+        return githubApi.notificationsRx(token()).map{ it.toList() }
+    }
+
 
     fun token() = "token ${auth.token}"
 }

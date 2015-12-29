@@ -10,7 +10,7 @@ class LoginFragmentController(val mainActivityController: MainActivityController
 
     fun initLogin(mainActivityComponent: MainActivityComponent, fm: FragmentManager, token: String){
         mainActivityController.createUserComponent(mainActivityComponent, Model.GithubAuth(token))
-        mainActivityController.displayFilesFragment(fm)
+        mainActivityController.displayNotificationFragment(fm)
     }
 
 }

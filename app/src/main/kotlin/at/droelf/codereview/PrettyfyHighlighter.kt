@@ -40,6 +40,7 @@ object PrettyfyHighlighter {
             val newlinesIndex = prettyCode.mapIndexed { i, c ->  if(c.equals('\n')) i else Int.MIN_VALUE }.filter { it != Int.MIN_VALUE }
 
             var ranges: List<Pair<Int,Int>> = newlinesIndex.subList(0, newlinesIndex.lastIndex).zip(newlinesIndex.subList(1, newlinesIndex.lastIndex + 1))
+
             if(newlinesIndex.first() != 0) {
                 ranges = listOf(Pair(0, newlinesIndex.first())) + ranges
             }

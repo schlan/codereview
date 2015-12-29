@@ -1,19 +1,12 @@
 package at.droelf.codereview.ui.activity
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
 import android.widget.FrameLayout
 import at.droelf.codereview.Global
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.activity.MainActivityComponent
 import at.droelf.codereview.dagger.activity.MainActivityModule
-import at.droelf.codereview.dagger.user.UserComponent
-import at.droelf.codereview.dagger.user.UserModule
-import at.droelf.codereview.model.Model
-import at.droelf.codereview.ui.fragment.LoginFragment
-import at.droelf.codereview.ui.fragment.StartFragment
 import butterknife.Bind
-import butterknife.ButterKnife
 import javax.inject.Inject
 
 class MainActivity : BaseActivity<MainActivityComponent>(){
@@ -28,7 +21,7 @@ class MainActivity : BaseActivity<MainActivityComponent>(){
         if(controller.accountInstalled()){
             if(savedInstanceState == null) {
                 println("Install fragment")
-                controller.displayFilesFragment(supportFragmentManager)
+                controller.displayNotificationFragment(supportFragmentManager)
             }
         } else {
             controller.displayLoginFragment(supportFragmentManager)
