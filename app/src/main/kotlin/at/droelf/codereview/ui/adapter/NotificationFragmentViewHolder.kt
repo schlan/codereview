@@ -34,7 +34,17 @@ class NotificationFragmentViewHolder(val view: View): RecyclerView.ViewHolder(vi
         secondLine.text = pr.base.repo.fullName
         timeStamp.text = HumanTime.approximately(System.currentTimeMillis() - pr.updatedAt.time)
         user.text = "@${pr.user.login}"
-        issueCount.text = if(pr.number < 99) "${pr.number}" else "99+" //FIXME
+
+        issueCount.visibility = View.GONE
+        controller.lazyLoadDataForPr(pr).subscribe {
+            val issueCountString = when {
+                it.first > 0 && it.first < 100 -> "${it.first}"
+                it.first > 99 -> "99+"
+                else -> null
+            }
+            issueCount.visibility = if(issueCountString != null) View.VISIBLE else View.GONE
+            issueCount.text = issueCountString
+        }
 
         view.setOnClickListener {
             controller.displayFileFragment(fm, pr.base.repo.owner.login, pr.base.repo.name, pr.number)

@@ -11,7 +11,7 @@ import rx.Observable
 class NotificationFragmentController(val mainActivityController: MainActivityController, val githubService: GithubService): RxHelper {
 
     var observable: Observable<List<GithubModel.PullRequest>>? = null
-
+    var listMapCache: MutableMap<String, Observable<Pair<Int, Any>>> = hashMapOf()
 
     fun loadPrs(): Observable<List<GithubModel.PullRequest>>{
         if (observable == null) {
@@ -21,6 +21,24 @@ class NotificationFragmentController(val mainActivityController: MainActivityCon
                     }
                     .compose(transformObservable<List<GithubModel.PullRequest>>())
                     .cache()
+        }
+
+        return observable!!
+    }
+
+    fun lazyLoadDataForPr(pr: GithubModel.PullRequest): Observable<Pair<Int, Any>> {
+        val key = "${pr.id}"
+        var observable = listMapCache[key]
+
+        if(observable == null){
+            observable = Observable.combineLatest(
+                    githubService.commentsRx(pr.base.repo.owner.login, pr.base.repo.name, pr.number).map { it.size },
+                    githubService.reviewCommentsRx(pr.base.repo.owner.login, pr.base.repo.name, pr.number).map{ it.size },
+                    { a, b -> Pair(a + b, Object())}
+            )
+                    .compose(transformObservable<Pair<Int, Any>>())
+                    .cache()
+            listMapCache.put(key, observable)
         }
 
         return observable!!
