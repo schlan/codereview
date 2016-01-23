@@ -40,19 +40,10 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
 
     override fun onStart() {
         super.onStart()
-//        controller.loadNotifications().subscribe { data ->
-//            list.adapter = NotificationListAdapter(data)
-//            list.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, i, l ->
-//                val notification = (view.tag as GithubModel.Notification)
-//                val id = HttpUrl.parse(notification.subject.url).pathSegments().last().toLong()
-//                controller.displayFileFragment(fragmentManager, notification.repository.owner.login, notification.repository.name, id)
-//            }
-//        }
-
         list.adapter = NotificationListAdapter(controller.loadPrs())
         list.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, i, l ->
             val pr = (view.tag as GithubModel.PullRequest)
-            controller.displayFileFragment(fragmentManager, pr.head.repo.owner.login, pr.head.repo.name, pr.number)
+            controller.displayFileFragment(fragmentManager, pr.base.repo.owner.login, pr.base.repo.name, pr.number)
         }
     }
 
