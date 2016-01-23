@@ -7,17 +7,18 @@ import rx.Observable
 
 interface GithubPagination {
 
-    fun <T> flatten(observable: Observable<List<MutableList<T>>>): Observable<List<T>> {
-        return observable.map { it.flatten() }
+    fun <T> Observable<List<MutableList<T>>>.flatten(): Observable<List<T>> {
+        return map { it.flatten() }
     }
 
     fun <T> pages(initialResponse: Observable<Response<T>>, loadNextPage: (page: Int) -> Observable<Response<T>>): Observable<List<T>> {
-        return initialResponse.flatMap { b ->
-            val lastPage = parseHeader(b.headers())
+        return initialResponse.flatMap { data ->
+            val lastPage = parseHeader(data.headers())
+
             if(lastPage == null) {
-                initialResponse
+                Observable.just(data)
             } else {
-                val pages = listOf<Observable<Response<T>>>() + initialResponse + (2..lastPage).map(loadNextPage)
+                val pages = listOf<Observable<Response<T>>>() + Observable.just(data) + (2..lastPage).map(loadNextPage)
                 Observable.merge(pages)
             }
         }.map{ it.body() }.toList()

@@ -39,7 +39,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/progressbar"
         android:layout_gravity="center"
-        android:background="#f00"
         />
 
 </FrameLayout>

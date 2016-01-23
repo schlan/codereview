@@ -19,10 +19,6 @@ class MainActivityController {
         return userComponent ?: throw RuntimeException("it's dead jim")
     }
 
-    fun releaseUserComponent() {
-        userComponent = null
-    }
-
     fun accountInstalled(): Boolean {
         return userComponent != null
     }
@@ -30,7 +26,6 @@ class MainActivityController {
     fun userComponent(): UserComponent {
         return userComponent ?: throw RuntimeException("it's dead jim 2")
     }
-
 
     fun showFileFragment(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?, owner: String, repo: String, pullRequest: Long) {
         displayFileDiffFragment(fm, contentsUrl, patch, filename, owner, repo, pullRequest)

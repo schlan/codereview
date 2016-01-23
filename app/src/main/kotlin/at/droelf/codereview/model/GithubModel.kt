@@ -7,7 +7,7 @@ object GithubModel {
 
     data class PullRequest(
             val id: Long, val number: Long, val state: String, val title: String, val body: String, val user: User,
-            val head: Head, val base: Base
+            val head: Head, val base: Base, val updatedAt: Date
     )
 
     data class PullRequestFile(

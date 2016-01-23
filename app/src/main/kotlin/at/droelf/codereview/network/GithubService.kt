@@ -11,36 +11,44 @@ import rx.Observable
 class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): GithubPagination {
 
     fun pullRequestFilesRx(owner: String, repo: String, number: Long): Observable<List<GithubModel.PullRequestFile>> {
-        val pages = pages(githubApi.pullRequestFilesRx(owner, repo, number, token())){ githubApi.pullRequestFilesRx(owner, repo, number, token(), it)}
-        return flatten(pages)
+        return pages(githubApi.pullRequestFilesRx(owner, repo, number, token())){
+            githubApi.pullRequestFilesRx(owner, repo, number, token(), it)
+        }.flatten()
     }
 
     fun fileRx(url: String, accept: String): Observable<ResponseBody> {
-        return githubApi.fileRx(url, accept, token()).map{
-            it.body()
-        }
+        return githubApi.fileRx(url, accept, token()).map{ it.body() }
     }
 
-    fun commentsRx(owner: String, repo: String, number: Long): Observable<MutableList<GithubModel.Comment>> {
-        return githubApi.commentsRx(owner, repo, number, token()).map {it.body()}
+    fun commentsRx(owner: String, repo: String, number: Long): Observable<List<GithubModel.Comment>> {
+        return pages(githubApi.commentsRx(owner, repo, number, token())){
+            githubApi.commentsRx(owner, repo, number, token(), it)
+        }.flatten()
     }
 
-    fun reviewCommentsRx(owner: String, repo: String, number: Long): Observable<MutableList<GithubModel.ReviewComment>> {
-        return githubApi.reviewCommentsRx(owner, repo, number, token()).map {it.body()}
+    fun reviewCommentsRx(owner: String, repo: String, number: Long): Observable<List<GithubModel.ReviewComment>> {
+        return pages(githubApi.reviewCommentsRx(owner, repo, number, token())){
+            githubApi.reviewCommentsRx(owner, repo, number, token(), it)
+        }.flatten()
     }
 
     fun subscriptionsRx(participating: Boolean): Observable<List<GithubModel.Repository>> {
-        return githubApi.subscriptionsRx(token(), participating).map {it.body()}.map { it.toList() }
+        return pages(githubApi.subscriptionsRx(token(), participating)){
+            githubApi.subscriptionsRx(token(), participating, it)
+        }.flatten()
     }
 
     fun notificationsRx(): Observable<List<GithubModel.Notification>> {
-        return githubApi.notificationsRx(token()).map {it.body()}.map{ it.toList() }
+        return pages(githubApi.notificationsRx(token())){
+            githubApi.notificationsRx(token(), it)
+        }.flatten()
     }
 
     fun pullRequestsRx(owner: String, repo: String): Observable<List<GithubModel.PullRequest>> {
-        return githubApi.pullRequestsRx(token(), owner, repo).map {it.body()}.map{ it.toList() }
+        return pages(githubApi.pullRequestsRx(token(), owner, repo)){
+            githubApi.pullRequestsRx(token(), owner, repo, it)
+        }.flatten()
     }
 
     fun token() = "token ${auth.token}"
-
 }

@@ -29,7 +29,8 @@ interface GithubApi {
             @Path("owner") owner: String,
             @Path("repo") repo: String,
             @Path("number") number: Long,
-            @Header("Authorization") auth: String
+            @Header("Authorization") auth: String,
+            @Query("page") page: Int = 1
     ): Observable<Response<MutableList<GithubModel.Comment>>>
 
     @GET("/repos/{owner}/{repo}/pulls/{number}/comments")
@@ -37,25 +38,29 @@ interface GithubApi {
             @Path("owner") owner: String,
             @Path("repo") repo: String,
             @Path("number") number: Long,
-            @Header("Authorization") auth: String
+            @Header("Authorization") auth: String,
+            @Query("page") page: Int = 1
     ): Observable<Response<MutableList<GithubModel.ReviewComment>>>
 
     @GET("/user/subscriptions")
     fun subscriptionsRx(
             @Header("Authorization") auth: String,
-            @Query("participating") participating: Boolean
+            @Query("participating") participating: Boolean,
+            @Query("page") page: Int = 1
     ): Observable<Response<MutableList<GithubModel.Repository>>>
 
     @GET("/notifications")
     fun notificationsRx(
-            @Header("Authorization") auth: String
+            @Header("Authorization") auth: String,
+            @Query("page") page: Int = 1
     ): Observable<Response<MutableList<GithubModel.Notification>>>
 
     @GET("/repos/{owner}/{repo}/pulls")
     fun pullRequestsRx(
             @Header("Authorization") auth: String,
             @Path("owner") owner: String,
-            @Path("repo") repo: String
+            @Path("repo") repo: String,
+            @Query("page") page: Int = 1
     ): Observable<Response<MutableList<GithubModel.PullRequest>>>
 
 }

@@ -1,6 +1,8 @@
 package at.droelf.codereview.ui.fragment
 
 import android.os.Bundle
+import android.support.v7.widget.LinearLayoutManager
+import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,8 +15,10 @@ import at.droelf.codereview.dagger.fragment.NotificationFragmentComponent
 import at.droelf.codereview.dagger.fragment.NotificationFragmentModule
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.activity.MainActivity
+import at.droelf.codereview.ui.adapter.NotificationFragmentAdapter
 import butterknife.Bind
 import butterknife.ButterKnife
+import jp.wasabeef.recyclerview.animators.SlideInRightAnimator
 import okhttp3.HttpUrl
 import rx.Observable
 import javax.inject.Inject
@@ -22,7 +26,7 @@ import javax.inject.Inject
 class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
 
     @Inject lateinit var controller: NotificationFragmentController
-    @Bind(R.id.notification_list) lateinit var list: ListView
+    @Bind(R.id.notification_list) lateinit var list: RecyclerView
 
     override fun injectComponent(component: NotificationFragmentComponent) {
         component.inject(this)
@@ -40,43 +44,8 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
 
     override fun onStart() {
         super.onStart()
-        list.adapter = NotificationListAdapter(controller.loadPrs())
-        list.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, i, l ->
-            val pr = (view.tag as GithubModel.PullRequest)
-            controller.displayFileFragment(fragmentManager, pr.base.repo.owner.login, pr.base.repo.name, pr.number)
-        }
+        list.layoutManager = LinearLayoutManager(activity)
+        list.itemAnimator = SlideInRightAnimator()
+        list.adapter = NotificationFragmentAdapter(controller.loadPrs(), controller, view, fragmentManager)
     }
-
-    class NotificationListAdapter(val pullRequestsRx: Observable<List<GithubModel.PullRequest>>) : BaseAdapter() {
-
-        var pullRequests: MutableList<GithubModel.PullRequest> = arrayListOf()
-
-        init {
-            pullRequestsRx.subscribe {
-                pullRequests.addAll(it)
-                notifyDataSetChanged()
-            }
-        }
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
-            val view = convertView ?: LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent, false)
-            (view.findViewById(android.R.id.text1) as TextView).text = pullRequests[position].title
-            view.tag = pullRequests[position]
-            return view
-        }
-
-        override fun getItem(position: Int): GithubModel.PullRequest {
-            return pullRequests[position]
-        }
-
-        override fun getItemId(position: Int): Long {
-            return 0L
-        }
-
-        override fun getCount(): Int {
-            return pullRequests.size
-        }
-    }
-
-
 }

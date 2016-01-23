@@ -6,4 +6,10 @@
 
     <color name="bg_gray">#EDEDED</color>
     <color name="bg_white">#FFFFFF</color>
+
+    <color name="black">#000</color>
+    <color name="text_primary">#DE000000</color>
+    <color name="text_secondary">#8A000000</color>
+    <color name="divider">#1F000000</color>
+
 </resources>
