@@ -1,6 +1,5 @@
 package at.droelf.codereview.ui.fragment
 
-import at.droelf.codereview.Constants
 import at.droelf.codereview.PrettyfyHighlighter
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubService
@@ -14,15 +13,15 @@ class PatchFragmentController(val mainActivityController: MainActivityController
 
     var observable: Observable<Model.GithubDataSet>? = null
 
-    fun data(contentUrl: String, p: String, filename: String): Observable<Model.GithubDataSet> {
+    fun data(contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long): Observable<Model.GithubDataSet> {
         if(observable == null) {
             val patchO = Patch.parse(p)
             val contentO = githubService.fileRx(contentUrl, "application/vnd.github.v3.raw").flatMap {
                 PrettyfyHighlighter.highlight(it.string(), filename.split(Regex("\\.")).last())
             }
 
-            val commentsO = githubService.commentsRx(Constants.owner, Constants.repo, Constants.pullRequest)
-            val commentsReviewO = githubService.reviewCommentsRx(Constants.owner, Constants.repo, Constants.pullRequest)
+            val commentsO = githubService.commentsRx(owner, repo, pullRequest)
+            val commentsReviewO = githubService.reviewCommentsRx(owner, repo, pullRequest)
                     .flatMap { comment ->
                         val pairPatch = comment.map { c ->
                             Observable.combineLatest(

@@ -23,12 +23,12 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
     @Inject lateinit var controller: StartFragmentController
     @Bind(R.id.listview) lateinit var listView: ListView
 
-    private fun loadFiles(owner: String, repo: String, id: Long) {
-        controller.loadData(owner, repo, id).subscribe ({ repos ->
+    private fun loadFiles(owner: String, repo: String, pullRequestNumber: Long) {
+        controller.loadData(owner, repo, pullRequestNumber).subscribe ({ repos ->
             listView.adapter = Adapter(repos)
             listView.onItemClickListener = AdapterView.OnItemClickListener { adapter, view, pos, id ->
                 val file = (adapter.adapter as Adapter).getItem(pos)
-                controller.showFile(fragmentManager, file?.contentsUrl, file?.patch, file?.filename)
+                controller.showFile(fragmentManager, file?.contentsUrl, file?.patch, file?.filename, owner, repo, pullRequestNumber)
             }
         }, { error ->
             error.printStackTrace()

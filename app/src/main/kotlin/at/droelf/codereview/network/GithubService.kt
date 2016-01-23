@@ -15,11 +15,11 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi) {
         return githubApi.fileRx(url, accept, token())
     }
 
-    fun commentsRx(owner: String, repo: String, number: Int): Observable<MutableList<GithubModel.Comment>> {
+    fun commentsRx(owner: String, repo: String, number: Long): Observable<MutableList<GithubModel.Comment>> {
         return githubApi.commentsRx(owner, repo, number, token())
     }
 
-    fun reviewCommentsRx(owner: String, repo: String, number: Int): Observable<MutableList<GithubModel.ReviewComment>> {
+    fun reviewCommentsRx(owner: String, repo: String, number: Long): Observable<MutableList<GithubModel.ReviewComment>> {
         return githubApi.reviewCommentsRx(owner, repo, number, token())
     }
 
@@ -29,6 +29,10 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi) {
 
     fun notificationsRx(): Observable<List<GithubModel.Notification>> {
         return githubApi.notificationsRx(token()).map{ it.toList() }
+    }
+
+    fun pullRequestsRx(owner: String, repo: String): Observable<List<GithubModel.PullRequest>> {
+        return githubApi.pullRequestsRx(token(), owner, repo).map{ it.toList() }
     }
 
     fun token() = "token ${auth.token}"

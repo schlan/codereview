@@ -5,7 +5,10 @@ import java.util.*
 
 object GithubModel {
 
-    data class PullRequest(val id: Long, val number: Long, val state: String, val title: String, val body: String)
+    data class PullRequest(
+            val id: Long, val number: Long, val state: String, val title: String, val body: String, val user: User,
+            val head: Head
+    )
 
     data class PullRequestFile(
             val sha: String, val filename: String, val status: String, val additions: Int, val deletions: Int, val changes: Int,
@@ -45,5 +48,9 @@ object GithubModel {
     data class Notification (
             val id: Long, val unread: Boolean, val reason: String, val updatedAt: Date, val lastReadAt: Date, val subject: Subject,
             val repository: Repository, val url: String
+    )
+
+    data class Head(
+            val repo: Repository
     )
 }

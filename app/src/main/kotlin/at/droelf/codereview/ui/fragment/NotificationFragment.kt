@@ -16,6 +16,7 @@ import at.droelf.codereview.ui.activity.MainActivity
 import butterknife.Bind
 import butterknife.ButterKnife
 import okhttp3.HttpUrl
+import rx.Observable
 import javax.inject.Inject
 
 class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
@@ -39,27 +40,42 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
 
     override fun onStart() {
         super.onStart()
-        controller.loadNotifications().subscribe { data ->
-            list.adapter = NotificationListAdapter(data)
-            list.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, i, l ->
-                val notification = (view.tag as GithubModel.Notification)
-                val id = HttpUrl.parse(notification.subject.url).pathSegments().last().toLong()
-                controller.displayFileFragment(fragmentManager, notification.repository.owner.login, notification.repository.name, id)
-            }
+//        controller.loadNotifications().subscribe { data ->
+//            list.adapter = NotificationListAdapter(data)
+//            list.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, i, l ->
+//                val notification = (view.tag as GithubModel.Notification)
+//                val id = HttpUrl.parse(notification.subject.url).pathSegments().last().toLong()
+//                controller.displayFileFragment(fragmentManager, notification.repository.owner.login, notification.repository.name, id)
+//            }
+//        }
+
+        list.adapter = NotificationListAdapter(controller.loadPrs())
+        list.onItemClickListener = AdapterView.OnItemClickListener { adapterView, view, i, l ->
+            val pr = (view.tag as GithubModel.PullRequest)
+            controller.displayFileFragment(fragmentManager, pr.head.repo.owner.login, pr.head.repo.name, pr.number)
         }
     }
 
-    class NotificationListAdapter(val repos: List<GithubModel.Notification>) : BaseAdapter() {
+    class NotificationListAdapter(val pullRequestsRx: Observable<List<GithubModel.PullRequest>>) : BaseAdapter() {
+
+        var pullRequests: MutableList<GithubModel.PullRequest> = arrayListOf()
+
+        init {
+            pullRequestsRx.subscribe {
+                pullRequests.addAll(it)
+                notifyDataSetChanged()
+            }
+        }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
             val view = convertView ?: LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent, false)
-            (view.findViewById(android.R.id.text1) as TextView).text = repos[position].subject.title
-            view.tag = repos[position]
+            (view.findViewById(android.R.id.text1) as TextView).text = pullRequests[position].title
+            view.tag = pullRequests[position]
             return view
         }
 
-        override fun getItem(position: Int): GithubModel.Notification {
-            return repos[position]
+        override fun getItem(position: Int): GithubModel.PullRequest {
+            return pullRequests[position]
         }
 
         override fun getItemId(position: Int): Long {
@@ -67,7 +83,7 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
         }
 
         override fun getCount(): Int {
-            return repos.size
+            return pullRequests.size
         }
     }
 

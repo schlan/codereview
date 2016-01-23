@@ -20,7 +20,7 @@
         android:id="@+id/row_patch_comment_card_container"
         android:orientation="horizontal"
         android:paddingBottom="16dp"
-        android:paddingRight="8dp"
+        android:paddingRight="16dp"
         android:paddingTop="16dp">
 
         <ImageView

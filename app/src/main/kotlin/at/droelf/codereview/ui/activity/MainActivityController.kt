@@ -32,8 +32,8 @@ class MainActivityController {
     }
 
 
-    fun showFileFragment(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?) {
-        displayFileDiffFragment(fm, contentsUrl, patch, filename)
+    fun showFileFragment(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?, owner: String, repo: String, pullRequest: Long) {
+        displayFileDiffFragment(fm, contentsUrl, patch, filename, owner, repo, pullRequest)
     }
 
     fun displayRepositoryFragment(fm: FragmentManager){
@@ -62,13 +62,16 @@ class MainActivityController {
         }
     }
 
-    fun displayFileDiffFragment(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?){
+    fun displayFileDiffFragment(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?, owner: String, repo: String, pullRequest: Long){
         fragmentTransaction(fm, true) {
             val fragment = PatchFragment()
             val bundle = Bundle()
             bundle.putString("url", contentsUrl)
             bundle.putString("patch", patch)
             bundle.putString("fname", filename)
+            bundle.putString("owner", owner)
+            bundle.putString("repo", repo)
+            bundle.putLong("pr", pullRequest)
             fragment.arguments = bundle
             fragment
         }

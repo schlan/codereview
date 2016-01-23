@@ -10,15 +10,16 @@ import rx.Observable
 
 class NotificationFragmentController(val mainActivityController: MainActivityController, val githubService: GithubService): RxHelper {
 
-    var observable: Observable<List<GithubModel.Notification>>? = null
+    var observable: Observable<List<GithubModel.PullRequest>>? = null
 
 
-    fun loadNotifications(): Observable<List<GithubModel.Notification>> {
-
-        if(observable == null){
-            observable = githubService.notificationsRx()
-                    .compose(transformObservable<List<GithubModel.Notification>>())
-                    .map{ it.filter { n -> n.subject.type.equals("PullRequest") } }
+    fun loadPrs(): Observable<List<GithubModel.PullRequest>>{
+        if (observable == null) {
+            observable = githubService.subscriptionsRx(false)
+                    .flatMap { repos ->
+                        Observable.merge(repos.map { githubService.pullRequestsRx(it.owner.login, it.name) })
+                    }
+                    .compose(transformObservable<List<GithubModel.PullRequest>>())
                     .cache()
         }
 

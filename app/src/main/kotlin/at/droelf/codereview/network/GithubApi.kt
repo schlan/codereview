@@ -24,17 +24,17 @@ interface GithubApi {
 
     @GET("/repos/{owner}/{repo}/issues/{number}/comments")
     fun commentsRx(
-        @Path("owner") owner: String,
-        @Path("repo") repo: String,
-        @Path("number") number: Int,
-        @Header("Authorization") auth: String
+            @Path("owner") owner: String,
+            @Path("repo") repo: String,
+            @Path("number") number: Long,
+            @Header("Authorization") auth: String
     ): Observable<MutableList<GithubModel.Comment>>
 
     @GET("/repos/{owner}/{repo}/pulls/{number}/comments")
     fun reviewCommentsRx(
             @Path("owner") owner: String,
             @Path("repo") repo: String,
-            @Path("number") number: Int,
+            @Path("number") number: Long,
             @Header("Authorization") auth: String
     ): Observable<MutableList<GithubModel.ReviewComment>>
 
@@ -48,5 +48,12 @@ interface GithubApi {
     fun notificationsRx(
             @Header("Authorization") auth: String
     ): Observable<MutableList<GithubModel.Notification>>
+
+    @GET("/repos/{owner}/{repo}/pulls")
+    fun pullRequestsRx(
+            @Header("Authorization") auth: String,
+            @Path("owner") owner: String,
+            @Path("repo") repo: String
+    ): Observable<MutableList<GithubModel.PullRequest>>
 
 }

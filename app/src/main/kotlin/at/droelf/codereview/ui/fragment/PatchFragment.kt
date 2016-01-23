@@ -32,7 +32,7 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
 
     var maxWidth: Int = -1
     var minWidth: Int = -1
-    var hscrollEnabled: Boolean = true
+    var hscrollEnabled: Boolean = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
         val view = inflater.inflate(R.layout.fragment_main, container, false)
@@ -74,14 +74,17 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
                     arguments.getString("url"),
                     arguments.getString("patch"),
                     arguments.getString("fname"),
+                    arguments.getString("owner"),
+                    arguments.getString("repo"),
+                    arguments.getLong("pr"),
                     activity
             )
         }
         println("Load code")
     }
 
-    fun loadCode(contentUrl: String, p: String, filename: String, context: Context) {
-        controller.data(contentUrl, p, filename).subscribe({ result ->
+    fun loadCode(contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long, context: Context) {
+        controller.data(contentUrl, p, filename, owner, repo, pullRequest).subscribe({ result ->
             progressbar.visibility = View.GONE
 
             val maxLengthLine = result.fileContent.maxBy { it.length }
