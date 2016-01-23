@@ -16,7 +16,6 @@ import at.droelf.codereview.model.Model
 class Global: Application() {
 
     lateinit var appComponent: AppComponent
-    //private var userComponent: UserComponent? = null
 
     companion object Factory {
         fun get(context: Context): Global {

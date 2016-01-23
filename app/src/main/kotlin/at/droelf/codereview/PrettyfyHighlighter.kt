@@ -49,8 +49,8 @@ object PrettyfyHighlighter {
             }
 
             val data = ranges.map { i ->
-                val start = if(prettyCode.get(i.first) == '\n') i.first + 1 else i.first
-                val end: Int = if(prettyCode.get(i.second) ==  '\n') i.second else i.second + 1
+                val start = if(prettyCode[i.first] == '\n') i.first + 1 else i.first
+                val end: Int = if(prettyCode[i.second] ==  '\n') i.second else i.second + 1
                 SpannableString(prettyCode.subSequence(start, end))
             }
 
@@ -72,10 +72,10 @@ object PrettyfyHighlighter {
 
     private fun colorForKeyword(keyWord: String): Int {
         return when{
-            colors.containsKey(keyWord) -> Color.parseColor("#${colors.get(keyWord)}")
+            colors.containsKey(keyWord) -> Color.parseColor("#${colors[keyWord]}")
             else -> {
                 println("------- Not found: $keyWord")
-                Color.parseColor("#${colors.get("pln")}")
+                Color.parseColor("#${colors["pln"]}")
             }
         }
     }

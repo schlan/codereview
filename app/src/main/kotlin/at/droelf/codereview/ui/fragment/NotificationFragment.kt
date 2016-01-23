@@ -15,7 +15,7 @@ import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.activity.MainActivity
 import butterknife.Bind
 import butterknife.ButterKnife
-import com.squareup.okhttp.HttpUrl
+import okhttp3.HttpUrl
 import javax.inject.Inject
 
 class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {

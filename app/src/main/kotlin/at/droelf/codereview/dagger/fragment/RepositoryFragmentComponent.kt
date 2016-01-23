@@ -1,8 +1,7 @@
 package at.droelf.codereview.dagger.fragment;
 
-import at.droelf.codereview.dagger.activity.FragmentScope;
-import at.droelf.codereview.ui.fragment.RepositoryFragment;
-import dagger.Subcomponent;
+import at.droelf.codereview.ui.fragment.RepositoryFragment
+import dagger.Subcomponent
 
 @FragmentScope
 @Subcomponent(

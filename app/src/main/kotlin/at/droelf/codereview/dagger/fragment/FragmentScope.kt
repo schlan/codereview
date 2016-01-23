@@ -1,4 +1,4 @@
-package at.droelf.codereview.dagger.activity
+package at.droelf.codereview.dagger.fragment
 
 import javax.inject.Scope
 

@@ -32,7 +32,7 @@ enum class PatchListType(val layoutId: Int, val viewType: Int, val holder: (view
 
     companion object{
         fun fromViewType(viewType: Int): PatchListType? {
-            return PatchListType.values.find { it.viewType == viewType }
+            return values().find { it.viewType == viewType }
         }
         private fun viewholder(view: View) = object : RecyclerView.ViewHolder(view){}
     }

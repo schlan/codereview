@@ -5,11 +5,9 @@ import at.droelf.codereview.PrettyfyHighlighter
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.patch.Patch
-import at.droelf.codereview.ui.activity.MainActivity
 import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
-import kotlin.text.Regex
 
 
 class PatchFragmentController(val mainActivityController: MainActivityController, val githubService: GithubService) : RxHelper {

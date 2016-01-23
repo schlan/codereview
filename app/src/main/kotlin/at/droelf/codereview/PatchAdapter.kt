@@ -1,12 +1,8 @@
 package at.droelf.codereview
 
 import android.support.v7.widget.RecyclerView
-import android.text.SpannableString
-import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import at.droelf.codereview.patch.Patch
-import java.util.*
 
 class PatchAdapter(val patchController: PatchAdapterController) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), PatchAdapterControllerImpl.PatchAdapterInterface {
 

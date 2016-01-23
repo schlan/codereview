@@ -5,7 +5,6 @@ import at.droelf.codereview.network.GithubApi
 import at.droelf.codereview.network.GithubService
 import dagger.Module
 import dagger.Provides
-import retrofit.Retrofit
 
 @Module
 class UserModule(private val data: Model.GithubAuth) {

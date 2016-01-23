@@ -3,15 +3,14 @@ package at.droelf.codereview.dagger.services
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.squareup.okhttp.Interceptor
-import com.squareup.okhttp.OkHttpClient
-import com.squareup.okhttp.logging.HttpLoggingInterceptor
-import dagger.Component
 import dagger.Module
 import dagger.Provides
-import retrofit.GsonConverterFactory
-import retrofit.Retrofit
-import retrofit.RxJavaCallAdapterFactory
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.GsonConverterFactory
+import retrofit2.Retrofit
+import retrofit2.RxJavaCallAdapterFactory
 import javax.inject.Singleton
 
 @Module
@@ -28,12 +27,12 @@ class SquareModule() {
     @Provides
     @Singleton
     fun providesOkhttp(): OkHttpClient {
-        val okHttp = OkHttpClient()
         val httpLogging = HttpLoggingInterceptor()
         httpLogging.setLevel(HttpLoggingInterceptor.Level.BODY)
 
-        okHttp.interceptors().add(httpLogging)
-        okHttp.interceptors().add(Interceptor { chain ->
+        val okHttp = OkHttpClient.Builder()
+        okHttp.addInterceptor(httpLogging)
+        okHttp.addInterceptor({ chain ->
             val builder = chain.request().newBuilder()
             builder.addHeader("User-Agent", "CodeReview @dr03lf")
             builder.addHeader("Content-Type", "application/json; charset=utf-8")
@@ -41,7 +40,7 @@ class SquareModule() {
             chain.proceed(builder.build())
         })
 
-        return okHttp
+        return okHttp.build()
     }
 
     @Provides

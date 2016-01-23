@@ -1,8 +1,8 @@
 package at.droelf.codereview.network
 
 import at.droelf.codereview.model.GithubModel
-import com.squareup.okhttp.ResponseBody
-import retrofit.http.*
+import okhttp3.ResponseBody
+import retrofit2.http.*
 import rx.Observable
 
 interface GithubApi {
@@ -44,9 +44,9 @@ interface GithubApi {
             @Query("participating") participating: Boolean
     ): Observable<MutableList<GithubModel.Repository>>
 
-
     @GET("/notifications")
     fun notificationsRx(
             @Header("Authorization") auth: String
     ): Observable<MutableList<GithubModel.Notification>>
+
 }

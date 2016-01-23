@@ -114,14 +114,14 @@ class PatchSegmentController(
                 patchSegment.lines.map { l ->
                     val lineString = when(l.type){
                         Patch.Type.Delete -> l.line
-                        else -> rawCode.get(l.modifiedNum!! - 1 - offset).prefix(if(l.type == Patch.Type.Add) "+" else " ")
+                        else -> rawCode[l.modifiedNum!! - 1 - offset].prefix(if(l.type == Patch.Type.Add) "+" else " ")
                     }
                     ViewHolderLine(SpannableString(lineString), ViewHolderLine.LineType.fromPatchType(l.type), l.originalNum, l.modifiedNum)
                 }
 
 
         val comments = reviewComments.filter { comment ->
-            val pos = comment.position!!
+            val pos = comment.position
             pos > visibleOffset && pos < (visibleOffset + patchSegment.lines.size)
         }
 
@@ -144,7 +144,7 @@ class PatchSegmentController(
     }
 
     fun viewHolderWrapper(pos: Int): ViewHolderWrapper {
-        return viewHolderWrapper.get(pos)
+        return viewHolderWrapper[pos]
     }
 
     fun expand(pos: Int): Pair<Int, Int> {
