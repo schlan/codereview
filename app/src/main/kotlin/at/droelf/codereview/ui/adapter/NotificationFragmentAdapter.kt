@@ -2,6 +2,7 @@ package at.droelf.codereview.ui.adapter
 
 import android.support.design.widget.Snackbar
 import android.support.v4.app.FragmentManager
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
@@ -15,13 +16,19 @@ class NotificationFragmentAdapter(
         pullRequestsObservable: Observable<List<GithubModel.PullRequest>>,
         val controller: NotificationFragmentController,
         parent: View,
-        val fragmentManager: FragmentManager) : RecyclerView.Adapter<NotificationFragmentViewHolder>() {
+        val fragmentManager: FragmentManager,
+        val swipeRefreshLayout: SwipeRefreshLayout) : RecyclerView.Adapter<NotificationFragmentViewHolder>() {
 
     var pullRequests: MutableList<GithubModel.PullRequest> = arrayListOf()
 
     init {
-        pullRequestsObservable.subscribe({ updateList(it) }, { error ->
+        swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = true })
+        pullRequestsObservable.subscribe({
+            updateList(it)
+        }, { error ->
             Snackbar.make(parent, "Error: ${error.message}", Snackbar.LENGTH_LONG).show()
+        }, {
+            swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = false })
         })
     }
 
@@ -29,8 +36,7 @@ class NotificationFragmentAdapter(
         prs.forEach { pr ->
             pullRequests.add(pr)
             pullRequests.sortByDescending { it.updatedAt }
-            val index = pullRequests.indexOf(pr)
-            notifyItemInserted(index)
+            notifyItemInserted(pullRequests.indexOf(pr))
         }
     }
 
