@@ -20,14 +20,12 @@ class NotificationFragmentAdapter(
         val fragmentManager: FragmentManager,
         val swipeRefreshLayout: SwipeRefreshLayout) : RecyclerView.Adapter<ViewHolderBinder<*>>() {
 
-
     var holderWrapperList: List<HolderWrapper> = arrayListOf()
     var myPullRequests: MutableList<GithubModel.PullRequest> = arrayListOf()
     var pullRequests: MutableList<GithubModel.PullRequest> = arrayListOf()
 
     val subHeaderMine = HolderWrapper(0, "Mine")
     val subHeaderOther = HolderWrapper(0, "All Pull Requests")
-
 
     init {
         swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = true })
@@ -60,6 +58,7 @@ class NotificationFragmentAdapter(
                 tmpList.add(subHeaderMine)
                 tmpList.addAll(myPullRequests.map{ HolderWrapper(1, it) })
             }
+
             if(pullRequests.size > 0){
                 tmpList.add(subHeaderOther)
                 tmpList.addAll(pullRequests.map{ HolderWrapper(1, it) })
@@ -81,7 +80,6 @@ class NotificationFragmentAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderBinder<*> {
-
         return when(viewType) {
             0 -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.row_notification_fragment_subheader, parent, false)
@@ -91,9 +89,8 @@ class NotificationFragmentAdapter(
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.row_notification_fragment, parent, false)
                 NotificationFragmentViewHolder(view)
             }
-            else -> throw IllegalArgumentException("Unkown pos")
+            else -> throw IllegalArgumentException("Unknown pos")
         }
-
     }
 
     override fun onBindViewHolder(holder: ViewHolderBinder<*>, position: Int) {

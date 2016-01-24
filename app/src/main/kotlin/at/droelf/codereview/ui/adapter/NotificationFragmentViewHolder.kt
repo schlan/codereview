@@ -1,7 +1,6 @@
 package at.droelf.codereview.ui.adapter
 
 import android.support.v4.app.FragmentManager
-import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.widget.ImageView
 import android.widget.RelativeLayout
@@ -70,6 +69,10 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
         }
     }
 
-    data class NotificationFragmentViewHolderData(val pr: GithubModel.PullRequest, val fm: FragmentManager, val controller: NotificationFragmentController)
+    data class NotificationFragmentViewHolderData(
+            val pr: GithubModel.PullRequest,
+            val fm: FragmentManager,
+            val controller: NotificationFragmentController
+    )
 
 }

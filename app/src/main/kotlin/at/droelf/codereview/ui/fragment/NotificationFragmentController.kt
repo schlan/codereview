@@ -2,7 +2,6 @@ package at.droelf.codereview.ui.fragment
 
 import android.support.v4.app.FragmentManager
 import at.droelf.codereview.model.GithubModel
-import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.utils.RxHelper

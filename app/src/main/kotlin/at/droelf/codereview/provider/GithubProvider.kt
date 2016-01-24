@@ -5,21 +5,19 @@ import at.droelf.codereview.ResponseHolder
 import at.droelf.codereview.cache.GithubEndpointCache
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.network.GithubService
-import com.couchbase.lite.internal.RevisionInternal
-import okhttp3.ResponseBody
 import rx.Observable
 
 
 class GithubProvider(val githubService: GithubService, val cache: LruCache<String, Any>) {
 
-    val githubPrCache = GithubEndpointCache<List<GithubModel.PullRequest>>(cache)
-    val githubPrDetailCache = GithubEndpointCache<GithubModel.PullRequestDetail>(cache)
-    val githubPrFiles = GithubEndpointCache<List<GithubModel.PullRequestFile>>(cache)
-    val githubPrComments = GithubEndpointCache<List<GithubModel.Comment>>(cache)
-    val githubPrReviewComments = GithubEndpointCache<List<GithubModel.ReviewComment>>(cache)
-    val githubSubscriptions = GithubEndpointCache<List<GithubModel.Repository>>(cache)
-    val githubNotifications = GithubEndpointCache<List<GithubModel.Notification>>(cache)
-    val githubFile = GithubEndpointCache<String>(cache)
+    private val githubPrCache = GithubEndpointCache<List<GithubModel.PullRequest>>(cache)
+    private val githubPrDetailCache = GithubEndpointCache<GithubModel.PullRequestDetail>(cache)
+    private val githubPrFiles = GithubEndpointCache<List<GithubModel.PullRequestFile>>(cache)
+    private val githubPrComments = GithubEndpointCache<List<GithubModel.Comment>>(cache)
+    private val githubPrReviewComments = GithubEndpointCache<List<GithubModel.ReviewComment>>(cache)
+    private val githubSubscriptions = GithubEndpointCache<List<GithubModel.Repository>>(cache)
+    private val githubNotifications = GithubEndpointCache<List<GithubModel.Notification>>(cache)
+    private val githubFile = GithubEndpointCache<String>(cache)
 
     fun pullRequests(owner: String, repo: String): Observable<List<GithubModel.PullRequest>> {
         val key = "pull_requests-$owner-$repo"
@@ -66,7 +64,7 @@ class GithubProvider(val githubService: GithubService, val cache: LruCache<Strin
         val network = nwObservable.doOnNext { cache.put(key, it.data) }
         val memory = cache.get(key)
         return Observable.concat(memory, network)
-                .first { d -> d.upToDate() }
+                .first { d ->d.upToDate()                 }
                 .map { d -> d.data }
     }
 
