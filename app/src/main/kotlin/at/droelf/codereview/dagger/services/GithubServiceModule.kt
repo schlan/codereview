@@ -14,4 +14,5 @@ class GithubServiceModule {
     fun providesGithubApi(retrofit: Retrofit): GithubApi{
         return retrofit.create(GithubApi::class.java)
     }
+
 }

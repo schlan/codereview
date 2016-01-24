@@ -1,6 +1,7 @@
 package at.droelf.codereview.dagger.fragment
 
 import at.droelf.codereview.network.GithubService
+import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.ui.fragment.NotificationFragment
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
@@ -19,8 +20,8 @@ class NotificationFragmentModule(private val notificationFragment: NotificationF
 
     @Provides
     @FragmentScope
-    fun providesNotificationFragmentController(mainActivityController: MainActivityController, githubService: GithubService): NotificationFragmentController {
-        return NotificationFragmentController(mainActivityController, githubService)
+    fun providesNotificationFragmentController(mainActivityController: MainActivityController, githubProvider: GithubProvider): NotificationFragmentController {
+        return NotificationFragmentController(mainActivityController, githubProvider)
     }
 
 }

@@ -24,7 +24,6 @@ interface GithubPagination {
         }.map{ it.body() }.toList()
     }
 
-
     fun parseHeader(headers: Headers): Int? {
         val pages = headers.get("Link") ?: return null
         val lastPage = pages.split(',').filter{ it.contains("last") }.firstOrNull() ?: return null

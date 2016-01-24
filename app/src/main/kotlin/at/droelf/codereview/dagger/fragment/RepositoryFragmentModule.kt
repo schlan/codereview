@@ -1,6 +1,6 @@
 package at.droelf.codereview.dagger.fragment
 
-import at.droelf.codereview.network.GithubService
+import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.ui.fragment.RepositoryFragment
 import at.droelf.codereview.ui.fragment.RepositoryFragmentController
@@ -18,8 +18,8 @@ class RepositoryFragmentModule(private val repositoryFragment: RepositoryFragmen
 
     @Provides
     @FragmentScope
-    fun provideRepositoryFragmentController(mainActivityController: MainActivityController, githubService: GithubService): RepositoryFragmentController{
-        return RepositoryFragmentController(mainActivityController, githubService)
+    fun provideRepositoryFragmentController(mainActivityController: MainActivityController, githubProvider: GithubProvider): RepositoryFragmentController{
+        return RepositoryFragmentController(mainActivityController, githubProvider)
     }
 
 }

@@ -4,24 +4,25 @@ import at.droelf.codereview.PrettyfyHighlighter
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.patch.Patch
+import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
 
 
-class PatchFragmentController(val mainActivityController: MainActivityController, val githubService: GithubService) : RxHelper {
+class PatchFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider) : RxHelper {
 
     var observable: Observable<Model.GithubDataSet>? = null
 
     fun data(contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long): Observable<Model.GithubDataSet> {
         if(observable == null) {
             val patchO = Patch.parse(p)
-            val contentO = githubService.fileRx(contentUrl, "application/vnd.github.v3.raw").flatMap {
-                PrettyfyHighlighter.highlight(it.string(), filename.split(Regex("\\.")).last())
+            val contentO = githubProvider.file(contentUrl, "application/vnd.github.v3.raw").flatMap {
+                PrettyfyHighlighter.highlight(it, filename.split(Regex("\\.")).last())
             }
 
-            val commentsO = githubService.commentsRx(owner, repo, pullRequest)
-            val commentsReviewO = githubService.reviewCommentsRx(owner, repo, pullRequest)
+            val commentsO = githubProvider.comments(owner, repo, pullRequest)
+            val commentsReviewO = githubProvider.reviewComments(owner, repo, pullRequest)
                     .flatMap { comment ->
                         val pairPatch = comment.map { c ->
                             Observable.combineLatest(

@@ -3,21 +3,22 @@ package at.droelf.codereview.ui.fragment
 import android.support.v4.app.FragmentManager
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.network.GithubService
+import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
 
 
-class NotificationFragmentController(val mainActivityController: MainActivityController, val githubService: GithubService): RxHelper {
+class NotificationFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider): RxHelper {
 
     var observable: Observable<List<GithubModel.PullRequest>>? = null
     var listMapCache: MutableMap<String, Observable<GithubModel.PullRequestDetail>> = hashMapOf()
 
     fun loadPrs(): Observable<List<GithubModel.PullRequest>>{
         if (observable == null) {
-            observable = githubService.subscriptionsRx(false)
+            observable = githubProvider.subscriptions(false)
                     .flatMap { repos ->
-                        Observable.merge(repos.map { githubService.pullRequestsRx(it.owner.login, it.name) })
+                        Observable.merge(repos.map { githubProvider.pullRequests(it.owner.login, it.name) })
                     }
                     .compose(transformObservable<List<GithubModel.PullRequest>>())
                     .cache()
@@ -32,7 +33,7 @@ class NotificationFragmentController(val mainActivityController: MainActivityCon
 
         if(observable == null){
 
-            observable = githubService.pullRequestDetailRx(pr.base.repo.owner.login, pr.base.repo.name, pr.number)
+            observable = githubProvider.pullRequestDetail(pr.base.repo.owner.login, pr.base.repo.name, pr.number)
                     .compose(transformObservable<GithubModel.PullRequestDetail>())
                     .cache()
 
