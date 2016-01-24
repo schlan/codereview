@@ -13,8 +13,10 @@ object Constants{
     //zendesk_mobile_ios_sdk/pull/670
 
 
-    val repo: String = "ZendeskAndroidClient"
-    val pullRequest: Int = 537
+    //val repo: String = "ZendeskAndroidClient"
+    //val pullRequest: Int = 537
+
+    val login: String = "schlan"
 
     //https://github.com/zendesk/ZendeskAndroidClient/pull/537
 

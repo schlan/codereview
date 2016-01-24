@@ -17,7 +17,7 @@ import com.squareup.picasso.Picasso
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
-class NotificationFragmentViewHolder(val view: View): RecyclerView.ViewHolder(view) {
+class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<NotificationFragmentViewHolder.NotificationFragmentViewHolderData>(view) {
 
     @Bind(R.id.row_notification_avatar) lateinit var avatar: ImageView
     @Bind(R.id.row_notification_name) lateinit var title: TextView
@@ -31,24 +31,24 @@ class NotificationFragmentViewHolder(val view: View): RecyclerView.ViewHolder(vi
         ButterKnife.bind(this, view)
     }
 
-    fun bind(pr: GithubModel.PullRequest, fm: FragmentManager, controller: NotificationFragmentController) {
-        Picasso.with(view.context).load(pr.user.avatarUrl).transform(CircleTransform()).into(avatar)
+    override fun bind(data: NotificationFragmentViewHolderData) {
+        Picasso.with(view.context).load(data.pr.user.avatarUrl).transform(CircleTransform()).into(avatar)
 
-        title.text = pr.title
-        secondLine.text = pr.base.repo.fullName
-        user.text = "@${pr.user.login}"
+        title.text = data.pr.title
+        secondLine.text = data.pr.base.repo.fullName
+        user.text = "@${data.pr.user.login}"
 
 
-        val timeSpan = System.currentTimeMillis() - pr.updatedAt.time
+        val timeSpan = System.currentTimeMillis() - data.pr.updatedAt.time
         if(timeSpan < TimeUnit.DAYS.toMillis(7)){
-            timeStamp.text = HumanTime.approximately(System.currentTimeMillis() - pr.updatedAt.time)
+            timeStamp.text = HumanTime.approximately(System.currentTimeMillis() - data.pr.updatedAt.time)
         } else {
-            timeStamp.text = SimpleDateFormat("dd MMM yyyy").format(pr.updatedAt)
+            timeStamp.text = SimpleDateFormat("dd MMM yyyy").format(data.pr.updatedAt)
         }
 
-        lazyLoadThings(pr, controller)
+        lazyLoadThings(data.pr, data.controller)
         view.setOnClickListener {
-            controller.displayFileFragment(fm, pr.base.repo.owner.login, pr.base.repo.name, pr.number)
+            data.controller.displayFileFragment(data.fm, data.pr.base.repo.owner.login, data.pr.base.repo.name, data.pr.number)
         }
     }
 
@@ -70,5 +70,6 @@ class NotificationFragmentViewHolder(val view: View): RecyclerView.ViewHolder(vi
         }
     }
 
+    data class NotificationFragmentViewHolderData(val pr: GithubModel.PullRequest, val fm: FragmentManager, val controller: NotificationFragmentController)
 
 }
