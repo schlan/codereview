@@ -63,4 +63,12 @@ interface GithubApi {
             @Query("page") page: Int = 1
     ): Observable<Response<MutableList<GithubModel.PullRequest>>>
 
+    @GET("/repos/{owner}/{repo}/pulls/{number}")
+    fun pullRequestDetailRx(
+            @Header("Authorization") auth: String,
+            @Path("owner") owner: String,
+            @Path("repo") repo: String,
+            @Path("number") number: Long
+    ): Observable<Response<GithubModel.PullRequestDetail>>
+
 }

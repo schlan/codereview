@@ -13,4 +13,7 @@
     <color name="text_secondary">#8A000000</color>
     <color name="divider">#1F000000</color>
 
+    <color name="build_fail">#BD2C00</color>
+    <color name="build_pass">#6CC644</color>
+
 </resources>

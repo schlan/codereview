@@ -32,11 +32,13 @@ class PullRequestView(context: Context, val fm: FragmentManager, val controller:
     }
 
     fun init() {
+        swipeToRefresh.isEnabled = false
         swipeToRefresh.setColorSchemeResources(R.color.colorAccent)
         swipeToRefresh.setOnRefreshListener {
             swipeToRefresh.isRefreshing = false
         }
 
+        list.addItemDecoration(DividerItemDecoration(context, resources.getDimensionPixelOffset(R.dimen.row_notification_pull_request_divider_padding_left)))
         list.layoutManager = LinearLayoutManager(context)
         list.itemAnimator = SlideInUpAnimator()
         list.adapter = NotificationFragmentAdapter(controller.loadPrs(), controller, this, fm, swipeToRefresh)

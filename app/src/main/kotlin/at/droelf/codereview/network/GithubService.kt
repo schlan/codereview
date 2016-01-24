@@ -50,5 +50,9 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): Githu
         }.flatten()
     }
 
+    fun pullRequestDetailRx(owner: String, repo: String, number: Long): Observable<GithubModel.PullRequestDetail> {
+        return githubApi.pullRequestDetailRx(token(), owner, repo, number).map { it.body() }
+    }
+
     fun token() = "token ${auth.token}"
 }

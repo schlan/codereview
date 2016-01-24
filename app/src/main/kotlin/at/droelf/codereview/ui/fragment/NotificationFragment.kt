@@ -54,25 +54,30 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
     override fun onStart() {
         super.onStart()
 
-        val prTab = tablayout.newTab()
-        prTab.setText("Pull Requests")
-        val issuesTab = tablayout.newTab()
-        issuesTab.setText("Issues")
+        if(tablayout.tabCount != 2) {
 
-        tablayout.addTab(prTab, 0, true)
-        tablayout.addTab(issuesTab, 1, false)
+            val prTab = tablayout.newTab()
+            prTab.setText("Pull Requests")
+            val issuesTab = tablayout.newTab()
+            issuesTab.setText("Issues")
 
-        tablayout.setOnTabSelectedListener(object: TabLayout.OnTabSelectedListener {
-            override fun onTabReselected(tab: TabLayout.Tab?) {}
+            tablayout.addTab(prTab, 0, true)
+            tablayout.addTab(issuesTab, 1, false)
 
-            override fun onTabUnselected(tab: TabLayout.Tab?) {}
+            tablayout.setOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
+                override fun onTabReselected(tab: TabLayout.Tab?) {
+                }
 
-            override fun onTabSelected(tab: TabLayout.Tab) {
-                viewpager.currentItem = tab.position
-            }
-        })
+                override fun onTabUnselected(tab: TabLayout.Tab?) {
+                }
 
-        viewpager.adapter = NotificationViewpagerAdapter(fragmentManager, controller)
-        viewpager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tablayout))
+                override fun onTabSelected(tab: TabLayout.Tab) {
+                    viewpager.currentItem = tab.position
+                }
+            })
+
+            viewpager.adapter = NotificationViewpagerAdapter(fragmentManager, controller)
+            viewpager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tablayout))
+        }
     }
 }

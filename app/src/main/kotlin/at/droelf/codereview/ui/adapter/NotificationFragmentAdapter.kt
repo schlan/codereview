@@ -35,7 +35,7 @@ class NotificationFragmentAdapter(
     fun updateList(prs: List<GithubModel.PullRequest>) {
         prs.forEach { pr ->
             pullRequests.add(pr)
-            pullRequests.sortByDescending { it.updatedAt }
+            pullRequests.sortByDescending { it.createdAt }
             notifyItemInserted(pullRequests.indexOf(pr))
         }
     }
