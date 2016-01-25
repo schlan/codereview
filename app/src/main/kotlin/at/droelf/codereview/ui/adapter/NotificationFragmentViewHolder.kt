@@ -37,7 +37,6 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
         secondLine.text = data.pr.base.repo.fullName
         user.text = "@${data.pr.user.login}"
 
-
         val timeSpan = System.currentTimeMillis() - data.pr.updatedAt.time
         if(timeSpan < TimeUnit.DAYS.toMillis(7)){
             timeStamp.text = HumanTime.approximately(System.currentTimeMillis() - data.pr.updatedAt.time)

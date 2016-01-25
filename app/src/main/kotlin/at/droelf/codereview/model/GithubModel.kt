@@ -14,7 +14,7 @@ object GithubModel {
             val id: Long, val number: Long, val state: String, val title: String, val body: String, val user: User,
             val head: Head, val base: Base, val updatedAt: Date, val mergeCommitSha: String, val merged: Boolean,
             val mergeable: String, val mergedBy: User, val comments: Int, val commits: Int, val additions: Int,
-            val deletions: Int, val changedFiles: Int, val reviewComments: Int
+            val deletions: Int, val changedFiles: Int, val reviewComments: Int, val bodyHtml: String
     )
 
     data class PullRequestFile(
@@ -23,7 +23,7 @@ object GithubModel {
     )
 
     data class Comment(
-            val id: Long, val url: String, val htmlUrl: String, val body: String, val user: User
+            val id: Long, val url: String, val htmlUrl: String, val body: String, val user: User, val bodyHtml: String
     )
 
     data class ReviewComment(

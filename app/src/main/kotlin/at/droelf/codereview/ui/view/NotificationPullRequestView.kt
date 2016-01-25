@@ -18,13 +18,13 @@ import butterknife.Bind
 import butterknife.ButterKnife
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
-class PullRequestView(context: Context, val fm: FragmentManager, val controller: NotificationFragmentController): FrameLayout(context) {
+class NotificationPullRequestView(context: Context, val fm: FragmentManager, val controller: NotificationFragmentController): FrameLayout(context) {
 
     @Bind(R.id.notification_list) lateinit var list: RecyclerView
     @Bind(R.id.notification_swipe_to_refresh) lateinit var swipeToRefresh: SwipeRefreshLayout
 
     init {
-        LayoutInflater.from(context).inflate(R.layout.fragment_notification_pull_requests, this, true)
+        LayoutInflater.from(context).inflate(R.layout.view_notification_pull_requests, this, true)
         swipeToRefresh = findViewById(R.id.notification_swipe_to_refresh) as SwipeRefreshLayout
         list = findViewById(R.id.notification_list) as RecyclerView
         //ButterKnife.bind(this)

@@ -1,14 +1,15 @@
-package at.droelf.codereview.ui.adapter;
+package at.droelf.codereview.ui.adapter
 
 import android.support.v4.app.FragmentManager
 import android.support.v4.view.PagerAdapter
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import at.droelf.codereview.ui.fragment.NotificationFragmentController
-import at.droelf.codereview.ui.view.NotificationPullRequestView
+import at.droelf.codereview.model.GithubModel
+import at.droelf.codereview.ui.fragment.StartFragmentController
+import at.droelf.codereview.ui.view.PullRequestCommentView
 
-class NotificationViewpagerAdapter(val fm: FragmentManager, val controller: NotificationFragmentController) : PagerAdapter() {
+class PullRequestViewpagerAdapter(val fm: FragmentManager, val controller: StartFragmentController, val pr: GithubModel.PullRequestDetail): PagerAdapter() {
 
     override fun isViewFromObject(view: View?, o: Any?): Boolean {
         return view == o
@@ -16,7 +17,7 @@ class NotificationViewpagerAdapter(val fm: FragmentManager, val controller: Noti
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any? {
         val view = when(position){
-            0 -> NotificationPullRequestView(container.context, fm, controller)
+            0 -> PullRequestCommentView(container.context, pr, fm, controller)
             1 -> FrameLayout(container.context)
             else -> throw IllegalArgumentException("Unknown pos: $position")
         }
@@ -31,4 +32,5 @@ class NotificationViewpagerAdapter(val fm: FragmentManager, val controller: Noti
     override fun getCount(): Int {
         return 2
     }
+
 }

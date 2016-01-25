@@ -20,9 +20,12 @@ class NotificationFragmentAdapter(
         val fragmentManager: FragmentManager,
         val swipeRefreshLayout: SwipeRefreshLayout) : RecyclerView.Adapter<ViewHolderBinder<*>>() {
 
-    var holderWrapperList: List<HolderWrapper> = arrayListOf()
-    var myPullRequests: MutableList<GithubModel.PullRequest> = arrayListOf()
-    var pullRequests: MutableList<GithubModel.PullRequest> = arrayListOf()
+    val lock = Any()
+
+    var holderWrapperList: List<HolderWrapper> = listOf()
+
+    val myPullRequests: MutableList<GithubModel.PullRequest> = arrayListOf()
+    val pullRequests: MutableList<GithubModel.PullRequest> = arrayListOf()
 
     val subHeaderMine = HolderWrapper(0, "Mine")
     val subHeaderOther = HolderWrapper(0, "All Pull Requests")
@@ -40,7 +43,6 @@ class NotificationFragmentAdapter(
 
     fun updateList(prs: List<GithubModel.PullRequest>) {
         prs.forEach { pr ->
-
             val emptyMy = myPullRequests.isEmpty()
             val emptyOther = pullRequests.isEmpty()
 
@@ -53,30 +55,33 @@ class NotificationFragmentAdapter(
             }
 
             val tmpList: MutableList<HolderWrapper> = arrayListOf()
-
             if(myPullRequests.size > 0){
                 tmpList.add(subHeaderMine)
                 tmpList.addAll(myPullRequests.map{ HolderWrapper(1, it) })
             }
-
             if(pullRequests.size > 0){
                 tmpList.add(subHeaderOther)
                 tmpList.addAll(pullRequests.map{ HolderWrapper(1, it) })
             }
 
             holderWrapperList = tmpList
-            if (emptyMy) notifyItemInserted(tmpList.indexOf(subHeaderMine))
-            if (emptyOther) notifyItemInserted(tmpList.indexOf(subHeaderOther))
-            val index = tmpList.indexOfFirst { it.type == 1 && it.data == pr }
-            notifyItemInserted(index)
+            //notifyDataSetChanged()
+            if (emptyMy) {
+                val p = holderWrapperList.indexOf(subHeaderMine)
+                notifyItemInserted(p)
+            }
+            if (emptyOther) {
+                val p = holderWrapperList.indexOf(subHeaderOther)
+                notifyItemInserted(p)
+            }
 
+            val index = tmpList.indexOfFirst { it.type == 1 && it.data.equals(pr) }
+            notifyItemInserted(index)
         }
     }
 
     override fun getItemCount(): Int {
-        val myPulls = if(myPullRequests.isNotEmpty()) myPullRequests.size + 1 else 0
-        val otherPulls = if(pullRequests.isNotEmpty()) pullRequests.size + 1 else 0
-        return myPulls + otherPulls
+        return holderWrapperList.size
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderBinder<*> {

@@ -12,6 +12,7 @@ import at.droelf.codereview.dagger.services.SquareModule
 import at.droelf.codereview.dagger.user.UserComponent
 import at.droelf.codereview.dagger.user.UserModule
 import at.droelf.codereview.model.Model
+import com.squareup.leakcanary.LeakCanary
 
 class Global: Application() {
 
@@ -25,6 +26,7 @@ class Global: Application() {
 
     override fun onCreate() {
         super.onCreate()
+        LeakCanary.install(this);
         initDagger()
     }
 

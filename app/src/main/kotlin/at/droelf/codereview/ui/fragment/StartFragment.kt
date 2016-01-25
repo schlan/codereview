@@ -1,19 +1,22 @@
 package at.droelf.codereview.ui.fragment
 
 import android.os.Bundle
+import android.support.design.widget.Snackbar
+import android.support.design.widget.TabLayout
+import android.support.v4.view.ViewPager
+import android.support.v7.app.AppCompatActivity
+import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.AdapterView
-import android.widget.BaseAdapter
-import android.widget.ListView
-import android.widget.TextView
-import at.droelf.codereview.Constants
+import android.widget.*
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.StartFragmentComponent
 import at.droelf.codereview.dagger.fragment.StartFragmentModule
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.activity.MainActivity
+import at.droelf.codereview.ui.adapter.PullRequestViewpagerAdapter
 import butterknife.Bind
 import butterknife.ButterKnife
 import javax.inject.Inject
@@ -21,35 +24,10 @@ import javax.inject.Inject
 class StartFragment : BaseFragment<StartFragmentComponent>() {
 
     @Inject lateinit var controller: StartFragmentController
-    @Bind(R.id.listview) lateinit var listView: ListView
-
-    private fun loadFiles(owner: String, repo: String, pullRequestNumber: Long) {
-        controller.loadData(owner, repo, pullRequestNumber).subscribe ({ repos ->
-            listView.adapter = Adapter(repos)
-            listView.onItemClickListener = AdapterView.OnItemClickListener { adapter, view, pos, id ->
-                val file = (adapter.adapter as Adapter).getItem(pos)
-                controller.showFile(fragmentManager, file?.contentsUrl, file?.patch, file?.filename, owner, repo, pullRequestNumber)
-            }
-        }, { error ->
-            error.printStackTrace()
-        })
-    }
-
-    override fun onStart() {
-        super.onStart()
-        loadFiles(
-                arguments.getString("owner"),
-                arguments.getString("repo"),
-                arguments.getLong("id", -1)
-        )
-    }
-
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.fragment_start, container, false)
-        ButterKnife.bind(this, view)
-        listView = view.findViewById(R.id.listview) as ListView
-        return view
-    }
+    @Bind(R.id.pr_toolbar) lateinit var toolbar: Toolbar
+    @Bind(R.id.pr_tablayout) lateinit var tablayout: TabLayout
+    @Bind(R.id.pr_viewpager) lateinit var viewpager: ViewPager
+    @Bind(R.id.pr_progressbar) lateinit var progressbar: ProgressBar
 
     override fun injectComponent(component: StartFragmentComponent) {
         component.inject(this)
@@ -59,25 +37,73 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         return mainActivity.controller.userComponent().plus(StartFragmentModule(this))
     }
 
-    class Adapter(val list: List<GithubModel.PullRequestFile>) : BaseAdapter() {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
+        val view = inflater.inflate(R.layout.fragment_pr, container, false)
+        ButterKnife.bind(this, view)
+        toolbar = view.findViewById(R.id.pr_toolbar) as Toolbar
+        tablayout = view.findViewById(R.id.pr_tablayout) as TabLayout
+        viewpager = view.findViewById(R.id.pr_viewpager) as ViewPager
+        progressbar = view.findViewById(R.id.pr_progressbar) as ProgressBar
+        return view
+    }
 
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val view = convertView ?: LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent, false)
-            (view.findViewById(android.R.id.text1) as TextView).text = list.get(position).filename
-            return view
-        }
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        (activity as AppCompatActivity).supportActionBar.setDisplayHomeAsUpEnabled(true)
+        setHasOptionsMenu(true)
+    }
 
-        override fun getItem(position: Int): GithubModel.PullRequestFile? {
-            return list.get(position)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            android.R.id.home -> {
+                activity.onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
+    }
 
-        override fun getItemId(position: Int): Long {
-            return 0
-        }
+    override fun onStart() {
+        super.onStart()
+        val owner = arguments.getString("owner")
+        val repo = arguments.getString("repo")
+        val id = arguments.getLong("id")
 
-        override fun getCount(): Int {
-            return list.size
-        }
+        progressbar.visibility = View.VISIBLE
+        controller.prdetails(owner, repo, id).subscribe({ pr ->
+            initTabLayout(pr)
+            progressbar.visibility = View.GONE
+        }, {
+            Snackbar.make(view, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
+            progressbar.visibility = View.GONE
+        })
+    }
+
+    fun initTabLayout(pr: GithubModel.PullRequestDetail) {
+        tablayout.removeAllTabs()
+        val commentsTab = tablayout.newTab()
+        commentsTab.setText("Comments")
+        val filesTab = tablayout.newTab()
+        filesTab.setText("Files")
+
+        tablayout.addTab(commentsTab, 0, true)
+        tablayout.addTab(filesTab, 1, false)
+
+        tablayout.setOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+            override fun onTabReselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabUnselected(tab: TabLayout.Tab?) {
+            }
+
+            override fun onTabSelected(tab: TabLayout.Tab) {
+                viewpager.currentItem = tab.position
+            }
+        })
+
+        viewpager.adapter = PullRequestViewpagerAdapter(fragmentManager, controller, pr)
+        viewpager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tablayout))
     }
 
 }
