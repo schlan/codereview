@@ -22,7 +22,7 @@ object HtmlTextViewMagic {
 
     private fun trimTrailingWhiteSpace(source: CharSequence): CharSequence {
         var i = source.length
-        while (--i >= 0 && source.get(i) == '\n') {
+        while (--i >= 0 && source[i] == '\n') {
         }
         return source.subSequence(0, i + 1)
     }
@@ -54,17 +54,24 @@ object HtmlTextViewMagic {
                             if (containerReference.get() == null) return
                             val rect = Rect()
                             containerReference.get().paint.getTextBounds("ABC", 0, 3, rect)
-                            val height = (rect.height() * 1.5).toInt()
+
+                            val minHeight = (rect.height() * 1).toInt()
+
+                            val right = if(bitmap.width < minHeight) minHeight else bitmap.width
+                            val bottom = if(bitmap.height < minHeight) minHeight else bitmap.height
 
                             val d = BitmapDrawable(context.resources, bitmap)
-                            d.setBounds(0, 0, height, height)
+                            d.setBounds(0, 0, right, bottom)
 
                             if (drawableReference.get() == null) return
 
-                            drawableReference.get().setBounds(0, 0, height, height)
+                            drawableReference.get().setBounds(0, 0, right, bottom)
                             drawableReference.get().drawable = d
 
-                            containerReference.get().invalidate()
+                            val txtView = containerReference.get()
+                            txtView.invalidate()
+                            txtView.ellipsize = null
+                            //txtView.text = txtView.text
                         }
                     })
         }

@@ -16,8 +16,8 @@ class RepositoryFragmentController(val mainActivityController: MainActivityContr
     fun loadRepositories(): Observable<List<GithubModel.Repository>> {
         if(observable == null){
             observable = githubProvider.subscriptions(true)
-                    .cache()
                     .compose(transformObservable<List<GithubModel.Repository>>())
+                    .cache()
         }
         return observable!!
     }

@@ -8,17 +8,32 @@ import android.widget.FrameLayout
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.fragment.StartFragmentController
 import at.droelf.codereview.ui.view.PullRequestCommentView
+import at.droelf.codereview.ui.view.PullRequestFileView
 
-class PullRequestViewpagerAdapter(val fm: FragmentManager, val controller: StartFragmentController, val pr: GithubModel.PullRequestDetail): PagerAdapter() {
+class PullRequestViewpagerAdapter(val fm: FragmentManager, val controller: StartFragmentController, val pr: GithubModel.PullRequestDetail): PagerAdapter(), UnsubscribeRx {
+
+
+    var commentView : PullRequestCommentView? = null
+    var fileView : PullRequestFileView? = null
 
     override fun isViewFromObject(view: View?, o: Any?): Boolean {
         return view == o
     }
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any? {
-        val view = when(position){
-            0 -> PullRequestCommentView(container.context, pr, fm, controller)
-            1 -> FrameLayout(container.context)
+        val view: View = when(position){
+            0 -> {
+                if(commentView == null){
+                    commentView = PullRequestCommentView(container.context, pr, fm, controller)
+                }
+                commentView!!
+            }
+            1 -> {
+                if(fileView == null){
+                    fileView = PullRequestFileView(container.context, pr, fm, controller)
+                }
+                fileView!!
+            }
             else -> throw IllegalArgumentException("Unknown pos: $position")
         }
         container.addView(view)
@@ -33,4 +48,8 @@ class PullRequestViewpagerAdapter(val fm: FragmentManager, val controller: Start
         return 2
     }
 
+    override fun unsubscribeRx() {
+        commentView?.unsubscribeRx()
+        fileView?.unsubscribeRx()
+    }
 }

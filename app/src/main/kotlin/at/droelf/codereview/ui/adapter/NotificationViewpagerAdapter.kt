@@ -8,7 +8,10 @@ import android.widget.FrameLayout
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import at.droelf.codereview.ui.view.NotificationPullRequestView
 
-class NotificationViewpagerAdapter(val fm: FragmentManager, val controller: NotificationFragmentController) : PagerAdapter() {
+class NotificationViewpagerAdapter(val fm: FragmentManager, val controller: NotificationFragmentController) : PagerAdapter(), UnsubscribeRx {
+
+    var prView: NotificationPullRequestView? = null
+    var issueView: FrameLayout? = null
 
     override fun isViewFromObject(view: View?, o: Any?): Boolean {
         return view == o
@@ -16,8 +19,18 @@ class NotificationViewpagerAdapter(val fm: FragmentManager, val controller: Noti
 
     override fun instantiateItem(container: ViewGroup, position: Int): Any? {
         val view = when(position){
-            0 -> NotificationPullRequestView(container.context, fm, controller)
-            1 -> FrameLayout(container.context)
+            0 -> {
+                if(prView == null){
+                    prView = NotificationPullRequestView(container.context, fm, controller)
+                }
+                prView!!
+            }
+            1 -> {
+                if(issueView == null){
+                    issueView = FrameLayout(container.context)
+                }
+                return issueView!!
+            }
             else -> throw IllegalArgumentException("Unknown pos: $position")
         }
         container.addView(view)
@@ -31,4 +44,9 @@ class NotificationViewpagerAdapter(val fm: FragmentManager, val controller: Noti
     override fun getCount(): Int {
         return 2
     }
+
+    override fun unsubscribeRx() {
+        prView?.unsubscribeRx()
+    }
+
 }

@@ -1,9 +1,5 @@
 package at.droelf.codereview.dagger.services
 
-import android.content.Context
-import com.couchbase.lite.Database
-import com.couchbase.lite.Manager
-import com.couchbase.lite.android.AndroidContext
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -17,14 +13,14 @@ class DbModule {
         return "codereview_db"
     }
 
-    @Singleton @Provides
-    fun provideManager(context: Context): Manager {
-        return Manager(AndroidContext(context), Manager.DEFAULT_OPTIONS)
-    }
-
-    @Singleton @Provides
-    fun provideDatabase(manager: Manager, @Named("db_name") dbName: String): Database{
-        return manager.getDatabase(dbName)
-    }
+//    @Singleton @Provides
+//    fun provideManager(context: Context): Manager? {
+//        return null //Manager(AndroidContext(context), Manager.DEFAULT_OPTIONS)
+//    }
+//
+//    @Singleton @Provides
+//    fun provideDatabase(manager: Manager, @Named("db_name") dbName: String): Database{
+//        return null //manager.getDatabase(dbName)
+//    }
 
 }

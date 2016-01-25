@@ -11,15 +11,17 @@ import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.adapter.NotificationFragmentAdapter
 import at.droelf.codereview.ui.adapter.PullRequestCommentsAdapter
+import at.droelf.codereview.ui.adapter.UnsubscribeRx
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import at.droelf.codereview.ui.fragment.StartFragmentController
 import butterknife.Bind
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
-class PullRequestCommentView(context: Context, val pr: GithubModel.PullRequestDetail, val fm: FragmentManager, val controller: StartFragmentController): FrameLayout(context) {
+class PullRequestCommentView(context: Context, val pr: GithubModel.PullRequestDetail, val fm: FragmentManager, val controller: StartFragmentController): FrameLayout(context), UnsubscribeRx {
 
     val list: RecyclerView
     val swipeToRefresh: SwipeRefreshLayout
+    var listAdapter: PullRequestCommentsAdapter? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.view_pr_comments, this, true)
@@ -44,6 +46,13 @@ class PullRequestCommentView(context: Context, val pr: GithubModel.PullRequestDe
         val repo = pr.base.repo.name
         val number = pr.number
         val comments = controller.comments(owner, repo, number)
-        list.adapter = PullRequestCommentsAdapter(comments, controller, this, fm, swipeToRefresh, pr)
+        listAdapter = PullRequestCommentsAdapter(comments, controller, this, fm, swipeToRefresh, pr)
+        list.adapter = listAdapter
     }
+
+    override fun unsubscribeRx() {
+        listAdapter?.unsubscribeRx()
+        listAdapter = null
+    }
+
 }

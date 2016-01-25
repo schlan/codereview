@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
@@ -19,6 +20,7 @@ import at.droelf.codereview.ui.activity.MainActivity
 import at.droelf.codereview.ui.adapter.PullRequestViewpagerAdapter
 import butterknife.Bind
 import butterknife.ButterKnife
+import rx.Subscription
 import javax.inject.Inject
 
 class StartFragment : BaseFragment<StartFragmentComponent>() {
@@ -28,6 +30,10 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
     @Bind(R.id.pr_tablayout) lateinit var tablayout: TabLayout
     @Bind(R.id.pr_viewpager) lateinit var viewpager: ViewPager
     @Bind(R.id.pr_progressbar) lateinit var progressbar: ProgressBar
+    @Bind(R.id.pr_swipe_to_refresh) lateinit var swipeToRefresh: SwipeRefreshLayout
+
+    var subscription: Subscription? = null
+    var viewPagerAdater: PullRequestViewpagerAdapter? = null
 
     override fun injectComponent(component: StartFragmentComponent) {
         component.inject(this)
@@ -44,6 +50,7 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         tablayout = view.findViewById(R.id.pr_tablayout) as TabLayout
         viewpager = view.findViewById(R.id.pr_viewpager) as ViewPager
         progressbar = view.findViewById(R.id.pr_progressbar) as ProgressBar
+        swipeToRefresh = view.findViewById(R.id.pr_swipe_to_refresh) as SwipeRefreshLayout
         return view
     }
 
@@ -70,14 +77,26 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         val repo = arguments.getString("repo")
         val id = arguments.getLong("id")
 
-        progressbar.visibility = View.VISIBLE
-        controller.prdetails(owner, repo, id).subscribe({ pr ->
+        swipeToRefresh.isEnabled = false
+        swipeToRefresh.setColorSchemeResources(R.color.colorAccent)
+
+        progressbar.visibility = View.GONE
+        swipeToRefresh.post({ swipeToRefresh.isRefreshing = true })
+        subscription = controller.prdetails(activity, owner, repo, id).subscribe({ pr ->
             initTabLayout(pr)
-            progressbar.visibility = View.GONE
+            swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
         }, {
             Snackbar.make(view, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
             progressbar.visibility = View.GONE
+            swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
         })
+    }
+
+    override fun onStop() {
+        super.onStop()
+        subscription?.unsubscribe()
+        subscription = null
+        viewPagerAdater?.unsubscribeRx()
     }
 
     fun initTabLayout(pr: GithubModel.PullRequestDetail) {
@@ -102,7 +121,8 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
             }
         })
 
-        viewpager.adapter = PullRequestViewpagerAdapter(fragmentManager, controller, pr)
+        viewPagerAdater = PullRequestViewpagerAdapter(fragmentManager, controller, pr)
+        viewpager.adapter = viewPagerAdater
         viewpager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tablayout))
     }
 

@@ -32,6 +32,8 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
     @Bind(R.id.notification_viewpager) lateinit var viewpager: ViewPager
     @Bind(R.id.notification_tablayout) lateinit var tablayout: TabLayout
 
+    var viewpagerAdater: NotificationViewpagerAdapter? = null
+
     override fun injectComponent(component: NotificationFragmentComponent) {
         component.inject(this)
     }
@@ -76,8 +78,14 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
                 }
             })
 
-            viewpager.adapter = NotificationViewpagerAdapter(fragmentManager, controller)
+            viewpagerAdater = NotificationViewpagerAdapter(fragmentManager, controller)
+            viewpager.adapter = viewpagerAdater
             viewpager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tablayout))
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        viewpagerAdater?.unsubscribeRx()
     }
 }

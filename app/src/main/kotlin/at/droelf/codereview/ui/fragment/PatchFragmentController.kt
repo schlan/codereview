@@ -43,8 +43,8 @@ class PatchFragmentController(val mainActivityController: MainActivityController
             observable = Observable.combineLatest(patchO, contentO, commentsO, commentsReviewO,  { patch, fileContent, comments, reviewComments ->
                 Model.GithubDataSet(patch, fileContent, comments.toList(), reviewComments, filename)
             })
+                    .compose(transformObservable<Model.GithubDataSet>())
                     .cache()
-                    .compose(transformObservable<Model.GithubDataSet?>())
         }
         return observable!!
     }

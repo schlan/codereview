@@ -12,33 +12,40 @@ import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import rx.Observable
+import rx.Subscription
+import java.util.concurrent.TimeUnit
 
 class NotificationFragmentAdapter(
         pullRequestsObservable: Observable<List<GithubModel.PullRequest>>,
         val controller: NotificationFragmentController,
         parent: View,
         val fragmentManager: FragmentManager,
-        val swipeRefreshLayout: SwipeRefreshLayout) : RecyclerView.Adapter<ViewHolderBinder<*>>() {
+        val swipeRefreshLayout: SwipeRefreshLayout) : RecyclerView.Adapter<ViewHolderBinder<*>>(), UnsubscribeRx {
 
     val lock = Any()
 
     var holderWrapperList: List<HolderWrapper> = listOf()
 
-    val myPullRequests: MutableList<GithubModel.PullRequest> = arrayListOf()
-    val pullRequests: MutableList<GithubModel.PullRequest> = arrayListOf()
+    val myPullRequests: MutableList<HolderWrapper> = arrayListOf()
+    val pullRequests: MutableList<HolderWrapper> = arrayListOf()
 
-    val subHeaderMine = HolderWrapper(0, "Mine")
-    val subHeaderOther = HolderWrapper(0, "All Pull Requests")
+    val subHeaderMine = HolderWrapper(0, 0L, "Mine")
+    val subHeaderOther = HolderWrapper(0, 1L, "All Pull Requests")
+
+    var subscription: Subscription?
 
     init {
+        setHasStableIds(true)
         swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = true })
-        pullRequestsObservable.subscribe({
-            updateList(it)
-        }, { error ->
-            Snackbar.make(parent, "Error: ${error.message}", Snackbar.LENGTH_LONG).show()
-        }, {
-            swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = false })
-        })
+        subscription = pullRequestsObservable
+                .subscribe({ d ->
+                    updateList(d)
+                }, { error ->
+                    swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = false })
+                    Snackbar.make(parent, "Error: ${error.message}", Snackbar.LENGTH_LONG).show()
+                }, {
+                    swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = false })
+                })
     }
 
     fun updateList(prs: List<GithubModel.PullRequest>) {
@@ -46,38 +53,36 @@ class NotificationFragmentAdapter(
             val emptyMy = myPullRequests.isEmpty()
             val emptyOther = pullRequests.isEmpty()
 
-            if(pr.user.login == Constants.login) {
-                myPullRequests.add(pr)
-                myPullRequests.sortByDescending { it.createdAt }
+            if (pr.user.login == Constants.login) {
+                myPullRequests.add(HolderWrapper(1, pr.id + pr.number + pr.body.hashCode(), pr))
+                myPullRequests.sortByDescending { (it.data as GithubModel.PullRequest).createdAt }
             } else {
-                pullRequests.add(pr)
-                pullRequests.sortByDescending { it.createdAt }
+                pullRequests.add(HolderWrapper(1, pr.id + pr.number + pr.body.hashCode(), pr))
+                pullRequests.sortByDescending { (it.data as GithubModel.PullRequest).createdAt }
             }
 
             val tmpList: MutableList<HolderWrapper> = arrayListOf()
-            if(myPullRequests.size > 0){
+            if (myPullRequests.size > 0) {
                 tmpList.add(subHeaderMine)
-                tmpList.addAll(myPullRequests.map{ HolderWrapper(1, it) })
+                tmpList.addAll(myPullRequests)
             }
-            if(pullRequests.size > 0){
+            if (pullRequests.size > 0) {
                 tmpList.add(subHeaderOther)
-                tmpList.addAll(pullRequests.map{ HolderWrapper(1, it) })
+                tmpList.addAll(pullRequests)
             }
 
             holderWrapperList = tmpList
-            //notifyDataSetChanged()
-            if (emptyMy) {
-                val p = holderWrapperList.indexOf(subHeaderMine)
-                notifyItemInserted(p)
+            if (emptyMy || emptyOther) {
+                notifyDataSetChanged()
+            } else {
+                val index = holderWrapperList.indexOfFirst { it.type == 1 && it.data.equals(pr) }
+                notifyItemInserted(index)
             }
-            if (emptyOther) {
-                val p = holderWrapperList.indexOf(subHeaderOther)
-                notifyItemInserted(p)
-            }
-
-            val index = tmpList.indexOfFirst { it.type == 1 && it.data.equals(pr) }
-            notifyItemInserted(index)
         }
+    }
+
+    override fun getItemId(position: Int): Long {
+        return holderWrapperList[position].id
     }
 
     override fun getItemCount(): Int {
@@ -85,7 +90,7 @@ class NotificationFragmentAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolderBinder<*> {
-        return when(viewType) {
+        return when (viewType) {
             0 -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.row_notification_fragment_subheader, parent, false)
                 NotificationFragmentViewHolderHeader(view)
@@ -99,10 +104,10 @@ class NotificationFragmentAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolderBinder<*>, position: Int) {
-        if(holder is NotificationFragmentViewHolderHeader){
+        if (holder is NotificationFragmentViewHolderHeader) {
             holder.bind(holderWrapperList[position].data as String)
 
-        } else if (holder is NotificationFragmentViewHolder){
+        } else if (holder is NotificationFragmentViewHolder) {
             val pr = holderWrapperList[position].data as GithubModel.PullRequest
             holder.bind(NotificationFragmentViewHolder.NotificationFragmentViewHolderData(pr, fragmentManager, controller))
 
@@ -113,6 +118,10 @@ class NotificationFragmentAdapter(
         return holderWrapperList[position].type
     }
 
+    override fun unsubscribeRx() {
+        subscription?.unsubscribe()
+        subscription = null
+    }
 
-    data class HolderWrapper(val type: Int, val data: Any)
+    data class HolderWrapper(val type: Int, val id: Long, val data: Any)
 }

@@ -33,13 +33,28 @@
             tools:text="Bla bla bla bla"
             />
 
-        <org.sufficientlysecure.htmltextview.HtmlTextView
-            android:id="@+id/row_pr_comment"
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="14dp"
-            android:textAppearance="@android:style/TextAppearance.Small"
-            android:textSize="14sp"/>
+            android:layout_height="wrap_content">
+
+            <org.sufficientlysecure.htmltextview.HtmlTextView
+                android:id="@+id/row_pr_comment"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="14dp"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:textSize="14sp"/>
+
+            <!--<WebView-->
+                <!--android:id="@+id/row_pr_comment_webview"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:minHeight="14dp"-->
+                <!--android:visibility="gone"-->
+                <!--/>-->
+
+        </FrameLayout>
+
 
     </LinearLayout>
 

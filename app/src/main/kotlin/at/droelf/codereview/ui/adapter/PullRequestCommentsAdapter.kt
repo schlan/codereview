@@ -12,22 +12,27 @@ import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.fragment.StartFragmentController
 import at.droelf.codereview.ui.view.PullRequestCommentView
 import rx.Observable
+import rx.Subscriber
+import rx.Subscription
 
 
 class PullRequestCommentsAdapter(
         val commentsObserver: Observable<List<GithubModel.Comment>>,
-        val controller: StartFragmentController, pullRequestCommentView: PullRequestCommentView,
+        val controller: StartFragmentController,
+        pullRequestCommentView: PullRequestCommentView,
         fm: FragmentManager,
         val swipeToRefresh: SwipeRefreshLayout,
-        pr: GithubModel.PullRequestDetail) : RecyclerView.Adapter<PullRequestCommentViewHolder>() {
+        pr: GithubModel.PullRequestDetail) : RecyclerView.Adapter<PullRequestCommentViewHolder>(), UnsubscribeRx {
 
     var comments: MutableList<GithubModel.Comment> = arrayListOf()
+    var subscription: Subscription?
 
     init {
         swipeToRefresh.post({ swipeToRefresh.isRefreshing = true })
         comments.add(GithubModel.Comment(-1L, "", "", "", pr.user, pr.bodyHtml))
+        notifyItemInserted(0)
 
-        commentsObserver.subscribe({ comments ->
+        subscription = commentsObserver.subscribe({ comments ->
             update(comments)
         }, {
             Snackbar.make(swipeToRefresh, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
@@ -39,7 +44,7 @@ class PullRequestCommentsAdapter(
 
     fun update(comments: List<GithubModel.Comment>){
         this.comments.addAll(comments)
-        notifyDataSetChanged()
+        notifyItemRangeInserted(1, comments.size)
     }
 
     override fun getItemCount(): Int {
@@ -55,5 +60,9 @@ class PullRequestCommentsAdapter(
         holder.bind(comments[position])
     }
 
+    override fun unsubscribeRx() {
+        subscription?.unsubscribe()
+        subscription = null
+    }
 
 }
