@@ -1,6 +1,8 @@
 package at.droelf.codereview.ui.fragment
 
+import android.content.Context
 import at.droelf.codereview.PrettyfyHighlighter
+import at.droelf.codereview.R
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.patch.Patch
@@ -8,13 +10,14 @@ import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
+import java.util.concurrent.TimeUnit
 
 
 class PatchFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider) : RxHelper {
 
     var observable: Observable<Model.GithubDataSet>? = null
 
-    fun data(contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long): Observable<Model.GithubDataSet> {
+    fun data(context: Context, contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long): Observable<Model.GithubDataSet> {
         if(observable == null) {
             val patchO = Patch.parse(p)
             val contentO = githubProvider.file(contentUrl, "application/vnd.github.v3.raw").flatMap {
@@ -43,6 +46,7 @@ class PatchFragmentController(val mainActivityController: MainActivityController
             observable = Observable.combineLatest(patchO, contentO, commentsO, commentsReviewO,  { patch, fileContent, comments, reviewComments ->
                 Model.GithubDataSet(patch, fileContent, comments.toList(), reviewComments, filename)
             })
+                    .delay(context.resources.getInteger(R.integer.fragment_anim_duration).toLong(), TimeUnit.MILLISECONDS)
                     .compose(transformObservable<Model.GithubDataSet>())
                     .cache()
         }

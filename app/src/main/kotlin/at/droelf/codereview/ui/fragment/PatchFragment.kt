@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
+import android.util.DisplayMetrics
 import android.view.*
 import android.widget.ProgressBar
 import at.droelf.codereview.HScrollView
@@ -85,12 +86,21 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
     }
 
     fun loadCode(contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long, context: Context) {
-        controller.data(contentUrl, p, filename, owner, repo, pullRequest).subscribe({ result ->
+        controller
+                .data(activity, contentUrl, p, filename, owner, repo, pullRequest).subscribe({ result ->
             progressbar.visibility = View.GONE
 
             val maxLengthLine = result.fileContent.maxBy { it.length }
             maxWidth = maxLengthLine!!.lengthInPixel(context) + context.resources.getDimensionPixelOffset(R.dimen.code_text_margin_left)
-            minWidth = main.width
+
+            minWidth = when(main.width){
+                0 -> {
+                    val metrics = DisplayMetrics()
+                    activity.windowManager.defaultDisplay.getMetrics(metrics)
+                    metrics.widthPixels
+                }
+                else -> main.width
+            }
 
             hscroll(hscrollEnabled)
 
