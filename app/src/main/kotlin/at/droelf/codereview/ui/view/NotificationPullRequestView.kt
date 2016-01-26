@@ -18,8 +18,9 @@ import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import butterknife.Bind
 import butterknife.ButterKnife
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
+import java.lang.ref.WeakReference
 
-class NotificationPullRequestView(context: Context, val fm: FragmentManager, val controller: NotificationFragmentController): FrameLayout(context), UnsubscribeRx {
+class NotificationPullRequestView(context: Context, val fm: WeakReference<FragmentManager>, val controller: NotificationFragmentController): FrameLayout(context), UnsubscribeRx {
 
     @Bind(R.id.notification_list) lateinit var list: RecyclerView
     @Bind(R.id.notification_swipe_to_refresh) lateinit var swipeToRefresh: SwipeRefreshLayout
@@ -41,7 +42,8 @@ class NotificationPullRequestView(context: Context, val fm: FragmentManager, val
             swipeToRefresh.isRefreshing = false
         }
 
-        listAdapter = NotificationFragmentAdapter(controller.loadPrs(), controller, this, fm, swipeToRefresh)
+        val fragmentManger = fm.get() ?: return
+        listAdapter = NotificationFragmentAdapter(controller.loadPrs(), controller, this, fragmentManger, swipeToRefresh)
 
         list.addItemDecoration(DividerItemDecoration(context, resources.getDimensionPixelOffset(R.dimen.row_notification_pull_request_divider_padding_left)))
         list.layoutManager = LinearLayoutManager(context)

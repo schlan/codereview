@@ -11,6 +11,9 @@ import at.droelf.codereview.Constants
 import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
+import at.droelf.codereview.ui.viewholder.NotificationFragmentViewHolder
+import at.droelf.codereview.ui.viewholder.NotificationFragmentViewHolderHeader
+import at.droelf.codereview.ui.viewholder.ViewHolderBinder
 import rx.Observable
 import rx.Subscription
 import java.util.concurrent.TimeUnit

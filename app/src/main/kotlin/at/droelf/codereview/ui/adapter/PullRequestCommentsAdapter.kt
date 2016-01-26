@@ -11,6 +11,7 @@ import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.fragment.StartFragmentController
 import at.droelf.codereview.ui.view.PullRequestCommentView
+import at.droelf.codereview.ui.viewholder.PullRequestCommentViewHolder
 import rx.Observable
 import rx.Subscriber
 import rx.Subscription

@@ -1,8 +1,9 @@
-package at.droelf.codereview.ui.adapter
+package at.droelf.codereview.ui.viewholder
 
 import android.view.View
 import android.widget.TextView
 import at.droelf.codereview.R
+import at.droelf.codereview.ui.viewholder.ViewHolderBinder
 import butterknife.Bind
 import butterknife.ButterKnife
 

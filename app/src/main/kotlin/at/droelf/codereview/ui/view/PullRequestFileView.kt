@@ -16,6 +16,7 @@ import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.adapter.NotificationFragmentAdapter
 import at.droelf.codereview.ui.adapter.PullRequestCommentsAdapter
+import at.droelf.codereview.ui.adapter.PullRequestFilesAdapter
 import at.droelf.codereview.ui.adapter.UnsubscribeRx
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import at.droelf.codereview.ui.fragment.StartFragmentController
@@ -26,14 +27,14 @@ import rx.Subscription
 
 class PullRequestFileView(context: Context, val pr: GithubModel.PullRequestDetail, val fm: FragmentManager, val controller: StartFragmentController): FrameLayout(context), UnsubscribeRx {
 
-    val list: ListView
+    val list: RecyclerView
     val swipeToRefresh: SwipeRefreshLayout
-    var listAdapter: Adapter? = null
+    var listAdapter: PullRequestFilesAdapter? = null
 
     init {
         LayoutInflater.from(context).inflate(R.layout.view_pr_files, this, true)
         swipeToRefresh = findViewById(R.id.pr_files_swipe_to_refresh) as SwipeRefreshLayout
-        list = findViewById(R.id.pr_files_list) as ListView
+        list = findViewById(R.id.pr_files_list) as RecyclerView
         init()
     }
 
@@ -44,22 +45,17 @@ class PullRequestFileView(context: Context, val pr: GithubModel.PullRequestDetai
             swipeToRefresh.isRefreshing = false
         }
 
-//        list.addItemDecoration(DividerItemDecoration(context, resources.getDimensionPixelOffset(R.dimen.row_notification_pull_request_divider_padding_left)))
-//        list.layoutManager = LinearLayoutManager(context)
-//        list.itemAnimator = SlideInUpAnimator()
-
+        list.addItemDecoration(DividerItemDecoration(context, resources.getDimensionPixelOffset(R.dimen.row_notification_pull_request_divider_padding_left)))
+        list.layoutManager = LinearLayoutManager(context)
+        list.itemAnimator = SlideInUpAnimator()
 
         val owner = pr.base.repo.owner.login
         val repo = pr.base.repo.name
         val number = pr.number
         val comments = controller.comments(owner, repo, number)
 
-        listAdapter = Adapter(controller.prfiles(owner, repo, number), swipeToRefresh) //FIXME to recycler
+        listAdapter = PullRequestFilesAdapter(controller.prfiles(owner, repo, number), controller, fm, swipeToRefresh, pr)
         list.adapter = listAdapter
-        list.onItemClickListener = AdapterView.OnItemClickListener { parent, view, position, id ->
-            val file = (view.tag as GithubModel.PullRequestFile)
-            controller.showFile(fm, file.contentsUrl, file.patch, file.filename, owner, repo, number)
-        }
     }
 
     override fun unsubscribeRx() {
@@ -68,46 +64,46 @@ class PullRequestFileView(context: Context, val pr: GithubModel.PullRequestDetai
     }
 
 
-    class Adapter(prfiles: Observable<List<GithubModel.PullRequestFile>>, swipeToRefresh: SwipeRefreshLayout) : BaseAdapter(), UnsubscribeRx {
-
-        var files: MutableList<GithubModel.PullRequestFile> = arrayListOf()
-        var subscription: Subscription?
-
-        init {
-            swipeToRefresh.post({ swipeToRefresh.isRefreshing = true })
-            subscription = prfiles.subscribe ({ data ->
-                files.addAll(data)
-                notifyDataSetChanged()
-            },{
-                Snackbar.make(swipeToRefresh, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
-                swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
-            },{
-                swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
-            })
-        }
-
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
-            val view = convertView ?: LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent, false)
-            (view.findViewById(android.R.id.text1) as TextView).text = files[position].filename
-            view.background = ColorDrawable(ContextCompat.getColor(parent.context, R.color.bg_white))
-            view.tag = files[position]
-            return view
-        }
-
-        override fun getItem(position: Int): Any? {
-            return files[position]
-        }
-
-        override fun getItemId(position: Int): Long {
-            return 0
-        }
-
-        override fun getCount(): Int {
-            return files.size
-        }
-
-        override fun unsubscribeRx() {
-            subscription?.unsubscribe()
-        }
-    }
+//    class Adapter(prfiles: Observable<List<Pair<GithubModel.PullRequestFile, Int>>>, swipeToRefresh: SwipeRefreshLayout) : BaseAdapter(), UnsubscribeRx {
+//
+//        var files: MutableList<Pair<GithubModel.PullRequestFile, Int>> = arrayListOf()
+//        var subscription: Subscription?
+//
+//        init {
+//            swipeToRefresh.post({ swipeToRefresh.isRefreshing = true })
+//            subscription = prfiles.subscribe ({ data ->
+//                files.addAll(data)
+//                notifyDataSetChanged()
+//            },{
+//                Snackbar.make(swipeToRefresh, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
+//                swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
+//            },{
+//                swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
+//            })
+//        }
+//
+//        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View? {
+//            val view = convertView ?: LayoutInflater.from(parent.context).inflate(android.R.layout.simple_list_item_1, parent, false)
+//            (view.findViewById(android.R.id.text1) as TextView).text = "${files[position].first.filename} ${files[position].second}"
+//            view.background = ColorDrawable(ContextCompat.getColor(parent.context, R.color.bg_white))
+//            view.tag = files[position].first
+//            return view
+//        }
+//
+//        override fun getItem(position: Int): Any? {
+//            return files[position]
+//        }
+//
+//        override fun getItemId(position: Int): Long {
+//            return 0
+//        }
+//
+//        override fun getCount(): Int {
+//            return files.size
+//        }
+//
+//        override fun unsubscribeRx() {
+//            subscription?.unsubscribe()
+//        }
+//    }
 }

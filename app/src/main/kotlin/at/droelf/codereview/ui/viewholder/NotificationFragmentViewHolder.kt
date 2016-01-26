@@ -1,4 +1,4 @@
-package at.droelf.codereview.ui.adapter
+package at.droelf.codereview.ui.viewholder
 
 import android.support.v4.app.FragmentManager
 import android.view.View
@@ -8,6 +8,7 @@ import android.widget.TextView
 import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
+import at.droelf.codereview.ui.viewholder.ViewHolderBinder
 import at.droelf.codereview.utils.CircleTransform
 import at.droelf.codereview.utils.HumanTime
 import butterknife.Bind

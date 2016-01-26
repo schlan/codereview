@@ -23,6 +23,7 @@ import at.droelf.codereview.ui.adapter.NotificationViewpagerAdapter
 import butterknife.Bind
 import butterknife.ButterKnife
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
+import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
@@ -78,7 +79,7 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
                 }
             })
 
-            viewpagerAdater = NotificationViewpagerAdapter(fragmentManager, controller)
+            viewpagerAdater = NotificationViewpagerAdapter(WeakReference(fragmentManager), controller)
             viewpager.adapter = viewpagerAdater
             viewpager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tablayout))
         }

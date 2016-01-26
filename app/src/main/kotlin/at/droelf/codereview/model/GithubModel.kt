@@ -19,7 +19,7 @@ object GithubModel {
 
     data class PullRequestFile(
             val sha: String, val filename: String, val status: String, val additions: Int, val deletions: Int, val changes: Int,
-            val patch: String, val blobUrl: String, val rawUrl: String, val contentsUrl: String
+            val patch: String?, val blobUrl: String, val rawUrl: String, val contentsUrl: String, val previousFilename: String?
     )
 
     data class Comment(

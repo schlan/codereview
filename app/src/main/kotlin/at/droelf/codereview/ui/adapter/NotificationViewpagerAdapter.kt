@@ -7,8 +7,9 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import at.droelf.codereview.ui.view.NotificationPullRequestView
+import java.lang.ref.WeakReference
 
-class NotificationViewpagerAdapter(val fm: FragmentManager, val controller: NotificationFragmentController) : PagerAdapter(), UnsubscribeRx {
+class NotificationViewpagerAdapter(val fm: WeakReference<FragmentManager>, val controller: NotificationFragmentController) : PagerAdapter(), UnsubscribeRx {
 
     var prView: NotificationPullRequestView? = null
     var issueView: FrameLayout? = null

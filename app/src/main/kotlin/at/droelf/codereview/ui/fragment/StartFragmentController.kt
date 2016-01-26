@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 
 class StartFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider) : RxHelper {
 
-    var observable: Observable<List<GithubModel.PullRequestFile>>? = null
+    var observable: Observable<List<Pair<GithubModel.PullRequestFile, Int>>>? = null
     var prObservable: Observable<GithubModel.PullRequestDetail>? = null
     var commentObservable: Observable<List<GithubModel.Comment>>? = null
 
@@ -35,10 +35,15 @@ class StartFragmentController(val mainActivityController: MainActivityController
         return commentObservable!!
     }
 
-    fun prfiles(owner: String, repo: String, pullRequest: Long): Observable<List<GithubModel.PullRequestFile>> {
+    fun prfiles(owner: String, repo: String, pullRequest: Long): Observable<List<Pair<GithubModel.PullRequestFile, Int>>> {
         if (observable == null) {
-            observable = githubProvider.pullRequestFiles(owner, repo, pullRequest)
-                    .compose(transformObservable<List<GithubModel.PullRequestFile>>())
+            observable = Observable.combineLatest(
+                    githubProvider.reviewComments(owner, repo, pullRequest),
+                    githubProvider.pullRequestFiles(owner, repo, pullRequest),
+                    { comments, files ->
+                        files.map{ f -> Pair(f, comments.count { it -> it.path == f.filename && it.position != null }) }
+                    })
+                    .compose(transformObservable<List<Pair<GithubModel.PullRequestFile, Int>>>())
                     .cache()
         }
         return observable!!

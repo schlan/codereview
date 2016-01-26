@@ -1,4 +1,4 @@
-package at.droelf.codereview.ui.adapter
+package at.droelf.codereview.ui.viewholder
 
 import android.support.v7.widget.RecyclerView
 import android.view.View
