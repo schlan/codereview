@@ -14,13 +14,13 @@ import at.droelf.codereview.ui.viewholder.PullRequestFileViewHolder
 import rx.Observable
 import rx.Subscription
 
-class PullRequestFilesAdapter(val commentsObserver: Observable<List<Pair<GithubModel.PullRequestFile, Int>>>,
+class PullRequestFilesAdapter(val commentsObserver: Observable<List<Triple<GithubModel.PullRequestFile, Int, List<GithubModel.ReviewComment>>>>,
                               val controller: StartFragmentController,
                               val fm: FragmentManager,
                               val swipeToRefresh: SwipeRefreshLayout,
                               val pr: GithubModel.PullRequestDetail): RecyclerView.Adapter<PullRequestFileViewHolder>(), UnsubscribeRx{
 
-    var files: MutableList<Pair<GithubModel.PullRequestFile, Int>> = arrayListOf()
+    var files: MutableList<Triple<GithubModel.PullRequestFile, Int, List<GithubModel.ReviewComment>>> = arrayListOf()
     var subscription : Subscription?
 
     init {
@@ -61,7 +61,7 @@ class PullRequestFilesAdapter(val commentsObserver: Observable<List<Pair<GithubM
     }
 
     data class PullRequestFileViewHolderData(
-            val file: Pair<GithubModel.PullRequestFile, Int>,
+            val file: Triple<GithubModel.PullRequestFile, Int, List<GithubModel.ReviewComment>>,
             val controller: StartFragmentController,
             val fm: FragmentManager,
             val pr: GithubModel.PullRequestDetail)

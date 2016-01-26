@@ -58,33 +58,64 @@
             android:layout_height="wrap_content"
             >
 
-            <TextView
-                android:id="@+id/row_pr_file_repo"
+            <HorizontalScrollView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_toLeftOf="@+id/row_pr_file_user"
-                android:ellipsize="end"
-                android:singleLine="true"
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="normal"
-                tools:text="Second line ver asldkjf afja dklf jalksdj faklsj dlaks aklsd kla skla d"
-                />
+                android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/row_pr_file_user"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_marginLeft="16dp"
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                android:textStyle="normal"
-                tools:text="\@avatar"
-                />
+                <LinearLayout
+                    android:id="@+id/row_pr_file_second_row_container"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="2dp"
+                    android:paddingBottom="2dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="@dimen/row_pr_file_avatar_size"
+                        android:layout_height="@dimen/row_pr_file_avatar_size"
+                        android:id="@+id/row_pr_file_count"
+                        android:background="@drawable/circle_background"
+                        android:gravity="center"
+                        android:textAppearance="@android:style/TextAppearance.Small"
+                        android:textColor="#fff"
+                        android:textSize="8sp"
+                        android:visibility="visible"
+                        tools:text="99+"/>
+
+
+                </LinearLayout>
+
+
+            </HorizontalScrollView>
+
+            <!--<TextView-->
+                <!--android:id="@+id/row_pr_file_repo"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentLeft="true"-->
+                <!--android:layout_toLeftOf="@+id/row_pr_file_user"-->
+                <!--android:ellipsize="end"-->
+                <!--android:singleLine="true"-->
+                <!--android:textAppearance="@android:style/TextAppearance.Small"-->
+                <!--android:textColor="@color/text_secondary"-->
+                <!--android:textSize="12sp"-->
+                <!--android:textStyle="normal"-->
+                <!--tools:text="Second line ver asldkjf afja dklf jalksdj faklsj dlaks aklsd kla skla d"-->
+                <!--/>-->
+
+            <!--<TextView-->
+                <!--android:id="@+id/row_pr_file_user"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_marginLeft="16dp"-->
+                <!--android:textAppearance="@android:style/TextAppearance.Small"-->
+                <!--android:textColor="@color/text_secondary"-->
+                <!--android:textSize="12sp"-->
+                <!--android:textStyle="normal"-->
+                <!--tools:text="\@avatar"-->
+                <!--/>-->
 
         </RelativeLayout>
 
