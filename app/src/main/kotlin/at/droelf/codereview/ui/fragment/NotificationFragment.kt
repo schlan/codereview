@@ -2,14 +2,8 @@ package at.droelf.codereview.ui.fragment
 
 import android.os.Bundle
 import android.support.design.widget.TabLayout
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
 import android.support.v4.view.ViewPager
-import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
 import android.view.View
@@ -18,12 +12,9 @@ import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.NotificationFragmentComponent
 import at.droelf.codereview.dagger.fragment.NotificationFragmentModule
 import at.droelf.codereview.ui.activity.MainActivity
-import at.droelf.codereview.ui.adapter.NotificationFragmentAdapter
 import at.droelf.codereview.ui.adapter.NotificationViewpagerAdapter
 import butterknife.Bind
 import butterknife.ButterKnife
-import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
-import java.lang.ref.WeakReference
 import javax.inject.Inject
 
 class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
@@ -33,7 +24,7 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
     @Bind(R.id.notification_viewpager) lateinit var viewpager: ViewPager
     @Bind(R.id.notification_tablayout) lateinit var tablayout: TabLayout
 
-    var viewpagerAdater: NotificationViewpagerAdapter? = null
+    var viewpagerAdapter: NotificationViewpagerAdapter? = null
 
     override fun injectComponent(component: NotificationFragmentComponent) {
         component.inject(this)
@@ -79,14 +70,20 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
                 }
             })
 
-            viewpagerAdater = NotificationViewpagerAdapter(WeakReference(fragmentManager), controller)
-            viewpager.adapter = viewpagerAdater
+            viewpagerAdapter = NotificationViewpagerAdapter(fragmentManager, controller)
+            viewpager.adapter = viewpagerAdapter
             viewpager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tablayout))
         }
     }
 
     override fun onStop() {
         super.onStop()
-        viewpagerAdater?.unsubscribeRx()
+        viewpagerAdapter?.unsubscribeRx()
+        viewpagerAdapter = null
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //viewpager?.adapter = null
     }
 }

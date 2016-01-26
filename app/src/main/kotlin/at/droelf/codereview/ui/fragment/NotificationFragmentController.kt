@@ -6,13 +6,14 @@ import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
-import java.util.concurrent.TimeUnit
 
 
 class NotificationFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider): RxHelper {
 
     var observable: Observable<List<GithubModel.PullRequest>>? = null
     var listMapCache: MutableMap<String, Observable<GithubModel.PullRequestDetail>> = hashMapOf()
+
+    var scrollPos: Int? = null
 
     fun loadPrs(): Observable<List<GithubModel.PullRequest>>{
         if (observable == null) {

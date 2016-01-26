@@ -7,9 +7,8 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import at.droelf.codereview.ui.view.NotificationPullRequestView
-import java.lang.ref.WeakReference
 
-class NotificationViewpagerAdapter(val fm: WeakReference<FragmentManager>, val controller: NotificationFragmentController) : PagerAdapter(), UnsubscribeRx {
+class NotificationViewpagerAdapter(val fm: FragmentManager, val controller: NotificationFragmentController) : PagerAdapter(), UnsubscribeRx {
 
     var prView: NotificationPullRequestView? = null
     var issueView: FrameLayout? = null
@@ -39,7 +38,7 @@ class NotificationViewpagerAdapter(val fm: WeakReference<FragmentManager>, val c
     }
 
     override fun destroyItem(container: ViewGroup, position: Int, o: Any) {
-        container.removeView(o as FrameLayout)
+        container.removeView(o as ViewGroup)
     }
 
     override fun getCount(): Int {
@@ -48,6 +47,8 @@ class NotificationViewpagerAdapter(val fm: WeakReference<FragmentManager>, val c
 
     override fun unsubscribeRx() {
         prView?.unsubscribeRx()
+        prView = null
+        issueView = null
     }
 
 }

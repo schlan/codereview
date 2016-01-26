@@ -70,6 +70,7 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
     override fun onStart() {
         super.onStart()
         if(recyclerView.adapter == null) {
+            progressbar.visibility = View.VISIBLE
             loadCode(
                     arguments.getString("url"),
                     arguments.getString("patch"),

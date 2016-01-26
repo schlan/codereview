@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.fragment.StartFragmentController
-import at.droelf.codereview.ui.view.PullRequestCommentView
 import at.droelf.codereview.ui.viewholder.PullRequestFileViewHolder
 import rx.Observable
 import rx.Subscription
@@ -25,16 +24,16 @@ class PullRequestFilesAdapter(val commentsObserver: Observable<List<Triple<Githu
 
     init {
         setHasStableIds(true)
-        swipeToRefresh.post({ swipeToRefresh.isRefreshing = true })
+        swipeToRefresh.isRefreshing = true
         subscription = commentsObserver
                 .subscribe({
                     files.addAll(it)
                     notifyDataSetChanged()
                 },{
                     Snackbar.make(swipeToRefresh, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
-                    swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
+                    swipeToRefresh.isRefreshing = false
                 },{
-                    swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
+                    swipeToRefresh.isRefreshing = false
                 })
     }
 

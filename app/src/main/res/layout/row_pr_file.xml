@@ -63,7 +63,6 @@
                 android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:id="@+id/row_pr_file_second_row_container"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:paddingTop="2dp"
@@ -82,6 +81,14 @@
                         android:textSize="8sp"
                         android:visibility="visible"
                         tools:text="99+"/>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:id="@+id/row_pr_file_second_row_container">
+
+                    </LinearLayout>
 
 
                 </LinearLayout>

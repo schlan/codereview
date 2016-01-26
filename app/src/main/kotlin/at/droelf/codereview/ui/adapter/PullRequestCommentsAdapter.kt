@@ -5,7 +5,6 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
@@ -13,7 +12,6 @@ import at.droelf.codereview.ui.fragment.StartFragmentController
 import at.droelf.codereview.ui.view.PullRequestCommentView
 import at.droelf.codereview.ui.viewholder.PullRequestCommentViewHolder
 import rx.Observable
-import rx.Subscriber
 import rx.Subscription
 
 
@@ -29,7 +27,7 @@ class PullRequestCommentsAdapter(
     var subscription: Subscription?
 
     init {
-        swipeToRefresh.post({ swipeToRefresh.isRefreshing = true })
+        swipeToRefresh.isRefreshing = true
         comments.add(GithubModel.Comment(-1L, "", "", "", pr.user, pr.bodyHtml))
         notifyItemInserted(0)
 
@@ -37,9 +35,9 @@ class PullRequestCommentsAdapter(
             update(comments)
         }, {
             Snackbar.make(swipeToRefresh, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
-            swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
+            swipeToRefresh.isRefreshing = false
         }, {
-            swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
+            swipeToRefresh.isRefreshing = false
         })
     }
 

@@ -1,12 +1,10 @@
 package at.droelf.codereview.ui.viewholder
 
-import android.graphics.drawable.GradientDrawable
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import at.droelf.codereview.R
-import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.adapter.PullRequestFilesAdapter
 import at.droelf.codereview.utils.CircleTransform
 import com.squareup.picasso.Picasso
@@ -15,7 +13,6 @@ class PullRequestFileViewHolder(val view: View): ViewHolderBinder<PullRequestFil
 
     val title: TextView
     val commentCount: TextView
-
     val secondRowContainer: LinearLayout
 
 //    val secondLine1: TextView
@@ -32,6 +29,7 @@ class PullRequestFileViewHolder(val view: View): ViewHolderBinder<PullRequestFil
 
     override fun bind(data: PullRequestFilesAdapter.PullRequestFileViewHolderData) {
         title.text = data.file.first.filename
+        secondRowContainer.removeAllViews()
 
         if(data.file.second > 0){
             commentCount.text = if(data.file.second < 100) data.file.second.toString() else "99+"
@@ -40,7 +38,10 @@ class PullRequestFileViewHolder(val view: View): ViewHolderBinder<PullRequestFil
             val size = view.context.resources.getDimensionPixelOffset(R.dimen.row_pr_file_avatar_size)
             val marginLeft = view.context.resources.getDimensionPixelOffset(R.dimen.row_pr_file_avatar_margin_left)
 
-            data.file.third.distinctBy { it.user.id }.forEach { comment ->
+            data.file.third
+                    .filter { it.path == data.file.first.filename && it.position != null }
+                    .distinctBy { it.user.id }
+                    .forEach { comment ->
                 val img = ImageView(view.context)
                 val params = LinearLayout.LayoutParams(size, size)
                 params.leftMargin = marginLeft
