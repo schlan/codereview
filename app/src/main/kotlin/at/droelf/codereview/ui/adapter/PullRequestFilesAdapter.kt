@@ -28,6 +28,9 @@ class PullRequestFilesAdapter(val commentsObserver: Observable<List<Triple<Githu
         subscription = commentsObserver
                 .subscribe({
                     files.addAll(it)
+                    files.sortBy { it.first.filename }
+                    files.sortByDescending { it.second }
+
                     notifyDataSetChanged()
                 },{
                     Snackbar.make(swipeToRefresh, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()

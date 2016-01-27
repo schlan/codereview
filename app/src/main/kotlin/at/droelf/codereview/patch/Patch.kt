@@ -30,8 +30,8 @@ object Patch{
 }
 
 class PatchParser {
-    val headerRegex = Regex("^@@\\ \\-\\d+\\,\\d+\\ \\+\\d+\\,\\d+\\ @@")
-    val rangeRegex = Regex("^[-,+]\\d+,\\d+$")
+    val headerRegex = Regex("^@@\\ \\-\\d+\\,\\d+\\ \\+\\d+\\,*\\d*\\ @@")
+    val rangeRegex = Regex("^[-,+]\\d+\\,*\\d*$")
 
     fun parse(lines: List<SpannableString>): Patch.Patch? {
         val headerIndex = lines.filter { isHeader(it) }.map { lines.indexOf(it) }
@@ -89,8 +89,14 @@ class PatchParser {
     fun parseRange(range: String): Patch.Range? {
         if(!rangeRegex.matches(range)) return null
         val r: List<String> = range.substring(1).split(",")
-        if(r.size != 2) return null
-        return Patch.Range(r.first().toInt(), r.last().toInt())
+        if(r.size == 1) {
+            return Patch.Range(r.first().toInt(), 0)
+        } else if (r.size == 2){
+            return Patch.Range(r.first().toInt(), r.last().toInt())
+
+        } else {
+            return null
+        }
     }
 
     //tested

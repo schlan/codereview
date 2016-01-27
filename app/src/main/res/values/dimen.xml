@@ -10,4 +10,7 @@
 
     <dimen name="row_pr_file_avatar_size">20dp</dimen>
     <dimen name="row_pr_file_avatar_margin_left">2dp</dimen>
+
+    <dimen name="row_pr_file_file_change_indicator_box_width">8dp</dimen>
+    <dimen name="row_pr_file_file_change_indicator_box_height">12dp</dimen>
 </resources>

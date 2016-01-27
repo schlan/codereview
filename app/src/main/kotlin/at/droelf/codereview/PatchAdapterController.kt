@@ -153,7 +153,12 @@ class PatchSegmentController(
             val mStart = header.modifiedRange.start
             val oStart = header.originalRange.start
 
-            val codeToAdd = rawCode.subList(0, patchSegment.newRange.start - 1 - offset)
+            val codeToAdd = if(patchSegment.newRange.start - 1 - offset > 0){
+                rawCode.subList(0, patchSegment.newRange.start - 1 - offset)
+            } else {
+                listOf()
+            }
+
             val newList = codeToAdd.mapIndexed { i, spannableString ->
                 ViewHolderLine(spannableString.prefix(" "), ViewHolderLine.LineType.Expanded, oStart - codeToAdd.size + i, mStart - codeToAdd.size + i)
             }
