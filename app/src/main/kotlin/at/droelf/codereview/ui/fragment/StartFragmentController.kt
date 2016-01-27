@@ -17,6 +17,8 @@ class StartFragmentController(val mainActivityController: MainActivityController
     var prObservable: Observable<GithubModel.PullRequestDetail>? = null
     var commentObservable: Observable<List<GithubModel.Comment>>? = null
 
+    var scrollPos: Int? = 0
+
     fun prdetails(context: Context, owner: String, repo: String, number: Long): Observable<GithubModel.PullRequestDetail> {
         if (prObservable == null) {
             prObservable = githubProvider.pullRequestDetail(owner, repo, number)

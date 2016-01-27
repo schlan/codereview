@@ -44,9 +44,14 @@ class PullRequestFileView(context: Context, val pr: GithubModel.PullRequestDetai
 
         listAdapter = PullRequestFilesAdapter(controller.prfiles(owner, repo, number), controller, fm, swipeToRefresh, pr)
         list.adapter = listAdapter
+
+        if(controller.scrollPos != null){
+            list.layoutManager.scrollToPosition(controller.scrollPos!!)
+        }
     }
 
     override fun unsubscribeRx() {
+        controller.scrollPos = (list.layoutManager as? LinearLayoutManager)?.findFirstVisibleItemPosition()
         listAdapter?.unsubscribeRx()
         listAdapter = null
     }
