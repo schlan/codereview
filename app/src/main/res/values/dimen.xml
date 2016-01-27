@@ -11,6 +11,9 @@
     <dimen name="row_pr_file_avatar_size">20dp</dimen>
     <dimen name="row_pr_file_avatar_margin_left">2dp</dimen>
 
+
+    <dimen name="row_pr_file_file_change_indicator_box_margin">2dp</dimen>
     <dimen name="row_pr_file_file_change_indicator_box_width">8dp</dimen>
     <dimen name="row_pr_file_file_change_indicator_box_height">12dp</dimen>
+    <dimen name="row_pr_file_file_change_indicator_image">16dp</dimen>
 </resources>

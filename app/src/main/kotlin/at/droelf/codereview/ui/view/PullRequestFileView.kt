@@ -34,7 +34,7 @@ class PullRequestFileView(context: Context, val pr: GithubModel.PullRequestDetai
             swipeToRefresh.isRefreshing = false
         }
 
-        list.addItemDecoration(DividerItemDecoration(context, resources.getDimensionPixelOffset(R.dimen.row_notification_pull_request_divider_padding_left)))
+        list.addItemDecoration(DividerItemDecoration(context, 0))
         list.layoutManager = LinearLayoutManager(context)
         list.itemAnimator = SlideInUpAnimator()
 

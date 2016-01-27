@@ -16,7 +16,7 @@ import rx.Subscription
 class PullRequestFilesAdapter(val commentsObserver: Observable<List<Triple<GithubModel.PullRequestFile, Int, List<GithubModel.ReviewComment>>>>,
                               val controller: StartFragmentController,
                               val fm: FragmentManager,
-                              val swipeToRefresh: SwipeRefreshLayout,
+                              val swipeRefreshLayout: SwipeRefreshLayout,
                               val pr: GithubModel.PullRequestDetail): RecyclerView.Adapter<PullRequestFileViewHolder>(), UnsubscribeRx{
 
     var files: MutableList<Triple<GithubModel.PullRequestFile, Int, List<GithubModel.ReviewComment>>> = arrayListOf()
@@ -24,19 +24,18 @@ class PullRequestFilesAdapter(val commentsObserver: Observable<List<Triple<Githu
 
     init {
         setHasStableIds(true)
-        swipeToRefresh.isRefreshing = true
+        swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = true })
         subscription = commentsObserver
                 .subscribe({
                     files.addAll(it)
                     files.sortBy { it.first.filename }
                     files.sortByDescending { it.second }
-
                     notifyDataSetChanged()
                 },{
-                    Snackbar.make(swipeToRefresh, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
-                    swipeToRefresh.isRefreshing = false
+                    Snackbar.make(swipeRefreshLayout, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
+                    swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = false })
                 },{
-                    swipeToRefresh.isRefreshing = false
+                    swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = false })
                 })
     }
 

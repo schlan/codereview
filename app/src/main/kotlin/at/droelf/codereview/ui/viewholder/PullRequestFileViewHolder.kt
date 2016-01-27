@@ -1,12 +1,18 @@
 package at.droelf.codereview.ui.viewholder
 
+import android.graphics.drawable.ColorDrawable
+import android.support.v4.app.FragmentManager
+import android.support.v4.content.ContextCompat
+import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import at.droelf.codereview.R
+import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.adapter.PullRequestFilesAdapter
+import at.droelf.codereview.ui.fragment.StartFragmentController
 import at.droelf.codereview.ui.view.FileChangesView
 import at.droelf.codereview.utils.CircleTransform
 import com.squareup.picasso.Picasso
@@ -16,8 +22,10 @@ class PullRequestFileViewHolder(val view: View): ViewHolderBinder<PullRequestFil
     val fileName: TextView
     val filePath: TextView
 
-    val commentCount: TextView
+    val commentCountView: TextView
     val secondRowContainer: LinearLayout
+    val commentContainer: View
+
     val fileChangesContainer: FrameLayout
 
     val renameContainer: View
@@ -25,22 +33,95 @@ class PullRequestFileViewHolder(val view: View): ViewHolderBinder<PullRequestFil
 
     init {
         fileName = view.findViewById(R.id.row_pr_file_name) as TextView
-        commentCount = view.findViewById(R.id.row_pr_file_count) as TextView
+        commentCountView = view.findViewById(R.id.row_pr_file_count) as TextView
         filePath = view.findViewById(R.id.row_pr_file_name_path) as TextView
         secondRowContainer = view.findViewById(R.id.row_pr_file_second_row_container) as LinearLayout
         fileChangesContainer = view.findViewById(R.id.row_pr_file_changes_view_container) as FrameLayout
+        commentContainer = view.findViewById(R.id.row_pr_file_comment_container)
 
         renameContainer = view.findViewById(R.id.row_pr_file_rename_container)
         renameFileName = view.findViewById(R.id.row_pr_file_rename_name) as TextView
     }
 
     override fun bind(data: PullRequestFilesAdapter.PullRequestFileViewHolderData) {
+        initTitle(data.file.first)
+        initStateIndicator(data.file.first)
+        initCommentRow(data.file.second, data.file.third, data.file.first)
+        initClickListener(data.file.first, data.controller, data.fm, data.pr)
+    }
 
-        val titleFileName = if(data.file.first.status == "renamed") data.file.first.previousFilename!! else data.file.first.filename
+    fun initCommentRow(commentCount: Int, reviewComments: List<GithubModel.ReviewComment>, file: GithubModel.PullRequestFile){
+        secondRowContainer.removeAllViews()
+        if(commentCount > 0){
+            commentContainer.visibility = View.VISIBLE
+            commentCountView.text = if(commentCount < 100) commentCount.toString() else "99+"
+            commentCountView.visibility = View.VISIBLE
 
-        if(data.file.first.status == "renamed"){
+            val size = view.context.resources.getDimensionPixelOffset(R.dimen.row_pr_file_avatar_size)
+            val marginLeft = view.context.resources.getDimensionPixelOffset(R.dimen.row_pr_file_avatar_margin_left)
+
+            reviewComments
+                    .filter { it.path == file.filename && it.position != null }
+                    .distinctBy { it.user.id }
+                    .forEach { comment ->
+                        val img = ImageView(view.context)
+                        val params = LinearLayout.LayoutParams(size, size)
+                        params.leftMargin = marginLeft
+                        img.layoutParams = params
+                        secondRowContainer.addView(img)
+                        Picasso.with(view.context).load(comment.user.avatarUrl).transform(CircleTransform()).into(img)
+                    }
+
+        } else {
+            commentContainer.visibility = View.GONE
+            commentCountView.visibility = View.GONE
+        }
+    }
+
+    fun initStateIndicator(file: GithubModel.PullRequestFile){
+        fileChangesContainer.removeAllViews()
+        val size = view.context.resources.getDimensionPixelOffset(R.dimen.row_pr_file_file_change_indicator_image)
+        val margin = view.context.resources.getDimensionPixelOffset(R.dimen.row_pr_file_file_change_indicator_box_margin)
+
+        when(file.status) {
+            "added" -> {
+                val view = ImageView(view.context)
+                val layout = FrameLayout.LayoutParams(size, size)
+                layout.rightMargin = margin
+                layout.gravity = Gravity.CENTER
+                view.layoutParams = layout
+                fileChangesContainer.addView(view)
+                Picasso.with(view.context).load(R.drawable.ic_add).into(view)
+            }
+            "removed" -> {
+                val view = ImageView(view.context)
+                val layout = LinearLayout.LayoutParams(size, size)
+                layout.rightMargin = margin
+                layout.gravity = Gravity.CENTER
+                view.layoutParams = layout
+                fileChangesContainer.addView(view)
+                Picasso.with(view.context).load(R.drawable.ic_remove).into(view)
+
+            }
+            "renamed" -> {
+                if(file.changes > 0){
+                    // files that are moved && modified
+                    fileChangesContainer.addView(FileChangesView(view.context, file.additions, file.deletions, file.changes))
+                }
+            }
+            "modified" -> {
+                fileChangesContainer.addView(FileChangesView(view.context, file.additions, file.deletions, file.changes))
+            }
+        }
+    }
+
+
+    fun initTitle(file: GithubModel.PullRequestFile) {
+        val titleFileName = if(file.status == "renamed") file.previousFilename!! else file.filename
+
+        if(file.status == "renamed"){
             renameContainer.visibility = View.VISIBLE
-            renameFileName.text = data.file.first.filename
+            renameFileName.text = file.filename
         } else {
             renameContainer.visibility = View.GONE
         }
@@ -52,51 +133,20 @@ class PullRequestFileViewHolder(val view: View): ViewHolderBinder<PullRequestFil
             fileName.text = titleFileName.substring(lastSlash + 1)
             filePath.text = titleFileName.substring(0, lastSlash + 1)
         }
-
-        secondRowContainer.removeAllViews()
-        fileChangesContainer.removeAllViews()
-        if(data.file.first.changes > 0) {
-            fileChangesContainer.addView(FileChangesView(view.context, data.file.first.additions, data.file.first.deletions, data.file.first.changes))
-        }
-
-        if(data.file.second > 0){
-            commentCount.text = if(data.file.second < 100) data.file.second.toString() else "99+"
-            commentCount.visibility = View.VISIBLE
-
-            val size = view.context.resources.getDimensionPixelOffset(R.dimen.row_pr_file_avatar_size)
-            val marginLeft = view.context.resources.getDimensionPixelOffset(R.dimen.row_pr_file_avatar_margin_left)
-
-            data.file.third
-                    .filter { it.path == data.file.first.filename && it.position != null }
-                    .distinctBy { it.user.id }
-                    .forEach { comment ->
-                val img = ImageView(view.context)
-                val params = LinearLayout.LayoutParams(size, size)
-                params.leftMargin = marginLeft
-                img.layoutParams = params
-                secondRowContainer.addView(img)
-                Picasso.with(view.context).load(comment.user.avatarUrl).transform(CircleTransform()).into(img)
-            }
-
-        } else {
-            commentCount.visibility = View.GONE
-        }
-
-        initClickListener(data)
     }
 
-    fun initClickListener(data: PullRequestFilesAdapter.PullRequestFileViewHolderData){
-        if(data.file.first.changes > 0){
+
+    fun initClickListener(file: GithubModel.PullRequestFile, controller: StartFragmentController, fm: FragmentManager, pr: GithubModel.PullRequestDetail){
+        if(file.changes > 0){
             view.setOnClickListener { view ->
-                val file = data.file.first
-                data.controller.showFile(
-                        data.fm,
+                controller.showFile(
+                        fm,
                         file.contentsUrl,
                         file.patch,
                         file.filename,
-                        data.pr.base.repo.owner.login,
-                        data.pr.base.repo.name,
-                        data.pr.number
+                        pr.base.repo.owner.login,
+                        pr.base.repo.name,
+                        pr.number
                 )
             }
         }else {

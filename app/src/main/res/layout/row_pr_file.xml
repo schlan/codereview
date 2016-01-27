@@ -60,6 +60,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
                 android:layout_marginLeft="16dp"
+                android:layout_centerVertical="true"
                 android:id="@+id/row_pr_file_changes_view_container"/>
 
 
@@ -70,7 +71,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/row_pr_file_rename_container"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -108,6 +109,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:id="@+id/row_pr_file_comment_container"
+            android:visibility="gone"
             >
 
             <HorizontalScrollView
@@ -138,22 +141,11 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:id="@+id/row_pr_file_second_row_container">
-
-                    </LinearLayout>
-
+                        android:id="@+id/row_pr_file_second_row_container" />
 
                 </LinearLayout>
-
-
             </HorizontalScrollView>
-
-
         </RelativeLayout>
 
-
-
-
     </LinearLayout>
-
 </LinearLayout>

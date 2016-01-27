@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:paddingLeft="4dp"
-    android:paddingRight="4dp"
+    android:paddingLeft="@dimen/row_pr_file_file_change_indicator_box_margin"
+    android:paddingRight="@dimen/row_pr_file_file_change_indicator_box_margin"
     android:paddingTop="2dp"
     android:paddingBottom="2dp">
 
@@ -19,28 +19,28 @@
         android:id="@+id/file_changes_2"
         android:layout_width="@dimen/row_pr_file_file_change_indicator_box_width"
         android:layout_height="@dimen/row_pr_file_file_change_indicator_box_height"
-        android:layout_marginLeft="2dp"
+        android:layout_marginLeft="@dimen/row_pr_file_file_change_indicator_box_margin"
         android:background="@color/build_pass"/>
 
     <View
         android:id="@+id/file_changes_3"
         android:layout_width="@dimen/row_pr_file_file_change_indicator_box_width"
         android:layout_height="@dimen/row_pr_file_file_change_indicator_box_height"
-        android:layout_marginLeft="2dp"
+        android:layout_marginLeft="@dimen/row_pr_file_file_change_indicator_box_margin"
         android:background="@color/build_fail"/>
 
     <View
         android:id="@+id/file_changes_4"
         android:layout_width="@dimen/row_pr_file_file_change_indicator_box_width"
         android:layout_height="@dimen/row_pr_file_file_change_indicator_box_height"
-        android:layout_marginLeft="2dp"
+        android:layout_marginLeft="@dimen/row_pr_file_file_change_indicator_box_margin"
         android:background="@color/build_fail"/>
 
     <View
         android:id="@+id/file_changes_5"
         android:layout_width="@dimen/row_pr_file_file_change_indicator_box_width"
         android:layout_height="@dimen/row_pr_file_file_change_indicator_box_height"
-        android:layout_marginLeft="2dp"
+        android:layout_marginLeft="@dimen/row_pr_file_file_change_indicator_box_margin"
         android:background="@color/bg_gray"/>
 
 </LinearLayout>
