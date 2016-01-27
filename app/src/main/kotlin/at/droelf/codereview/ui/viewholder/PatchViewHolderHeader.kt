@@ -1,9 +1,10 @@
-package at.droelf.codereview
+package at.droelf.codereview.ui.viewholder
 
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
 import android.view.View
 import android.widget.TextView
+import at.droelf.codereview.R
 import butterknife.Bind
 import butterknife.ButterKnife
 

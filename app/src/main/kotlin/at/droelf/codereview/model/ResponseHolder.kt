@@ -1,4 +1,4 @@
-package at.droelf.codereview
+package at.droelf.codereview.model
 
 import java.util.concurrent.TimeUnit
 

@@ -21,7 +21,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:layout_marginTop="8dp">
 
         <TextView
             android:id="@+id/row_pr_name"
@@ -44,6 +45,14 @@
                 android:minHeight="14dp"
                 android:textAppearance="@android:style/TextAppearance.Small"
                 android:textSize="14sp"/>
+
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Show full comment"
+                android:id="@+id/row_pr_comment_button"
+                android:foreground="?android:attr/selectableItemBackground"
+                />
 
             <!--<WebView-->
                 <!--android:id="@+id/row_pr_comment_webview"-->

@@ -1,7 +1,7 @@
 package at.droelf.codereview.provider
 
 import android.util.LruCache
-import at.droelf.codereview.ResponseHolder
+import at.droelf.codereview.model.ResponseHolder
 import at.droelf.codereview.cache.GithubEndpointCache
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.network.GithubService

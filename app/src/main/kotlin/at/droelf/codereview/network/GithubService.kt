@@ -1,6 +1,6 @@
 package at.droelf.codereview.network
 
-import at.droelf.codereview.ResponseHolder
+import at.droelf.codereview.model.ResponseHolder
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
 import okhttp3.ResponseBody
@@ -55,6 +55,6 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): Githu
     fun token() = "token ${auth.token}"
 
     fun <E> wrap(data: Observable<E>): Observable<ResponseHolder<E>> {
-        return data.map { ResponseHolder(it, ResponseHolder.Source.Network, upToDate = {true}) }
+        return data.map { ResponseHolder(it, ResponseHolder.Source.Network, upToDate = { true }) }
     }
 }

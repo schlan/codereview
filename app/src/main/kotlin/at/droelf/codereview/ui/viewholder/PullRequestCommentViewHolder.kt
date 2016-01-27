@@ -1,11 +1,14 @@
 package at.droelf.codereview.ui.viewholder
 
 import android.support.v7.widget.RecyclerView
+import android.text.Html
 import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
+import at.droelf.codereview.ui.fragment.StartFragmentController
 import at.droelf.codereview.ui.view.HtmlTextViewMagic
 import at.droelf.codereview.utils.CircleTransform
 import butterknife.Bind
@@ -13,32 +16,22 @@ import butterknife.ButterKnife
 import com.squareup.picasso.Picasso
 import org.sufficientlysecure.htmltextview.HtmlTextView
 
-class PullRequestCommentViewHolder(val view: View): RecyclerView.ViewHolder(view) {
+class PullRequestCommentViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-    @Bind(R.id.row_pr_comment_avatar) lateinit var avatar: ImageView
-    @Bind(R.id.row_pr_name) lateinit var userName: TextView
-    @Bind(R.id.row_pr_comment) lateinit var userComment: HtmlTextView
-    //@Bind(R.id.row_pr_comment_webview) lateinit var webview: WebView
+    val avatar: ImageView
+    val userName: TextView
+    val userComment: HtmlTextView
+    val showCommentButton: Button
 
     init {
         ButterKnife.bind(this, view)
         avatar = view.findViewById(R.id.row_pr_comment_avatar) as ImageView
         userName = view.findViewById(R.id.row_pr_name) as TextView
         userComment = view.findViewById(R.id.row_pr_comment) as HtmlTextView
-        //webview = view.findViewById(R.id.row_pr_comment_webview) as WebView
+        showCommentButton = view.findViewById(R.id.row_pr_comment_button) as Button
     }
 
-    fun bind(comment: GithubModel.Comment){
-//        val useWebView = comment.bodyHtml.contains("<table")
-//        if(useWebView){
-//            webview.visibility = View.VISIBLE
-//            userComment.visibility = View.GONE
-//        } else {
-//            webview.visibility = View.GONE
-//            userComment.visibility = View.VISIBLE
-//        }
-//
-//        webview.clearCache(true)
+    fun bind(comment: GithubModel.Comment, controller: StartFragmentController) {
         userComment.text = ""
 
         userName.text = "@${comment.user.login}"
@@ -47,27 +40,18 @@ class PullRequestCommentViewHolder(val view: View): RecyclerView.ViewHolder(view
                 .transform(CircleTransform())
                 .into(avatar)
 
-//        if(!useWebView){
+        if(comment.bodyHtml.contains("<table")){
+            showCommentButton.setOnClickListener {
+                if (comment.bodyHtml.contains("<table")) {
+                    controller.showDialog(view.context, "@${comment.user.login}", comment.bodyHtml)
+                }
+            }
+            showCommentButton.visibility = View.VISIBLE
+            userComment.visibility = View.GONE
+        } else{
             HtmlTextViewMagic.apply(userComment, comment.bodyHtml)
-//        } else {
-//            webview.settings.javaScriptEnabled = true;
-//            webview.setWebViewClient(object: WebViewClient() {
-//                override fun onPageFinished(view: WebView, url: String) {
-//                    webview.loadUrl("javascript:MyApp.resize(document.body.getBoundingClientRect().height)");
-//                    super.onPageFinished(view, url);
-//                }
-//            });
-//            webview.addJavascriptInterface(this, "MyApp")
-//            webview.loadData(comment.bodyHtml, "text/html", "utf-8")
-//        }
+            showCommentButton.visibility = View.GONE
+            userComment.visibility = View.VISIBLE
+        }
     }
-
-//    @JavascriptInterface
-//    fun resize(height: Float) {
-//        Handler(Looper.getMainLooper())
-//        Handler(Looper.getMainLooper()).post({
-//                webview.layoutParams = FrameLayout.LayoutParams(view.context.resources.displayMetrics.widthPixels,
-//                        (height * view.context.resources.displayMetrics.density).toInt());
-//        });
-//    }
 }

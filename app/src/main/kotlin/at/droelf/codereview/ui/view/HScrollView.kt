@@ -1,4 +1,4 @@
-package at.droelf.codereview
+package at.droelf.codereview.ui.view
 
 import android.content.Context
 import android.support.v7.widget.RecyclerView

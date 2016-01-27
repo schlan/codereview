@@ -56,7 +56,7 @@ class PullRequestCommentsAdapter(
     }
 
     override fun onBindViewHolder(holder: PullRequestCommentViewHolder, position: Int) {
-        holder.bind(comments[position])
+        holder.bind(comments[position], controller)
     }
 
     override fun unsubscribeRx() {

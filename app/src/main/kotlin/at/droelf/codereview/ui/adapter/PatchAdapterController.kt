@@ -1,7 +1,10 @@
-package at.droelf.codereview
+package at.droelf.codereview.ui.adapter
 
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import at.droelf.codereview.ViewHolderHeader
+import at.droelf.codereview.ViewHolderLine
+import at.droelf.codereview.ViewHolderWrapper
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.patch.Patch
 
@@ -32,7 +35,7 @@ class PatchAdapterControllerImpl(val githubDataSet: Model.GithubDataSet) : Patch
                     listOf(),
                     "end",
                     ""
-                    )
+            )
             lastSegmentController = listOf(PatchSegmentController(endSegment, rawCode.subList(lastLineNew - 1, rawCode.lastIndex + 1), lastLineNew - 1, 0, commentsForSegment))
         }
 
@@ -137,7 +140,6 @@ class PatchSegmentController(
 
         return wrapper
     }
-
 
     fun size(): Int {
         return viewHolderWrapper.size

@@ -55,4 +55,8 @@ class StartFragmentController(val mainActivityController: MainActivityController
     fun showFile(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?, owner: String, repo: String, pullRequest: Long) {
         mainActivityController.showFileFragment(fm, contentsUrl, patch, filename, owner, repo, pullRequest)
     }
+
+    fun showDialog(context: Context, title: String, body: String){
+        mainActivityController.showWebViewDialog(context, title, body)
+    }
 }

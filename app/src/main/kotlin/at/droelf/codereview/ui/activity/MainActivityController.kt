@@ -1,8 +1,16 @@
 package at.droelf.codereview.ui.activity
 
+import android.app.Dialog
+import android.content.Context
+import android.content.DialogInterface
 import android.os.Bundle
+import android.os.Environment
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
+import android.support.v7.app.AlertDialog
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.activity.MainActivityComponent
 import at.droelf.codereview.dagger.user.UserComponent
@@ -86,4 +94,26 @@ class MainActivityController {
                 .replace(R.id.main_container, f)
                 .commit()
     }
+
+    fun showWebViewDialog(context: Context, title: String, body: String){
+        val dialog: AlertDialog.Builder = AlertDialog.Builder(context)
+        dialog.setTitle(title)
+
+        val html = context.getString(R.string.github_webview_content).format(body)
+
+        val wv: WebView = WebView(context)
+        //wv.settings.loadWithOverviewMode = true
+        wv.settings.useWideViewPort = true
+        wv.settings.javaScriptEnabled = true
+        wv.settings.builtInZoomControls = true
+        wv.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+        wv.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null)
+
+        dialog.setView(wv);
+        dialog.setNegativeButton("Close", { dialogInterface: DialogInterface, i: Int ->
+                dialogInterface.dismiss()
+        });
+        dialog.show()
+    }
+
 }

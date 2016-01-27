@@ -10,9 +10,9 @@ import android.text.SpannableString
 import android.util.DisplayMetrics
 import android.view.*
 import android.widget.ProgressBar
-import at.droelf.codereview.HScrollView
-import at.droelf.codereview.PatchAdapter
-import at.droelf.codereview.PatchAdapterControllerImpl
+import at.droelf.codereview.ui.view.HScrollView
+import at.droelf.codereview.ui.adapter.PatchAdapter
+import at.droelf.codereview.ui.adapter.PatchAdapterControllerImpl
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.PatchFragmentComponent
 import at.droelf.codereview.dagger.fragment.PatchFragmentModule

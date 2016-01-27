@@ -1,7 +1,7 @@
 package at.droelf.codereview.cache
 
 import android.util.LruCache
-import at.droelf.codereview.ResponseHolder
+import at.droelf.codereview.model.ResponseHolder
 import rx.Observable
 
 class GithubEndpointCache<E>(val cache: LruCache<String, Any>) where E : Any {

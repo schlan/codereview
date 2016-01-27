@@ -1,8 +1,11 @@
-package at.droelf.codereview
+package at.droelf.codereview.ui.adapter
 
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import at.droelf.codereview.ui.adapter.PatchAdapterController
+import at.droelf.codereview.ui.adapter.PatchAdapterControllerImpl
+import at.droelf.codereview.PatchListType
 
 class PatchAdapter(val patchController: PatchAdapterController) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), PatchAdapterControllerImpl.PatchAdapterInterface {
 

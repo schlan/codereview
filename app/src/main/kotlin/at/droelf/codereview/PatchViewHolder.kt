@@ -12,6 +12,7 @@ import at.droelf.codereview.ViewHolderLine.LineType
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.patch.Patch
+import at.droelf.codereview.ui.adapter.PatchAdapterController
 import at.droelf.codereview.ui.view.CommentView
 import at.droelf.codereview.utils.CircleTransform
 import butterknife.Bind
