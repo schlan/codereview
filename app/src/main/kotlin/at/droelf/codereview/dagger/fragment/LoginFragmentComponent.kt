@@ -1,6 +1,5 @@
 package at.droelf.codereview.dagger.fragment
 
-import at.droelf.codereview.dagger.fragment.FragmentScope
 import at.droelf.codereview.ui.fragment.LoginFragment
 import dagger.Subcomponent
 

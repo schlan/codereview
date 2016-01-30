@@ -34,8 +34,4 @@ class LoginFragmentController(val mainActivityController: MainActivityController
 
     }
 
-    fun fooBar(){
-
-    }
-
 }
