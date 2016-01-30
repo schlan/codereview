@@ -5,8 +5,11 @@ import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubApi
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.provider.GithubProvider
+import com.jakewharton.disklrucache.DiskLruCache
 import dagger.Module
 import dagger.Provides
+import java.io.File
+import javax.inject.Named
 
 @Module
 class UserModule(private val data: Model.GithubAuth) {
@@ -31,7 +34,13 @@ class UserModule(private val data: Model.GithubAuth) {
 
     @Provides
     @UserScope
-    fun providesGithubProviders(githubService: GithubService, githubCache: LruCache<String, Any>): GithubProvider {
-        return GithubProvider(githubService, githubCache)
+    fun providesGithubPersistantCache(@Named("cache_dir") cacheDir: File): DiskLruCache {
+        return DiskLruCache.open(cacheDir, 1, 1,1024 * 1024 * 10)
+    }
+
+    @Provides
+    @UserScope
+    fun providesGithubProviders(githubService: GithubService, githubCache: LruCache<String, Any>, diskLruCache: DiskLruCache): GithubProvider {
+        return GithubProvider(githubService, githubCache, diskLruCache)
     }
 }

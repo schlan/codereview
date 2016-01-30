@@ -10,30 +10,28 @@ import android.view.ViewGroup
 import at.droelf.codereview.Constants
 import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
+import at.droelf.codereview.model.ResponseHolder
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import at.droelf.codereview.ui.viewholder.NotificationFragmentViewHolder
 import at.droelf.codereview.ui.viewholder.NotificationFragmentViewHolderHeader
 import at.droelf.codereview.ui.viewholder.ViewHolderBinder
 import rx.Observable
 import rx.Subscription
-import java.util.concurrent.TimeUnit
 
 class NotificationFragmentAdapter(
-        pullRequestsObservable: Observable<List<GithubModel.PullRequest>>,
+        pullRequestsObservable: Observable<ResponseHolder<List<GithubModel.PullRequest>>>,
         val controller: NotificationFragmentController,
         parent: View,
         val fragmentManager: FragmentManager,
         val swipeRefreshLayout: SwipeRefreshLayout) : RecyclerView.Adapter<ViewHolderBinder<*>>(), UnsubscribeRx {
-
-    val lock = Any()
 
     var holderWrapperList: List<HolderWrapper> = listOf()
 
     val myPullRequests: MutableList<HolderWrapper> = arrayListOf()
     val pullRequests: MutableList<HolderWrapper> = arrayListOf()
 
-    val subHeaderMine = HolderWrapper(0, 0L, "Mine")
-    val subHeaderOther = HolderWrapper(0, 1L, "All Pull Requests")
+    val subHeaderMine = HolderWrapper(0, 0L, "Mine", null, null)
+    val subHeaderOther = HolderWrapper(0, 1L, "All Pull Requests", null, null)
 
     var subscription: Subscription?
 
@@ -44,6 +42,7 @@ class NotificationFragmentAdapter(
                 .subscribe({ d ->
                     updateList(d)
                 }, { error ->
+                    error.printStackTrace()
                     swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = false })
                     Snackbar.make(parent, "Error: ${error.message}", Snackbar.LENGTH_LONG).show()
                 }, {
@@ -51,16 +50,27 @@ class NotificationFragmentAdapter(
                 })
     }
 
-    fun updateList(prs: List<GithubModel.PullRequest>) {
-        prs.forEach { pr ->
+    fun updateList(prs: ResponseHolder<List<GithubModel.PullRequest>>) {
+        prs.data.forEach { pr ->
             val emptyMy = myPullRequests.isEmpty()
             val emptyOther = pullRequests.isEmpty()
 
+            var replaced = false
+
             if (pr.user.login == Constants.login) {
-                myPullRequests.add(HolderWrapper(1, pr.id + pr.number + pr.body.hashCode(), pr))
+                if(prs.upToDate() && myPullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.isNotEmpty()){
+                    replaced = true
+                    myPullRequests.remove(myPullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.first())
+                }
+                myPullRequests.add(HolderWrapper(1, pr.id + pr.number + pr.body.hashCode(), pr, prs.source, prs.upToDate()))
                 myPullRequests.sortByDescending { (it.data as GithubModel.PullRequest).createdAt }
+
             } else {
-                pullRequests.add(HolderWrapper(1, pr.id + pr.number + pr.body.hashCode(), pr))
+                if(prs.upToDate() && pullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.isNotEmpty()) {
+                    replaced = true
+                    pullRequests.remove(pullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.first())
+                }
+                pullRequests.add(HolderWrapper(1, pr.id + pr.number + pr.body.hashCode(), pr, prs.source, prs.upToDate()))
                 pullRequests.sortByDescending { (it.data as GithubModel.PullRequest).createdAt }
             }
 
@@ -79,7 +89,12 @@ class NotificationFragmentAdapter(
                 notifyDataSetChanged()
             } else {
                 val index = holderWrapperList.indexOfFirst { it.type == 1 && it.data.equals(pr) }
-                notifyItemInserted(index)
+
+                if(replaced){
+                    notifyItemChanged(index)
+                } else {
+                    notifyItemInserted(index)
+                }
             }
         }
     }
@@ -111,8 +126,9 @@ class NotificationFragmentAdapter(
             holder.bind(holderWrapperList[position].data as String)
 
         } else if (holder is NotificationFragmentViewHolder) {
-            val pr = holderWrapperList[position].data as GithubModel.PullRequest
-            holder.bind(NotificationFragmentViewHolder.NotificationFragmentViewHolderData(pr, fragmentManager, controller))
+            val wrapper = holderWrapperList[position]
+            val pr = wrapper.data as GithubModel.PullRequest
+            holder.bind(NotificationFragmentViewHolder.NotificationFragmentViewHolderData(pr, fragmentManager, controller, wrapper.source!!, wrapper.updateToDate!!))
 
         }
     }
@@ -126,5 +142,5 @@ class NotificationFragmentAdapter(
         subscription = null
     }
 
-    data class HolderWrapper(val type: Int, val id: Long, val data: Any)
+    data class HolderWrapper(val type: Int, val id: Long, val data: Any, var source: ResponseHolder.Source?, var updateToDate: Boolean?)
 }

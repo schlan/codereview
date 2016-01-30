@@ -58,10 +58,16 @@ object GithubModel {
     )
 
     data class Head(
-            val repo: Repository
+            val repo: Repository, val ref: String
     )
 
     data class Base(
-            val repo: Repository
+            val repo: Repository, val ref: String
     )
+
+    data class Status(
+            val createdAt: Date, val updatedAt: Date, val state: String, val targetUrl: String, val description: String,
+            val id: Long, val url: String, val context: String, val creator: User
+    )
+
 }

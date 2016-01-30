@@ -17,10 +17,18 @@ abstract class BaseActivity<E> : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println("    onCreate Base")
         fragment = getHeadlessFragment()
         if(fragment.data == null){
             fragment.data = createComponent()
         }
+
+        println("    inject Base")
+        injectComponent(fragment.data!!)
+    }
+
+    override fun onStart() {
+        super.onStart()
         injectComponent(fragment.data!!)
     }
 

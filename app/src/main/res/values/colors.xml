@@ -15,5 +15,6 @@
 
     <color name="build_fail">#BD2C00</color>
     <color name="build_pass">#6CC644</color>
+    <color name="build_pending">#E5DA3F</color>
 
 </resources>

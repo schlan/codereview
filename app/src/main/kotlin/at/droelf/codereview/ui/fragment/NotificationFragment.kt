@@ -27,11 +27,11 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
     var viewpagerAdapter: NotificationViewpagerAdapter? = null
 
     override fun injectComponent(component: NotificationFragmentComponent) {
-        component.inject(this)
+        component?.inject(this)
     }
 
-    override fun createComponent(mainActivity: MainActivity): NotificationFragmentComponent {
-        return mainActivity.controller.userComponent().plus(NotificationFragmentModule(this))
+    override fun createComponent(mainActivity: MainActivity): NotificationFragmentComponent? {
+        return mainActivity.controller?.userComponent()?.plus(NotificationFragmentModule(this))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View? {

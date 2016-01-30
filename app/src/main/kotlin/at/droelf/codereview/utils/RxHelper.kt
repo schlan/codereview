@@ -8,7 +8,7 @@ import rx.schedulers.Schedulers
 interface RxHelper {
     fun <E>transformObservable(): Observable.Transformer<E, E> = Observable.Transformer {
             it
-                    .subscribeOn(Schedulers.newThread())
+                    .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
     }
 }

@@ -9,11 +9,7 @@ import butterknife.ButterKnife
 
 class NotificationFragmentViewHolderHeader(view: View): ViewHolderBinder<String>(view) {
 
-    @Bind(R.id.row_notification_header_title) lateinit var titleView: TextView
-
-    init {
-        ButterKnife.bind(this, view)
-    }
+    val titleView: TextView = view.findViewById(R.id.row_notification_header_title) as TextView
 
     override fun bind(data: String){
         titleView.text = data

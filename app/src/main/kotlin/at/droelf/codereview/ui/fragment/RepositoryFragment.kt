@@ -24,8 +24,8 @@ class RepositoryFragment: BaseFragment<RepositoryFragmentComponent>() {
         component.inject(this)
     }
 
-    override fun createComponent(mainActivity: MainActivity): RepositoryFragmentComponent {
-        return mainActivity.controller.userComponent().plus(RepositoryFragmentModule(this))
+    override fun createComponent(mainActivity: MainActivity): RepositoryFragmentComponent? {
+        return mainActivity.controller?.userComponent()?.plus(RepositoryFragmentModule(this))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View? {

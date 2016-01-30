@@ -9,8 +9,15 @@ abstract class BaseFragment<E> : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        injectComponent(createComponent((context as MainActivity)))
         println("${this.javaClass} onCreate")
+
+        val component = createComponent((context as MainActivity))
+        if(component != null){
+            injectComponent(component)
+            println("${this.javaClass} injection done")
+        } else {
+            println("${this.javaClass} injection failed - null")
+        }
     }
 
     override fun onAttach(context: Context) {
@@ -23,5 +30,5 @@ abstract class BaseFragment<E> : Fragment() {
     }
 
     abstract fun injectComponent(component: E): Unit
-    abstract fun createComponent(mainActivity: MainActivity): E
+    abstract fun createComponent(mainActivity: MainActivity): E?
 }

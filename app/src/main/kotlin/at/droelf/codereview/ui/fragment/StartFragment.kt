@@ -26,32 +26,34 @@ import javax.inject.Inject
 class StartFragment : BaseFragment<StartFragmentComponent>() {
 
     @Inject lateinit var controller: StartFragmentController
-    @Bind(R.id.pr_toolbar) lateinit var toolbar: Toolbar
-    @Bind(R.id.pr_tablayout) lateinit var tablayout: TabLayout
-    @Bind(R.id.pr_viewpager) lateinit var viewpager: ViewPager
-    @Bind(R.id.pr_progressbar) lateinit var progressbar: ProgressBar
-    @Bind(R.id.pr_swipe_to_refresh) lateinit var swipeToRefresh: SwipeRefreshLayout
+    lateinit var toolbar: Toolbar
+    lateinit var tablayout: TabLayout
+    lateinit var viewpager: ViewPager
+    lateinit var progressbar: ProgressBar
+    lateinit var swipeToRefresh: SwipeRefreshLayout
 
     var subscription: Subscription? = null
-    var viewPagerAdater: PullRequestViewpagerAdapter? = null
+    var viewPagerAdapter: PullRequestViewpagerAdapter? = null
 
     override fun injectComponent(component: StartFragmentComponent) {
         component.inject(this)
     }
 
-    override fun createComponent(mainActivity: MainActivity): StartFragmentComponent {
-        return mainActivity.controller.userComponent().plus(StartFragmentModule(this))
+    override fun createComponent(mainActivity: MainActivity): StartFragmentComponent? {
+        return mainActivity.controller?.userComponent()?.plus(StartFragmentModule(this))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.fragment_pr, container, false)
-        ButterKnife.bind(this, view)
+        return inflater.inflate(R.layout.fragment_pr, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         toolbar = view.findViewById(R.id.pr_toolbar) as Toolbar
         tablayout = view.findViewById(R.id.pr_tablayout) as TabLayout
         viewpager = view.findViewById(R.id.pr_viewpager) as ViewPager
         progressbar = view.findViewById(R.id.pr_progressbar) as ProgressBar
         swipeToRefresh = view.findViewById(R.id.pr_swipe_to_refresh) as SwipeRefreshLayout
-        return view
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -96,7 +98,7 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         super.onStop()
         subscription?.unsubscribe()
         subscription = null
-        viewPagerAdater?.unsubscribeRx()
+        viewPagerAdapter?.unsubscribeRx()
     }
 
     fun initTabLayout(pr: GithubModel.PullRequestDetail) {
@@ -105,6 +107,9 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         commentsTab.setText("Comments")
         val filesTab = tablayout.newTab()
         filesTab.setText("Files")
+
+        toolbar.subtitle = pr.title
+        toolbar.title = "Pull Request"
 
         tablayout.addTab(commentsTab, 0, true)
         tablayout.addTab(filesTab, 1, false)
@@ -121,8 +126,8 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
             }
         })
 
-        viewPagerAdater = PullRequestViewpagerAdapter(fragmentManager, controller, pr)
-        viewpager.adapter = viewPagerAdater
+        viewPagerAdapter = PullRequestViewpagerAdapter(fragmentManager, controller, pr)
+        viewpager.adapter = viewPagerAdapter
         viewpager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tablayout))
     }
 

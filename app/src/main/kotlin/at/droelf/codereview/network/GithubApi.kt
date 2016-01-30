@@ -71,4 +71,13 @@ interface GithubApi {
             @Path("number") number: Long
     ): Observable<Response<GithubModel.PullRequestDetail>>
 
+    @GET("/repos/{owner}/{repo}/commits/{ref}/statuses")
+    fun statusesRx(
+            @Header("Authorization") auth: String,
+            @Path("owner") owner: String,
+            @Path("repo") repo: String,
+            @Path("ref") ref: String,
+            @Query("page") page: Int = 1
+    ): Observable<Response<MutableList<GithubModel.Status>>>
+
 }

@@ -37,7 +37,7 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
         component.inject(this)
     }
 
-    override fun createComponent(mainActivity: MainActivity): LoginFragmentComponent {
+    override fun createComponent(mainActivity: MainActivity): LoginFragmentComponent? {
         return mainActivity.mainComponent().plus(LoginFragmentModule(this))
     }
 

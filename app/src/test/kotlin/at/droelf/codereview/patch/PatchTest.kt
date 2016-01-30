@@ -1,12 +1,11 @@
 package at.droelf.codereview.patch;
 
 import android.text.SpannableString
-import org.hamcrest.CoreMatchers.*
+import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mockito
-import org.hamcrest.MatcherAssert.assertThat;
-import kotlin.test.expect
 
 
 class PatchTest {

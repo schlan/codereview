@@ -6,16 +6,17 @@ class ResponseHolder<E>(
         val data: E,
         val source: Source,
         val timeStamp: Long = System.currentTimeMillis(),
-        private val upToDate: (timeStamp: Long) -> Boolean = {
-            val maxAge = TimeUnit.MILLISECONDS.convert(2, TimeUnit.MINUTES)
-            (System.currentTimeMillis() - timeStamp) < maxAge
-        }) {
+        val alwaysUpToDate: Boolean = false,
+        val notUpToDate: Boolean = false) {
 
     fun upToDate(): Boolean {
-        return upToDate(timeStamp)
+        if(alwaysUpToDate) return true
+        if(notUpToDate) return false
+        val maxAge = TimeUnit.MILLISECONDS.convert(2, TimeUnit.MINUTES)
+        return (System.currentTimeMillis() - timeStamp) < maxAge
     }
 
     enum class Source {
-        Network, Memory
+        Network, Memory, Disc
     }
 }

@@ -1,10 +1,10 @@
 package at.droelf.codereview.network
 
-import at.droelf.codereview.model.ResponseHolder
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
-import okhttp3.ResponseBody
+import at.droelf.codereview.model.ResponseHolder
 import rx.Observable
+import java.util.concurrent.TimeUnit
 
 class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): GithubPagination {
 
@@ -52,9 +52,15 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): Githu
         return wrap(githubApi.pullRequestDetailRx(token(), owner, repo, number).map { it.body() })
     }
 
+    fun statusRx(owner: String, repo: String, ref: String): Observable<ResponseHolder<List<GithubModel.Status>>> {
+        return wrap(pages(githubApi.statusesRx(token(), owner, repo, ref)){
+            githubApi.statusesRx(token(), owner, repo, ref, it)
+        }.flatten())
+    }
+
     fun token() = "token ${auth.token}"
 
     fun <E> wrap(data: Observable<E>): Observable<ResponseHolder<E>> {
-        return data.map { ResponseHolder(it, ResponseHolder.Source.Network, upToDate = { true }) }
+        return data.map { ResponseHolder(it, ResponseHolder.Source.Network, alwaysUpToDate = true) }
     }
 }

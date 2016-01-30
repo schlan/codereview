@@ -2,42 +2,51 @@ package at.droelf.codereview.ui.fragment
 
 import android.support.v4.app.FragmentManager
 import at.droelf.codereview.model.GithubModel
+import at.droelf.codereview.model.ResponseHolder
 import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 
 
 class NotificationFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider): RxHelper {
 
-    var observable: Observable<List<GithubModel.PullRequest>>? = null
-    var listMapCache: MutableMap<String, Observable<GithubModel.PullRequestDetail>> = hashMapOf()
+    var observable: Observable<ResponseHolder<List<GithubModel.PullRequest>>>? = null
+    var listMapCache: MutableMap<String, Observable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>>> = hashMapOf()
 
     var scrollPos: Int? = null
 
-    fun loadPrs(): Observable<List<GithubModel.PullRequest>>{
-        if (observable == null) {
-            observable = githubProvider.subscriptions(false)
-                    .flatMap { repos ->
-                        Observable.merge(repos.map { githubProvider.pullRequests(it.owner.login, it.name) })
-                    }
-                    .compose(transformObservable<List<GithubModel.PullRequest>>())
+    fun loadPrs(skipCache: Boolean = false): Observable<ResponseHolder<List<GithubModel.PullRequest>>>{
+        if (observable == null || skipCache) {
+            observable = githubProvider.subscriptions(false, skipCache)
+                    .flatMap({ repos ->
+                        Observable.merge(repos.map{githubProvider.pullRequests(it.owner.login, it.name, skipCache)}, 100)
+                    }, 100)
+                    .compose(transformObservable<ResponseHolder<List<GithubModel.PullRequest>>>())
                     .cache()
         }
 
         return observable!!
     }
 
-    fun lazyLoadDataForPr(pr: GithubModel.PullRequest): Observable<GithubModel.PullRequestDetail> {
+    fun lazyLoadDataForPr(pr: GithubModel.PullRequest): Observable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>> {
         val key = "${pr.id}"
         var observable = listMapCache[key]
 
         if(observable == null){
+            val owner = pr.base.repo.owner.login
+            val repo = pr.base.repo.name
+            val prNumber = pr.number
 
-            observable = githubProvider.pullRequestDetail(pr.base.repo.owner.login, pr.base.repo.name, pr.number)
-                    .compose(transformObservable<GithubModel.PullRequestDetail>())
+            observable = Observable.combineLatest(
+                    githubProvider.status(owner, repo, pr.head.ref, true),
+                    githubProvider.pullRequestDetail(owner, repo, prNumber, true),
+                    { a, b -> Pair(b, a)}
+            )
+                    .compose(transformObservable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>>())
                     .cache()
-
             listMapCache.put(key, observable)
         }
 
