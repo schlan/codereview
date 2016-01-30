@@ -37,6 +37,7 @@ android {
         exclude 'META-INF/LICENSE'
         exclude 'META-INF/NOTICE'
         exclude 'META-INF/services/javax.annotation.processing.Processor'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
     }
 }
 
@@ -76,6 +77,8 @@ dependencies {
 
     compile 'io.reactivex:rxjava:1.0.17'
     compile 'io.reactivex:rxandroid:1.0.1'
+
+    compile 'com.firebase:firebase-client-android:2.5.0'
 
     compile 'org.sufficientlysecure:html-textview:1.3'
 

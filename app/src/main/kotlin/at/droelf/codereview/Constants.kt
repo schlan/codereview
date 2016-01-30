@@ -20,6 +20,8 @@ object Constants{
 
     //https://github.com/zendesk/ZendeskAndroidClient/pull/537
 
+    val clientId = "5548f476ee88ff856ac7"
+    val clientSecret = "3659193694a19a37537040258af0ebd501f62e04"
 
     val rawFile: String =
 """

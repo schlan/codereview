@@ -4,7 +4,7 @@ import android.text.SpannableString
 import at.droelf.codereview.patch.Patch
 
 object Model {
-    data class GithubAuth(val token: String, val travisToken: String)
+    data class GithubAuth(val token: String)
 
     data class GithubDataSet(
             val patch: Patch.Patch,

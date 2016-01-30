@@ -70,4 +70,21 @@ object GithubModel {
             val id: Long, val url: String, val context: String, val creator: User
     )
 
+    data class AuthRequest(
+            val clientSecret: String, val scopes: List<String>, val note: String, val noteUrl: String
+    )
+
+
+    data class AuthResponse(
+            val id: Long, val url: String, val scopes: MutableList<String>, val token: String, val tokenLastEight: String,
+            val hashedToken: String, val updatedAt: Date
+    )
+
+    enum class AuthReturnType() {
+            Error, Success, TwoFactorApp, TwoFactorSms, TwoFactorUnknown
+    }
+
 }
+
+
+
