@@ -41,9 +41,16 @@ class GithubAuthService(
         }
     }
 
+    fun user(token: String): Observable<GithubModel.User> {
+        return githubAuthApi.getUser(token(token)).map { it.body() }
+    }
+
+    fun token(token: String): String {
+        return "token $token"
+    }
+
     private fun basicAuth(username: String, password: String): String {
         val creds = "$username:$password"
         return "Basic ${Base64.encodeToString(creds.toByteArray(), Base64.NO_WRAP)}"
     }
-
 }

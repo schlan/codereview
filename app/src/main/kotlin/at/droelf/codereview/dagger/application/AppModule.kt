@@ -2,11 +2,14 @@ package at.droelf.codereview.dagger.application
 
 import android.app.Application
 import android.content.Context
+import android.content.SharedPreferences
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.network.GithubAuthApi
 import at.droelf.codereview.network.GithubAuthService
 import at.droelf.codereview.provider.GithubAuthProvider
 import at.droelf.codereview.provider.GithubProvider
+import at.droelf.codereview.storage.GithubUserStorage
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import java.io.File
@@ -59,5 +62,11 @@ class AppModule(private val app: Application) {
     @Provides
     fun providesGithubProvider(githubAuthService: GithubAuthService): GithubAuthProvider {
         return GithubAuthProvider(githubAuthService)
+    }
+
+    @Singleton
+    @Provides
+    fun providesGithubUserStorage(context: Context, gson: Gson): GithubUserStorage {
+        return GithubUserStorage(context.getSharedPreferences("user", Context.MODE_PRIVATE), gson)
     }
 }

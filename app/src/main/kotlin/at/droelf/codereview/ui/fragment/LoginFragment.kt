@@ -4,6 +4,7 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.support.design.widget.Snackbar
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
@@ -14,10 +15,12 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.ProgressBar
 import at.droelf.codereview.R
+import at.droelf.codereview.dagger.activity.MainActivityComponent
 import at.droelf.codereview.dagger.fragment.LoginFragmentComponent
 import at.droelf.codereview.dagger.fragment.LoginFragmentModule
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.activity.MainActivity
+import java.util.*
 import javax.inject.Inject
 
 class LoginFragment : BaseFragment<LoginFragmentComponent>() {
@@ -56,8 +59,8 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
                 view?.findViewById(R.id.login_twofactor_6) as EditText
         )
         loginTwoFactor.forEachIndexed { i, editText ->
-            val nextView = if(i+1 < loginTwoFactor.size) loginTwoFactor[i+1] else null
-            val prevView = if(i-1 >= 0) loginTwoFactor[i-1] else null
+            val nextView = if (i + 1 < loginTwoFactor.size) loginTwoFactor[i + 1] else null
+            val prevView = if (i - 1 >= 0) loginTwoFactor[i - 1] else null
             val listener = TwoFactorListener(editText, nextView, prevView)
             editText.setOnKeyListener(listener)
             editText.addTextChangedListener(listener)
@@ -65,34 +68,34 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
 
         twoFactorPaste.setOnClickListener({ view ->
             val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-            if(clipboard.hasPrimaryClip()){
+            if (clipboard.hasPrimaryClip()) {
                 val clipContent = clipboard.primaryClip.getItemAt(0).text
-                if(clipContent.length == 6 && clipContent.matches("[0-9]+".toRegex())){
+                if (clipContent.length == 6 && clipContent.matches("[0-9]+".toRegex())) {
                     loginTwoFactor.forEachIndexed { i, editText ->
                         editText.setText(clipContent[i].toString())
                     }
                 }
             }
         })
-
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         loginSubmitButton.setOnClickListener({ view ->
-
-            loginUsername.error = null
             loading(true)
-            val o = if(twoFactorContainer.visibility == View.VISIBLE){
-                val token = loginTwoFactor.fold("", {s, e -> "$s${e.text.toString()}"})
-                controller.getToken(loginUsername.text.toString(), loginPassword.text.toString(), token)
+            loginUsername.error = null
+
+            val username = loginUsername.text.toString()
+            val password = loginPassword.text.toString()
+            val totp: String? = if (twoFactorContainer.visibility == View.VISIBLE) {
+                loginTwoFactor.fold("", { s, e -> "$s${e.text.toString()}" })
             } else {
-                controller.getToken(loginUsername.text.toString(), loginPassword.text.toString())
+                null
             }
 
-            o.subscribe({ data ->
+            controller.getToken(username, password, totp).subscribe({ data ->
                 loading(false)
-                when(data.first) {
+                when (data.first) {
                     GithubModel.AuthReturnType.TwoFactorApp, GithubModel.AuthReturnType.TwoFactorUnknown, GithubModel.AuthReturnType.TwoFactorSms -> {
                         twoFactorContainer.visibility = View.VISIBLE
                         loginUsername.isEnabled = false
@@ -104,7 +107,7 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
                         loginUsername.error = "Login Error"
                     }
                     GithubModel.AuthReturnType.Success -> {
-                        initApp(data.second!!)
+                        loadUser(data.second!!, data.third)
                     }
                 }
 
@@ -117,9 +120,13 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
         })
     }
 
-    fun initApp(second: GithubModel.AuthResponse) {
+    fun loadUser(second: GithubModel.AuthResponse, uuid: UUID) {
         loading(true)
-        //FIXME init all the stuff
+        controller.getUserAndStoreUserData(second, uuid).subscribe { data ->
+            loading(false)
+            Snackbar.make(view, "Hello @${data.user.login}", Snackbar.LENGTH_LONG).show()
+            controller.initLogin((activity as MainActivity).mainComponent(), fragmentManager, data)
+        }
     }
 
     override fun injectComponent(component: LoginFragmentComponent) {
@@ -131,21 +138,21 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
     }
 
     private fun loading(loading: Boolean) {
-        progressBar.visibility = if(loading) View.VISIBLE else View.GONE
+        progressBar.visibility = if (loading) View.VISIBLE else View.GONE
         val elements: List<View> = listOf(loginSubmitButton, loginUsername, loginPassword) + loginTwoFactor + twoFactorPaste
         elements.forEach { view ->
             view.isEnabled = !loading
         }
     }
 
-    class TwoFactorListener(val thisView: EditText, val nextView: EditText?, val prevView: EditText?): View.OnKeyListener, TextWatcher {
+    class TwoFactorListener(val thisView: EditText, val nextView: EditText?, val prevView: EditText?) : View.OnKeyListener, TextWatcher {
 
         override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
         }
 
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            if(count == 0){
+            if (count == 0) {
                 prevView?.requestFocus()
             }
         }
@@ -156,7 +163,7 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
 
         override fun onKey(v: View, keyCode: Int, event: KeyEvent?): Boolean {
             val txt = thisView.text.toString()
-            if(txt.length == 1 && Character.isDigit(txt.first())){
+            if (txt.length == 1 && Character.isDigit(txt.first())) {
                 nextView?.requestFocus()
             }
             return false

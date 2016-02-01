@@ -7,7 +7,6 @@ import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import at.droelf.codereview.Constants
 import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.ResponseHolder
@@ -57,7 +56,7 @@ class NotificationFragmentAdapter(
 
             var replaced = false
 
-            if (pr.user.login == Constants.login) {
+            if (pr.user.id == controller.user.id) {
                 if(prs.upToDate() && myPullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.isNotEmpty()){
                     replaced = true
                     myPullRequests.remove(myPullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.first())

@@ -1,24 +1,25 @@
 package at.droelf.codereview.ui.activity
 
-import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.os.Environment
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
 import android.webkit.WebSettings
 import android.webkit.WebView
-import android.webkit.WebViewClient
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.activity.MainActivityComponent
 import at.droelf.codereview.dagger.user.UserComponent
 import at.droelf.codereview.dagger.user.UserModule
 import at.droelf.codereview.model.Model
+import at.droelf.codereview.storage.GithubUserStorage
 import at.droelf.codereview.ui.fragment.*
+import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 
-class MainActivityController {
+class MainActivityController(val githubUserStorage: GithubUserStorage) {
 
     private var userComponent: UserComponent? = null
 
@@ -29,6 +30,21 @@ class MainActivityController {
 
     fun accountInstalled(): Boolean {
         return userComponent != null
+    }
+
+    fun tryToLoadAccount(appComponent: MainActivityComponent): Observable<Boolean> {
+        return Observable.just(githubUserStorage.userStored())
+            .flatMap {
+                if(it){
+                    githubUserStorage.getUser()
+                        .doOnNext { createUserComponent(appComponent, it) }
+                        .map { true }
+                } else {
+                    Observable.just(false)
+                }
+            }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun userComponent(): UserComponent {

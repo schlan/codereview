@@ -26,7 +26,15 @@ class MainActivity : BaseActivity<MainActivityComponent>(){
                 controller!!.displayNotificationFragment(supportFragmentManager)
             }
         } else {
-            controller!!.displayLoginFragment(supportFragmentManager)
+            controller!!.tryToLoadAccount(mainComponent()).subscribe({
+                if(it){
+                    controller!!.displayNotificationFragment(supportFragmentManager)
+                } else {
+                    controller!!.displayLoginFragment(supportFragmentManager)
+                }
+            }, {
+                it.printStackTrace()
+            })
         }
     }
 

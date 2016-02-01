@@ -17,4 +17,10 @@ interface GithubAuthApi {
             @Header("X-GitHub-OTP") otpToken: String? = null
     ): Observable<Response<GithubModel.AuthResponse>>
 
+
+    @GET("/user")
+    fun getUser(
+            @Header("Authorization") basicAuth: String
+    ): Observable<Response<GithubModel.User>>
+
 }

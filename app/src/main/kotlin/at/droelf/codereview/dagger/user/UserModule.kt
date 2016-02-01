@@ -1,6 +1,7 @@
 package at.droelf.codereview.dagger.user
 
 import android.util.LruCache
+import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubApi
 import at.droelf.codereview.network.GithubService
@@ -18,6 +19,12 @@ class UserModule(private val data: Model.GithubAuth) {
     @UserScope
     fun providesGithubAuth(): Model.GithubAuth {
         return data
+    }
+
+    @Provides
+    @UserScope
+    fun providesGithubUser(): GithubModel.User {
+        return data.user
     }
 
     @Provides

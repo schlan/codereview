@@ -1,5 +1,6 @@
 package at.droelf.codereview.dagger.activity
 
+import at.droelf.codereview.storage.GithubUserStorage
 import at.droelf.codereview.ui.activity.MainActivityController
 import dagger.Module
 import dagger.Provides
@@ -9,8 +10,8 @@ class MainActivityModule {
 
     @ActivityScope
     @Provides
-    fun provideMainActivityController(): MainActivityController{
-        return MainActivityController()
+    fun provideMainActivityController(githubUserStorage: GithubUserStorage): MainActivityController{
+        return MainActivityController(githubUserStorage)
     }
 
 }

@@ -2,9 +2,11 @@ package at.droelf.codereview.model
 
 import android.text.SpannableString
 import at.droelf.codereview.patch.Patch
+import java.util.*
 
 object Model {
-    data class GithubAuth(val token: String)
+
+    data class GithubAuth(val auth: GithubModel.AuthResponse, val user: GithubModel.User, val uuid: UUID)
 
     data class GithubDataSet(
             val patch: Patch.Patch,

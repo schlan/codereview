@@ -7,11 +7,9 @@ import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
 
 
-class NotificationFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider): RxHelper {
+class NotificationFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider, val user: GithubModel.User): RxHelper {
 
     var observable: Observable<ResponseHolder<List<GithubModel.PullRequest>>>? = null
     var listMapCache: MutableMap<String, Observable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>>> = hashMapOf()

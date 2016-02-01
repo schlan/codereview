@@ -9,8 +9,13 @@ import java.util.*
 class GithubAuthProvider(val githubAuthService: GithubAuthService) {
 
     fun authToken(username: String, password: String, totp: String?)
-            : Observable<Pair<GithubModel.AuthReturnType, GithubModel.AuthResponse?>> {
+            : Observable<Triple<GithubModel.AuthReturnType, GithubModel.AuthResponse?, UUID>> {
         val uuid = UUID.randomUUID()
-        return githubAuthService.authToken(username, password, uuid, totp)
+        return githubAuthService.authToken(username, password, uuid, totp).map{ Triple(it.first, it.second, uuid) }
     }
+
+    fun user(token: String): Observable<GithubModel.User> {
+        return githubAuthService.user(token)
+    }
+
 }

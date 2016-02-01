@@ -58,7 +58,7 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): Githu
         }.flatten())
     }
 
-    fun token() = "token ${auth.token}"
+    fun token() = "token ${auth.auth.token}"
 
     fun <E> wrap(data: Observable<E>): Observable<ResponseHolder<E>> {
         return data.map { ResponseHolder(it, ResponseHolder.Source.Network, alwaysUpToDate = true) }
