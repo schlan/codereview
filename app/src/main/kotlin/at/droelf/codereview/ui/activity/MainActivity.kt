@@ -26,22 +26,25 @@ class MainActivity : BaseActivity<MainActivityComponent>(){
                 controller!!.displayNotificationFragment(supportFragmentManager)
             }
         } else {
-            controller!!.tryToLoadAccount(mainComponent()).subscribe({
-                if(it){
-                    controller!!.displayNotificationFragment(supportFragmentManager)
-                } else {
-                    controller!!.displayLoginFragment(supportFragmentManager)
-                }
-            }, {
-                it.printStackTrace()
-            })
+            val result = controller?.tryToLoadAccount(mainComponent())
+            if(result != null && result) {
+                controller!!.displayNotificationFragment(supportFragmentManager)
+            }else {
+                controller!!.displayLoginFragment(supportFragmentManager)
+            }
         }
     }
 
-    override fun injectComponent(component: MainActivityComponent) {
-        if(controller == null) {
-            component.inject(this)
+    fun getOrInit(): MainActivityController {
+        if(controller == null){
+            init()
+            controller?.tryToLoadAccount(mainComponent())
         }
+        return controller!!
+    }
+
+    override fun injectComponent(component: MainActivityComponent) {
+        component.inject(this)
     }
 
     override fun createComponent(): MainActivityComponent {

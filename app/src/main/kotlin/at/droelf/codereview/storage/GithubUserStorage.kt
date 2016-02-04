@@ -22,6 +22,22 @@ class GithubUserStorage(private val sharedPreferences: SharedPreferences, privat
                 .apply()
     }
 
+    fun getUserBlocking(): Model.GithubAuth? {
+        val json = sharedPreferences.getString(dataKey, "")
+        if (json.length > 0) {
+            val data = gson.fromJson(json, Model.GithubAuth::class.java)
+            if (data != null) {
+               return data
+            } else {
+                sharedPreferences.edit().clear()
+                return null
+            }
+        } else {
+            sharedPreferences.edit().clear()
+            return null
+        }
+    }
+
     fun getUser(): Observable<Model.GithubAuth> {
         return Observable.create({
             val json = sharedPreferences.getString(dataKey, "")

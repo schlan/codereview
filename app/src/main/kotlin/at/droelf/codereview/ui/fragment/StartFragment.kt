@@ -40,7 +40,7 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
     }
 
     override fun createComponent(mainActivity: MainActivity): StartFragmentComponent? {
-        return mainActivity.controller?.userComponent()?.plus(StartFragmentModule(this))
+        return mainActivity.getOrInit().userComponent().plus(StartFragmentModule(this))
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {

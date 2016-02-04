@@ -100,7 +100,6 @@ interface PatchAdapterController {
     var patchAdapter: PatchAdapterControllerImpl.PatchAdapterInterface?
 }
 
-
 class PatchSegmentController(
         val patchSegment: Patch.PatchSegment,
         val rawCode: List<SpannableString>,
@@ -168,10 +167,8 @@ class PatchSegmentController(
 
             return Pair(pos, pos + codeToAdd.size - 1) // FIXME
         }
-
         return Pair(pos, pos)
     }
-
 }
 
 interface SpannableStringHelper {

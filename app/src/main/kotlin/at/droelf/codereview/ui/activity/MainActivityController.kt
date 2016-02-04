@@ -32,19 +32,26 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
         return userComponent != null
     }
 
-    fun tryToLoadAccount(appComponent: MainActivityComponent): Observable<Boolean> {
-        return Observable.just(githubUserStorage.userStored())
-            .flatMap {
-                if(it){
-                    githubUserStorage.getUser()
-                        .doOnNext { createUserComponent(appComponent, it) }
-                        .map { true }
-                } else {
-                    Observable.just(false)
-                }
-            }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
+    fun tryToLoadAccount(appComponent: MainActivityComponent): Boolean {
+        if(githubUserStorage.userStored()){
+            val user = githubUserStorage.getUserBlocking() ?: return false
+            createUserComponent(appComponent, user)
+            return true
+        }
+        return false
+
+//        return Observable.just(githubUserStorage.userStored())
+//            .flatMap {
+//                if(it){
+//                    githubUserStorage.getUser()
+//                        .doOnNext { createUserComponent(appComponent, it) }
+//                        .map { true }
+//                } else {
+//                    Observable.just(false)
+//                }
+//            }
+//                .subscribeOn(Schedulers.io())
+//                .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun userComponent(): UserComponent {

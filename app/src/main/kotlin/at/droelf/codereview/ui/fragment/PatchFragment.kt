@@ -51,7 +51,7 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
     }
 
     override fun createComponent(mainActivity: MainActivity): PatchFragmentComponent? {
-        return mainActivity.controller?.userComponent()?.plus(PatchFragmentModule(this))
+        return mainActivity.getOrInit().userComponent().plus(PatchFragmentModule(this))
     }
 
     override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater) {
