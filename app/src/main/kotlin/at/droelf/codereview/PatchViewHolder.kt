@@ -5,19 +5,12 @@ import android.graphics.drawable.ColorDrawable
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
 import android.view.View
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import at.droelf.codereview.ViewHolderLine.LineType
-import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.patch.Patch
 import at.droelf.codereview.ui.adapter.PatchAdapterController
 import at.droelf.codereview.ui.view.CommentView
-import at.droelf.codereview.utils.CircleTransform
-import butterknife.Bind
-import butterknife.ButterKnife
-import com.squareup.picasso.Picasso
 
 //////////
 abstract class ViewHolderWrapper(val type: PatchListType) {

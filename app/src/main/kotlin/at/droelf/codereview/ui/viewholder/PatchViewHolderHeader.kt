@@ -5,17 +5,10 @@ import android.text.SpannableString
 import android.view.View
 import android.widget.TextView
 import at.droelf.codereview.R
-import butterknife.Bind
-import butterknife.ButterKnife
 
 class PatchViewHolderHeader(val view: View) : RecyclerView.ViewHolder(view) {
 
-    @Bind(R.id.row_patch_header)
-    lateinit var text: TextView
-
-    init{
-        ButterKnife.bind(view)
-    }
+    val text: TextView = view.findViewById(R.id.row_patch_header) as TextView
 
     fun bind(line: SpannableString) {
         text.text = line

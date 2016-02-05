@@ -13,11 +13,8 @@ import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.ResponseHolder
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
-import at.droelf.codereview.ui.viewholder.ViewHolderBinder
 import at.droelf.codereview.utils.CircleTransform
 import at.droelf.codereview.utils.HumanTime
-import butterknife.Bind
-import butterknife.ButterKnife
 import com.squareup.picasso.Picasso
 import rx.Subscription
 import java.text.SimpleDateFormat

@@ -1,7 +1,6 @@
 package at.droelf.codereview.ui.viewholder
 
 import android.support.v7.widget.RecyclerView
-import android.text.Html
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
@@ -11,25 +10,15 @@ import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.fragment.StartFragmentController
 import at.droelf.codereview.ui.view.HtmlTextViewMagic
 import at.droelf.codereview.utils.CircleTransform
-import butterknife.Bind
-import butterknife.ButterKnife
 import com.squareup.picasso.Picasso
 import org.sufficientlysecure.htmltextview.HtmlTextView
 
 class PullRequestCommentViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
-    val avatar: ImageView
-    val userName: TextView
-    val userComment: HtmlTextView
-    val showCommentButton: Button
-
-    init {
-        ButterKnife.bind(this, view)
-        avatar = view.findViewById(R.id.row_pr_comment_avatar) as ImageView
-        userName = view.findViewById(R.id.row_pr_name) as TextView
-        userComment = view.findViewById(R.id.row_pr_comment) as HtmlTextView
-        showCommentButton = view.findViewById(R.id.row_pr_comment_button) as Button
-    }
+    val avatar: ImageView = view.findViewById(R.id.row_pr_comment_avatar) as ImageView
+    val userName: TextView = view.findViewById(R.id.row_pr_name) as TextView
+    val userComment: HtmlTextView = view.findViewById(R.id.row_pr_comment) as HtmlTextView
+    val showCommentButton: Button = view.findViewById(R.id.row_pr_comment_button) as Button
 
     fun bind(comment: GithubModel.Comment, controller: StartFragmentController) {
         userComment.text = ""

@@ -11,7 +11,6 @@ import at.droelf.codereview.R
 import at.droelf.codereview.ui.adapter.NotificationFragmentAdapter
 import at.droelf.codereview.ui.adapter.UnsubscribeRx
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
-import butterknife.Bind
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
 class NotificationPullRequestView(context: Context, val fm: FragmentManager, val controller: NotificationFragmentController): FrameLayout(context), UnsubscribeRx {

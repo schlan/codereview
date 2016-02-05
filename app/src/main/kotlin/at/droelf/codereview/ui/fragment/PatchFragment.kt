@@ -10,26 +10,24 @@ import android.text.SpannableString
 import android.util.DisplayMetrics
 import android.view.*
 import android.widget.ProgressBar
-import at.droelf.codereview.ui.view.HScrollView
-import at.droelf.codereview.ui.adapter.PatchAdapter
-import at.droelf.codereview.ui.adapter.PatchAdapterControllerImpl
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.PatchFragmentComponent
 import at.droelf.codereview.dagger.fragment.PatchFragmentModule
 import at.droelf.codereview.ui.activity.MainActivity
-import butterknife.Bind
-import butterknife.ButterKnife
+import at.droelf.codereview.ui.adapter.PatchAdapter
+import at.droelf.codereview.ui.adapter.PatchAdapterControllerImpl
+import at.droelf.codereview.ui.view.HScrollView
 import javax.inject.Inject
 
 class PatchFragment : BaseFragment<PatchFragmentComponent>() {
 
     @Inject lateinit var controller: PatchFragmentController
 
-    @Bind(R.id.main) lateinit var main: ViewGroup
-    @Bind(R.id.recyclerView) lateinit var recyclerView: RecyclerView
-    @Bind(R.id.recyclerViewBounds) lateinit var recyclerViewBounds: ViewGroup
-    @Bind(R.id.horizontalScrollView) lateinit var horizontalScrollView: HScrollView
-    @Bind(R.id.progressbar) lateinit var progressbar: ProgressBar
+    lateinit var main: ViewGroup
+    lateinit var recyclerView: RecyclerView
+    lateinit var recyclerViewBounds: ViewGroup
+    lateinit var horizontalScrollView: HScrollView
+    lateinit var progressbar: ProgressBar
 
     var maxWidth: Int = -1
     var minWidth: Int = -1
@@ -37,10 +35,17 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
 
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val view = inflater?.inflate(R.layout.fragment_main, container, false)
-        ButterKnife.bind(this, view)
+        return inflater?.inflate(R.layout.fragment_main, container, false)
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-        return view
+        main = view?.findViewById(R.id.main) as ViewGroup
+        recyclerView = view?.findViewById(R.id.recyclerView) as RecyclerView
+        recyclerViewBounds = view?.findViewById(R.id.recyclerViewBounds) as ViewGroup
+        horizontalScrollView = view?.findViewById(R.id.horizontalScrollView) as HScrollView
+        progressbar = view?.findViewById(R.id.progressbar) as ProgressBar
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

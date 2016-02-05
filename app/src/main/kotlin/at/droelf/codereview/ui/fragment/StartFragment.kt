@@ -11,15 +11,13 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
+import android.widget.ProgressBar
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.StartFragmentComponent
 import at.droelf.codereview.dagger.fragment.StartFragmentModule
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.activity.MainActivity
 import at.droelf.codereview.ui.adapter.PullRequestViewpagerAdapter
-import butterknife.Bind
-import butterknife.ButterKnife
 import rx.Subscription
 import javax.inject.Inject
 

@@ -4,23 +4,21 @@ import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.view.*
 import android.support.v7.widget.Toolbar
+import android.view.*
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.NotificationFragmentComponent
 import at.droelf.codereview.dagger.fragment.NotificationFragmentModule
 import at.droelf.codereview.ui.activity.MainActivity
 import at.droelf.codereview.ui.adapter.NotificationViewpagerAdapter
-import butterknife.Bind
-import butterknife.ButterKnife
 import javax.inject.Inject
 
 class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
 
     @Inject lateinit var controller: NotificationFragmentController
-    @Bind(R.id.notification_toolbar) lateinit var toolbar: Toolbar
-    @Bind(R.id.notification_viewpager) lateinit var viewpager: ViewPager
-    @Bind(R.id.notification_tablayout) lateinit var tablayout: TabLayout
+    lateinit var toolbar: Toolbar
+    lateinit var viewpager: ViewPager
+    lateinit var tablayout: TabLayout
 
     var viewpagerAdapter: NotificationViewpagerAdapter? = null
 
@@ -34,9 +32,15 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         val view = inflater?.inflate(R.layout.fragment_notifications, container, false)
-        ButterKnife.bind(this, view)
         setHasOptionsMenu(true)
         return view
+    }
+
+    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        toolbar = view?.findViewById(R.id.notification_toolbar) as Toolbar
+        viewpager = view?.findViewById(R.id.notification_viewpager) as ViewPager
+        tablayout = view?.findViewById(R.id.notification_tablayout) as TabLayout
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

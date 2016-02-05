@@ -9,12 +9,9 @@ import android.view.LayoutInflater
 import android.widget.FrameLayout
 import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
-import at.droelf.codereview.ui.adapter.NotificationFragmentAdapter
 import at.droelf.codereview.ui.adapter.PullRequestCommentsAdapter
 import at.droelf.codereview.ui.adapter.UnsubscribeRx
-import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import at.droelf.codereview.ui.fragment.StartFragmentController
-import butterknife.Bind
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
 class PullRequestCommentView(context: Context, val pr: GithubModel.PullRequestDetail, val fm: FragmentManager, val controller: StartFragmentController): FrameLayout(context), UnsubscribeRx {
