@@ -84,7 +84,7 @@ class NotificationFragmentAdapter(
             }
 
             holderWrapperList = tmpList
-            if (emptyMy || emptyOther) {
+            if (emptyMy != myPullRequests.isEmpty() || emptyOther != pullRequests.isEmpty()) {
                 notifyDataSetChanged()
             } else {
                 val index = holderWrapperList.indexOfFirst { it.type == 1 && it.data.equals(pr) }
@@ -131,6 +131,14 @@ class NotificationFragmentAdapter(
 
         }
     }
+
+    override fun onViewDetachedFromWindow(holder: ViewHolderBinder<*>) {
+        super.onViewDetachedFromWindow(holder)
+        if(holder is NotificationFragmentViewHolder){
+            holder.pause()
+        }
+    }
+
 
     override fun getItemViewType(position: Int): Int {
         return holderWrapperList[position].type

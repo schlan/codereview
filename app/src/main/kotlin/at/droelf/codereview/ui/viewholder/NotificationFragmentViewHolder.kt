@@ -19,6 +19,7 @@ import at.droelf.codereview.utils.HumanTime
 import butterknife.Bind
 import butterknife.ButterKnife
 import com.squareup.picasso.Picasso
+import rx.Subscription
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
@@ -33,6 +34,8 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
     val avatarBackground: RelativeLayout = view.findViewById(R.id.row_notification_avatar_background) as RelativeLayout
     val main: ViewGroup = view.findViewById(R.id.row_notification_background) as ViewGroup
     val sourceIndicator: View = view.findViewById(R.id.row_notification_source_indicator)
+
+    var subscription: Subscription? = null
 
     override fun bind(data: NotificationFragmentViewHolderData) {
         Picasso.with(view.context).load(data.pr.user.avatarUrl).transform(CircleTransform()).into(avatar)
@@ -72,7 +75,9 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
     fun lazyLoadThings(pr: GithubModel.PullRequest, controller: NotificationFragmentController, upToDate: Boolean){
         issueCount.visibility = View.GONE
         avatarBackground.background = null
-        controller.lazyLoadDataForPr(pr).subscribe { data ->
+        subscription = controller.lazyLoadDataForPr(pr)
+                .onErrorResumeNext { controller.lazyLoadDataForPr(pr) }
+                .subscribe ({ data ->
             val prDetail = data.first
 
             val comments = prDetail.reviewComments + prDetail.comments
@@ -86,7 +91,10 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
 
             initAvatarBackground(data.second, prDetail)
             main.background = ColorDrawable(ContextCompat.getColor(view.context, if(upToDate) R.color.bg_white else R.color.bg_gray))
-        }
+        }, { error ->
+            error.printStackTrace()
+            println("Error: lazy loaded data :(")
+        })
     }
 
     private fun initAvatarBackground(status: List<GithubModel.Status>, prDetail: GithubModel.PullRequestDetail) {
@@ -118,6 +126,10 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
 
     fun setLoading(loading: Boolean){
         main.background = ColorDrawable(ContextCompat.getColor(view.context, if(loading) R.color.bg_gray else R.color.bg_white))
+    }
+
+    fun pause() {
+        subscription?.unsubscribe()
     }
 
     data class NotificationFragmentViewHolderData(
