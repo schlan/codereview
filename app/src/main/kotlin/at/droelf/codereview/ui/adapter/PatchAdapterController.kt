@@ -50,11 +50,11 @@ class PatchAdapterControllerImpl(val githubDataSet: Model.GithubDataSet) : Patch
                     Pair(0, patchSegment.newRange.start + patchSegment.newRange.numLines - 1)
                 }
                 patch.patchSegments.lastIndex == i -> {
-                    val prevRange = patch.patchSegments.get(i - 1).newRange
+                    val prevRange = patch.patchSegments[i - 1].newRange
                     Pair(prevRange.start + prevRange.numLines - 1, rawCode.lastIndex + 1)
                 }
                 else -> {
-                    val prevRange = patch.patchSegments.get(i - 1).newRange
+                    val prevRange = patch.patchSegments[i - 1].newRange
                     Pair(prevRange.start + prevRange.numLines - 1, patchSegment.newRange.start + patchSegment.newRange.numLines - 1)
                 }
             }
@@ -71,11 +71,11 @@ class PatchAdapterControllerImpl(val githubDataSet: Model.GithubDataSet) : Patch
         val sumList = sizeList.mapIndexed { i, value -> sizeList.subList(0, i+1).sum() }
         val index = sumList.indexOfFirst { it > pos }
         val posInSegment = pos - sizeList.subList(0, index).sum()
-        return Pair(patchSegmentController.get(index), posInSegment)
+        return Pair(patchSegmentController[index], posInSegment)
     }
 
-    override fun expand(pos: Int): Unit {
-        val range = patchSegmentForPos(pos).first.expand(pos)
+    override fun expand(line: Int): Unit {
+        val range = patchSegmentForPos(line).first.expand(line)
         patchAdapter?.update(range)
     }
 

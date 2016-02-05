@@ -4,10 +4,8 @@ import android.os.Bundle
 import android.support.design.widget.TabLayout
 import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
+import android.view.*
 import android.support.v7.widget.Toolbar
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.NotificationFragmentComponent
 import at.droelf.codereview.dagger.fragment.NotificationFragmentModule
@@ -34,9 +32,10 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
         return mainActivity.getOrInit().userComponent().plus(NotificationFragmentModule(this))
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_notifications, container, false)
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater?.inflate(R.layout.fragment_notifications, container, false)
         ButterKnife.bind(this, view)
+        setHasOptionsMenu(true)
         return view
     }
 
@@ -45,15 +44,29 @@ class NotificationFragment: BaseFragment<NotificationFragmentComponent>() {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?, inflater: MenuInflater?) {
+        inflater?.inflate(R.menu.menu_notifications, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            R.id.menu_notificaiton_configure -> {
+                controller.displayRepoSettingsFragment(fragmentManager)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
     override fun onStart() {
         super.onStart()
 
         if(tablayout.tabCount != 2) {
 
             val prTab = tablayout.newTab()
-            prTab.setText("Pull Requests")
+            prTab.text = "Pull Requests"
             val issuesTab = tablayout.newTab()
-            issuesTab.setText("Issues")
+            issuesTab.text = "Issues"
 
             tablayout.addTab(prTab, 0, true)
             tablayout.addTab(issuesTab, 1, false)

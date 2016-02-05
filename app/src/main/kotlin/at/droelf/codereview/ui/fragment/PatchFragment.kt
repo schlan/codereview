@@ -35,8 +35,9 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
     var minWidth: Int = -1
     var hscrollEnabled: Boolean = false
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
-        val view = inflater.inflate(R.layout.fragment_main, container, false)
+
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater?.inflate(R.layout.fragment_main, container, false)
         ButterKnife.bind(this, view)
         setHasOptionsMenu(true)
         return view

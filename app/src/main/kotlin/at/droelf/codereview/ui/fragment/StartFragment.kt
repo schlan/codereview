@@ -43,8 +43,8 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         return mainActivity.getOrInit().userComponent().plus(StartFragmentModule(this))
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.fragment_pr, container, false)
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater?.inflate(R.layout.fragment_pr, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,7 +59,7 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar.setDisplayHomeAsUpEnabled(true)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
         setHasOptionsMenu(true)
     }
 
@@ -88,7 +88,7 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
             initTabLayout(pr)
             swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
         }, {
-            Snackbar.make(view, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
+            Snackbar.make(view!!, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
             progressbar.visibility = View.GONE
             swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
         })

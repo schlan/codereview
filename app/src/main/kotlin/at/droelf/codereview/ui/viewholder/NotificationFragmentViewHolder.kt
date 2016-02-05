@@ -93,7 +93,7 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
             main.background = ColorDrawable(ContextCompat.getColor(view.context, if(upToDate) R.color.bg_white else R.color.bg_gray))
         }, { error ->
             error.printStackTrace()
-            println("Error: lazy loaded data :(")
+            println("Error during lazy loading data :(")
         })
     }
 

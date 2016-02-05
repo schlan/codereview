@@ -39,19 +39,6 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
             return true
         }
         return false
-
-//        return Observable.just(githubUserStorage.userStored())
-//            .flatMap {
-//                if(it){
-//                    githubUserStorage.getUser()
-//                        .doOnNext { createUserComponent(appComponent, it) }
-//                        .map { true }
-//                } else {
-//                    Observable.just(false)
-//                }
-//            }
-//                .subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread())
     }
 
     fun userComponent(): UserComponent {
@@ -62,8 +49,8 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
         displayFileDiffFragment(fm, contentsUrl, patch, filename, owner, repo, pullRequest)
     }
 
-    fun displayRepositoryFragment(fm: FragmentManager){
-        fragmentTransaction(fm, false) { RepositoryFragment() }
+    fun displayRepositoryFragment(fm: FragmentManager, backstack: Boolean = false){
+        fragmentTransaction(fm, backstack) { RepositoryFragment() }
     }
 
     fun displayLoginFragment(fm: FragmentManager){

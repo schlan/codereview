@@ -1,24 +1,24 @@
 package at.droelf.codereview.ui.fragment
 
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import android.support.v7.widget.Toolbar
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.RepositoryFragmentComponent
 import at.droelf.codereview.dagger.fragment.RepositoryFragmentModule
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.activity.MainActivity
-import butterknife.Bind
-import butterknife.ButterKnife
 import javax.inject.Inject
 
 class RepositoryFragment: BaseFragment<RepositoryFragmentComponent>() {
 
     @Inject lateinit var controller: RepositoryFragmentController
-    @Bind(R.id.repository_fragment_list) lateinit var listView: ListView
-
+    lateinit var listView: ListView
+    lateinit var toolbar: Toolbar
 
     override fun injectComponent(component: RepositoryFragmentComponent) {
         component.inject(this)
@@ -28,10 +28,16 @@ class RepositoryFragment: BaseFragment<RepositoryFragmentComponent>() {
         return mainActivity.getOrInit().userComponent().plus(RepositoryFragmentModule(this))
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View? {
-        val view = inflater.inflate(R.layout.fragment_repository, container, false)
-        ButterKnife.bind(this, view)
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val view = inflater?.inflate(R.layout.fragment_repository, container, false)
+        listView = view?.findViewById(R.id.repository_fragment_list) as ListView
+        toolbar = view?.findViewById(R.id.repository_toolbar) as Toolbar
         return view
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
     }
 
     override fun onStart() {

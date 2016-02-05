@@ -38,8 +38,8 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
 
     lateinit var progressBar: ProgressBar
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup, savedInstanceState: Bundle?): View {
-        return inflater.inflate(R.layout.fragment_login, container, false)
+    override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        return inflater?.inflate(R.layout.fragment_login, container, false)
     }
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
@@ -124,7 +124,7 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
         loading(true)
         controller.getUserAndStoreUserData(second, uuid).subscribe { data ->
             loading(false)
-            Snackbar.make(view, "Hello @${data.user.login}", Snackbar.LENGTH_LONG).show()
+            Snackbar.make(view!!, "Hello @${data.user.login}", Snackbar.LENGTH_LONG).show()
             controller.initLogin((activity as MainActivity).mainComponent(), fragmentManager, data)
         }
     }

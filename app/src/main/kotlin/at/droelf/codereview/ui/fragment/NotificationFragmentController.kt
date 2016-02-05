@@ -55,4 +55,8 @@ class NotificationFragmentController(val mainActivityController: MainActivityCon
         mainActivityController.displayFilesFragment(fm, owner, repo, id)
     }
 
+    fun displayRepoSettingsFragment(fm: FragmentManager) {
+        mainActivityController.displayRepositoryFragment(fm, true)
+    }
+
 }
