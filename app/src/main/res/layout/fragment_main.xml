@@ -1,43 +1,61 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:id="@+id/main"
-              android:background="#fff">
+<FrameLayout android:id="@+id/main"
+             xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:app="http://schemas.android.com/apk/res-auto"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:background="#fff"
+             android:orientation="vertical">
 
-    <at.droelf.codereview.ui.view.HScrollView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/horizontalScrollView">
+        android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="wrap_content"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/patch_toolbar"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+
+        <at.droelf.codereview.ui.view.HScrollView
+            android:id="@+id/horizontalScrollView"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent">
 
             <LinearLayout
-                android:layout_width="100dp"
-                android:id="@+id/recyclerViewBounds"
+                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/recyclerView"
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:id="@+id/recyclerViewBounds"
+                    android:layout_width="100dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:splitMotionEvents="true"
-                    />
+                    android:orientation="horizontal">
 
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/recyclerView"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:splitMotionEvents="true"
+                        />
+
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
-    </at.droelf.codereview.ui.view.HScrollView>
+        </at.droelf.codereview.ui.view.HScrollView>
+    </LinearLayout>
+
 
     <ProgressBar
+        android:id="@+id/progressbar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/progressbar"
         android:layout_gravity="center"
         />
 

@@ -4,11 +4,15 @@ import android.content.Context
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.support.v7.widget.Toolbar
 import android.text.SpannableString
 import android.util.DisplayMetrics
 import android.view.*
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.DecelerateInterpolator
 import android.widget.ProgressBar
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.PatchFragmentComponent
@@ -16,6 +20,7 @@ import at.droelf.codereview.dagger.fragment.PatchFragmentModule
 import at.droelf.codereview.ui.activity.MainActivity
 import at.droelf.codereview.ui.adapter.PatchAdapter
 import at.droelf.codereview.ui.adapter.PatchAdapterControllerImpl
+import at.droelf.codereview.ui.listener.HidingScrollListener
 import at.droelf.codereview.ui.view.HScrollView
 import javax.inject.Inject
 
@@ -28,6 +33,7 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
     lateinit var recyclerViewBounds: ViewGroup
     lateinit var horizontalScrollView: HScrollView
     lateinit var progressbar: ProgressBar
+    lateinit var toolbar: Toolbar
 
     var maxWidth: Int = -1
     var minWidth: Int = -1
@@ -46,6 +52,13 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
         recyclerViewBounds = view?.findViewById(R.id.recyclerViewBounds) as ViewGroup
         horizontalScrollView = view?.findViewById(R.id.horizontalScrollView) as HScrollView
         progressbar = view?.findViewById(R.id.progressbar) as ProgressBar
+        toolbar = view?.findViewById(R.id.patch_toolbar) as Toolbar
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+        (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -68,6 +81,10 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
         when(item.itemId){
             R.id.menu_code_hscroll -> {
                 hscroll(!hscrollEnabled)
+                return true
+            }
+            android.R.id.home -> {
+                activity.onBackPressed()
                 return true
             }
         }
@@ -134,7 +151,7 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
 
     fun SpannableString.lengthInPixel(context: Context): Int {
         val p = Paint();
-        p.setTypeface(Typeface.MONOSPACE)
+        p.typeface = Typeface.MONOSPACE
         p.textSize = context.resources.getDimension(R.dimen.code_text_size)
         return p.measureText(this, 0, length).toInt()
     }
