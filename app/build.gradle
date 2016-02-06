@@ -10,7 +10,8 @@ android {
         minSdkVersion 14
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -48,6 +49,7 @@ kapt {
 dependencies {
     compile 'com.android.support:appcompat-v7:23.1.1'
     compile "com.android.support:support-v4:23.1.1"
+    compile 'com.android.support:multidex:1.0.1'
 
     compile "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
     compile "org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"
@@ -55,6 +57,11 @@ dependencies {
     compile 'com.google.dagger:dagger:2.0.2'
     kapt 'com.google.dagger:dagger-compiler:2.0.2'
     provided 'org.glassfish:javax.annotation:10.0-b28'
+
+    compile "io.realm:realm-android-library:0.87.4@aar"
+    compile "io.realm:realm-annotations:0.87.4"
+    kapt "io.realm:realm-annotations:0.87.4"
+    kapt "io.realm:realm-annotations-processor:0.87.4"
 
     compile 'com.squareup.retrofit2:retrofit:2.0.0-beta3'
     compile 'com.squareup.retrofit2:converter-gson:2.0.0-beta3'
@@ -75,8 +82,6 @@ dependencies {
 
     compile 'io.reactivex:rxjava:1.0.17'
     compile 'io.reactivex:rxandroid:1.0.1'
-
-    compile 'com.firebase:firebase-client-android:2.5.0'
 
     compile 'org.sufficientlysecure:html-textview:1.3'
 

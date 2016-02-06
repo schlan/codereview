@@ -1,5 +1,6 @@
 package at.droelf.codereview.dagger.services
 
+import com.facebook.stetho.okhttp3.StethoInterceptor
 import com.google.gson.FieldNamingPolicy
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
@@ -28,7 +29,7 @@ class SquareModule() {
     @Singleton
     fun providesOkhttp(): OkHttpClient {
         val httpLogging = HttpLoggingInterceptor()
-        httpLogging.setLevel(HttpLoggingInterceptor.Level.BODY)
+        httpLogging.level = HttpLoggingInterceptor.Level.BODY
 
         val okHttp = OkHttpClient.Builder()
         okHttp.addInterceptor(httpLogging)

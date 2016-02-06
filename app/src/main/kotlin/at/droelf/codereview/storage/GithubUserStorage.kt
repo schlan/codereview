@@ -1,60 +1,44 @@
 package at.droelf.codereview.storage
 
+import android.content.Context
 import android.content.SharedPreferences
 import at.droelf.codereview.model.Model
+import at.droelf.codereview.model.realm.RealmGithubAccount
+import at.droelf.codereview.model.realm.RealmHelper
 import com.google.gson.Gson
-import com.google.gson.JsonParseException
-import rx.Observable
+import io.realm.Realm
 
-class GithubUserStorage(private val sharedPreferences: SharedPreferences, private val gson: Gson) {
+class GithubUserStorage(private val context: Context): RealmHelper {
 
     private val dataKey = "github_data"
 
     fun userStored(): Boolean {
-        return sharedPreferences.contains(dataKey)
+        val realm = realm()
+        val count = realm.allObjects(RealmGithubAccount::class.java).count()
+        return count > 0
     }
 
     fun storeUser(userData: Model.GithubAuth) {
-        val jsonData = gson.toJson(userData)
-        sharedPreferences
-                .edit()
-                .putString(dataKey, jsonData)
-                .apply()
+        val realm = realm()
+        realm.beginTransaction()
+        realm.copyToRealm(accountToRealm(userData))
+//        val user = realm.copyFromRealm(userToRealm(userData.user))
+//        val auth = realm.copyToRealm(authResponseToRealm(userData.auth))
+//        val account = realm.createObject(RealmGithubAccount::class.java)
+//        account.uuid = userData.uuid.toString()
+//        account.auth = auth
+//        account.user = user
+        realm.commitTransaction()
     }
 
     fun getUserBlocking(): Model.GithubAuth? {
-        val json = sharedPreferences.getString(dataKey, "")
-        if (json.length > 0) {
-            val data = gson.fromJson(json, Model.GithubAuth::class.java)
-            if (data != null) {
-               return data
-            } else {
-                sharedPreferences.edit().clear()
-                return null
-            }
-        } else {
-            sharedPreferences.edit().clear()
-            return null
-        }
+        val realm = realm()
+        val auth = realm.allObjects(RealmGithubAccount::class.java).firstOrNull() ?: return null
+        return accountToGithub(auth)
     }
 
-    fun getUser(): Observable<Model.GithubAuth> {
-        return Observable.create({
-            val json = sharedPreferences.getString(dataKey, "")
-            if (json.length > 0) {
-                val data = gson.fromJson(json, Model.GithubAuth::class.java)
-                if (data != null) {
-                    it.onNext(data)
-                    it.onCompleted()
-                } else {
-                    sharedPreferences.edit().clear()
-                    it.onError(JsonParseException("unable to parse json"))
-                }
-            } else {
-                sharedPreferences.edit().clear()
-                it.onError(JsonParseException("No user stored"))
-            }
-        })
+    private fun realm(): Realm {
+        return Realm.getInstance(context)
     }
 
 }

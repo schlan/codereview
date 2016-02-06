@@ -66,7 +66,7 @@ class AppModule(private val app: Application) {
 
     @Singleton
     @Provides
-    fun providesGithubUserStorage(context: Context, gson: Gson): GithubUserStorage {
-        return GithubUserStorage(context.getSharedPreferences("user", Context.MODE_PRIVATE), gson)
+    fun providesGithubUserStorage(context: Context): GithubUserStorage {
+        return GithubUserStorage(context)
     }
 }
