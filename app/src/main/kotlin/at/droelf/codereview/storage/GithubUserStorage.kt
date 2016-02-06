@@ -1,11 +1,10 @@
 package at.droelf.codereview.storage
 
 import android.content.Context
-import android.content.SharedPreferences
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.model.realm.RealmGithubAccount
 import at.droelf.codereview.model.realm.RealmHelper
-import com.google.gson.Gson
+import at.droelf.codereview.model.realm.RealmRepoConfiguration
 import io.realm.Realm
 
 class GithubUserStorage(private val context: Context): RealmHelper {
@@ -13,22 +12,13 @@ class GithubUserStorage(private val context: Context): RealmHelper {
     private val dataKey = "github_data"
 
     fun userStored(): Boolean {
-        val realm = realm()
-        val count = realm.allObjects(RealmGithubAccount::class.java).count()
-        return count > 0
+        return realm().allObjects(RealmGithubAccount::class.java).count() > 0
     }
 
     fun storeUser(userData: Model.GithubAuth) {
-        val realm = realm()
-        realm.beginTransaction()
-        realm.copyToRealm(accountToRealm(userData))
-//        val user = realm.copyFromRealm(userToRealm(userData.user))
-//        val auth = realm.copyToRealm(authResponseToRealm(userData.auth))
-//        val account = realm.createObject(RealmGithubAccount::class.java)
-//        account.uuid = userData.uuid.toString()
-//        account.auth = auth
-//        account.user = user
-        realm.commitTransaction()
+        transaction {
+           it.copyToRealm(accountToRealm(userData))
+        }
     }
 
     fun getUserBlocking(): Model.GithubAuth? {
@@ -37,8 +27,26 @@ class GithubUserStorage(private val context: Context): RealmHelper {
         return accountToGithub(auth)
     }
 
-    private fun realm(): Realm {
-        return Realm.getInstance(context)
+    fun storeRepoConfigration(repoConfiguration: List<Model.RepoConfiguration>){
+        transaction {
+            val repoConfig = repoConfiguration.map { repoConfigurationToRealm(it) }.toMutableList()
+            it.copyToRealm(repoConfig)
+        }
     }
 
+    fun getRepoConfigrations(): List<Model.RepoConfiguration> {
+        return realm().allObjects(RealmRepoConfiguration::class.java)
+                .map{ repoConfigurationToGithub(it) }
+    }
+
+    private fun realm(): Realm {
+        return Realm.getDefaultInstance()
+    }
+
+    private fun transaction(update: (realm: Realm) -> Unit){
+        val realm = realm()
+        realm.beginTransaction()
+        update(realm)
+        realm.commitTransaction()
+    }
 }

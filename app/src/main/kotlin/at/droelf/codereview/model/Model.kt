@@ -7,6 +7,7 @@ import java.util.*
 object Model {
 
     data class GithubAuth(val auth: GithubModel.AuthResponse, val user: GithubModel.User, val uuid: UUID)
+    data class RepoConfiguration(val id: Long, val pullRequests: WatchType, val issues: WatchType)
 
     data class GithubDataSet(
             val patch: Patch.Patch,
@@ -20,4 +21,17 @@ object Model {
             val id: Long, val body: String, val user: GithubModel.User, val position: Int, val originalPosition: Int, val diffHunk: Patch.Patch,
             val path: String, val bodyHtml: String, val bodyText: String
     )
+
+    enum class WatchType(val id: Int) {
+        Hide(0),
+        Mine(1),
+        Participate(2),
+        All(3);
+
+        companion object {
+            fun fromId(id: Int): WatchType {
+                return WatchType.values().find { it.id == id} ?: All
+            }
+        }
+    }
 }

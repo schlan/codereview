@@ -12,7 +12,7 @@ class ResponseHolder<E>(
     fun upToDate(): Boolean {
         if(alwaysUpToDate) return true
         if(notUpToDate) return false
-        val maxAge = TimeUnit.MILLISECONDS.convert(2, TimeUnit.MINUTES)
+        val maxAge = TimeUnit.MILLISECONDS.convert(10, TimeUnit.MINUTES)
         return (System.currentTimeMillis() - timeStamp) < maxAge
     }
 

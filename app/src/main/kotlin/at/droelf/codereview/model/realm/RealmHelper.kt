@@ -75,4 +75,21 @@ interface RealmHelper {
                 userToRealm(githubAuth.user)
         )
     }
+
+    fun repoConfigurationToGithub(realmRepoConfiguration: RealmRepoConfiguration): Model.RepoConfiguration {
+        return Model.RepoConfiguration(
+                realmRepoConfiguration.id,
+                Model.WatchType.fromId(realmRepoConfiguration.pullRequest!!),
+                Model.WatchType.fromId(realmRepoConfiguration.issues!!)
+        )
+    }
+
+    fun repoConfigurationToRealm(githubRepoConfiguration: Model.RepoConfiguration): RealmRepoConfiguration {
+        return RealmRepoConfiguration(
+                githubRepoConfiguration.id,
+                githubRepoConfiguration.pullRequests.id,
+                githubRepoConfiguration.issues.id
+        )
+    }
+
 }
