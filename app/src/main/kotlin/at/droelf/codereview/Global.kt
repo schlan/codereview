@@ -8,7 +8,6 @@ import at.droelf.codereview.dagger.application.DaggerAppComponent
 import at.droelf.codereview.dagger.services.DbModule
 import at.droelf.codereview.dagger.services.GithubApiModule
 import at.droelf.codereview.dagger.services.SquareModule
-import com.facebook.stetho.Stetho
 import com.squareup.leakcanary.LeakCanary
 
 class Global: MultiDexApplication() {
