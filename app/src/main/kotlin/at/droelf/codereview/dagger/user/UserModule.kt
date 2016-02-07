@@ -6,6 +6,7 @@ import at.droelf.codereview.model.Model
 import at.droelf.codereview.network.GithubApi
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.provider.GithubProvider
+import at.droelf.codereview.storage.GithubUserStorage
 import com.jakewharton.disklrucache.DiskLruCache
 import dagger.Module
 import dagger.Provides
@@ -47,7 +48,7 @@ class UserModule(private val data: Model.GithubAuth) {
 
     @Provides
     @UserScope
-    fun providesGithubProviders(githubService: GithubService, githubCache: LruCache<String, Any>, diskLruCache: DiskLruCache): GithubProvider {
-        return GithubProvider(githubService, githubCache, diskLruCache)
+    fun providesGithubProviders(githubService: GithubService, githubUserStorage: GithubUserStorage, githubCache: LruCache<String, Any>, diskLruCache: DiskLruCache): GithubProvider {
+        return GithubProvider(githubService, githubUserStorage, githubCache, diskLruCache)
     }
 }

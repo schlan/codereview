@@ -16,7 +16,7 @@ class GithubUserStorage(private val context: Context): RealmHelper {
     }
 
     fun storeUser(userData: Model.GithubAuth) {
-        transaction {
+        transaction(realm()) {
            it.copyToRealm(accountToRealm(userData))
         }
     }
@@ -27,24 +27,36 @@ class GithubUserStorage(private val context: Context): RealmHelper {
         return accountToGithub(auth)
     }
 
-    fun storeRepoConfigration(repoConfiguration: List<Model.RepoConfiguration>){
-        transaction {
+    fun storeRepoConfiguration(repoConfiguration: List<Model.RepoConfiguration>){
+        transaction(realm()) {
             val repoConfig = repoConfiguration.map { repoConfigurationToRealm(it) }.toMutableList()
-            it.copyToRealm(repoConfig)
+            it.copyToRealmOrUpdate(repoConfig)
         }
     }
 
-    fun getRepoConfigrations(): List<Model.RepoConfiguration> {
+    fun getRepoConfigurations(): List<Model.RepoConfiguration> {
         return realm().allObjects(RealmRepoConfiguration::class.java)
                 .map{ repoConfigurationToGithub(it) }
+    }
+
+    fun getRepoConfiguration(realm: Realm, repoId: Long): Model.RepoConfiguration {
+        val config = realm.where(RealmRepoConfiguration::class.java).equalTo("id", repoId).findFirst()
+        return repoConfigurationToGithub(config)
+    }
+
+    fun updateRepoConfiguration(realm: Realm, repoId: Long, pr: Model.WatchType? = null, issue: Model.WatchType? = null) {
+        transaction(realm) {
+            val repoConfig = it.where(RealmRepoConfiguration::class.java).equalTo("id", repoId).findFirst()
+            if(pr != null) repoConfig.pullRequest = pr.id
+            if(issue != null) repoConfig.issues = issue.id
+        }
     }
 
     private fun realm(): Realm {
         return Realm.getDefaultInstance()
     }
 
-    private fun transaction(update: (realm: Realm) -> Unit){
-        val realm = realm()
+    private fun transaction(realm: Realm, update: (realm: Realm) -> Unit){
         realm.beginTransaction()
         update(realm)
         realm.commitTransaction()

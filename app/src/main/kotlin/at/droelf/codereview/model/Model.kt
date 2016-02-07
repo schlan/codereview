@@ -9,6 +9,8 @@ object Model {
     data class GithubAuth(val auth: GithubModel.AuthResponse, val user: GithubModel.User, val uuid: UUID)
     data class RepoConfiguration(val id: Long, val pullRequests: WatchType, val issues: WatchType)
 
+    data class GithubSubscription(val repo: GithubModel.Repository, val config: RepoConfiguration)
+
     data class GithubDataSet(
             val patch: Patch.Patch,
             val fileContent: List<SpannableString>,

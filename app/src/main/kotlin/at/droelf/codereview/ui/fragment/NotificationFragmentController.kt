@@ -9,18 +9,19 @@ import at.droelf.codereview.utils.RxHelper
 import rx.Observable
 
 
-class NotificationFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider, val user: GithubModel.User): RxHelper {
+class NotificationFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider, val user: GithubModel.User) : RxHelper {
 
     var observable: Observable<ResponseHolder<List<GithubModel.PullRequest>>>? = null
     var listMapCache: MutableMap<String, Observable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>>> = hashMapOf()
 
     var scrollPos: Int? = null
 
-    fun loadPrs(skipCache: Boolean = false): Observable<ResponseHolder<List<GithubModel.PullRequest>>>{
+    fun loadPrs(skipCache: Boolean = false): Observable<ResponseHolder<List<GithubModel.PullRequest>>> {
         if (observable == null || skipCache) {
             observable = githubProvider.subscriptions(false, skipCache)
                     .flatMap({ repos ->
-                        Observable.merge(repos.map{githubProvider.pullRequests(it.owner.login, it.name, skipCache)}, 100)
+                        //TODO filter
+                        Observable.merge(repos.map { githubProvider.pullRequests(it.repo.owner.login, it.repo.name, skipCache) }, 100)
                     }, 100)
                     .compose(transformObservable<ResponseHolder<List<GithubModel.PullRequest>>>())
                     .cache()
@@ -33,7 +34,7 @@ class NotificationFragmentController(val mainActivityController: MainActivityCon
         val key = "${pr.id}"
         var observable = listMapCache[key]
 
-        if(observable == null){
+        if (observable == null) {
             val owner = pr.base.repo.owner.login
             val repo = pr.base.repo.name
             val prNumber = pr.number
@@ -41,7 +42,7 @@ class NotificationFragmentController(val mainActivityController: MainActivityCon
             observable = Observable.combineLatest(
                     githubProvider.status(owner, repo, pr.head.ref, true),
                     githubProvider.pullRequestDetail(owner, repo, prNumber, true),
-                    { a, b -> Pair(b, a)}
+                    { a, b -> Pair(b, a) }
             )
                     .compose(transformObservable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>>())
                     .cache()
@@ -51,7 +52,7 @@ class NotificationFragmentController(val mainActivityController: MainActivityCon
         return observable!!
     }
 
-    fun displayFileFragment(fm: FragmentManager, owner: String, repo: String, id: Long){
+    fun displayFileFragment(fm: FragmentManager, owner: String, repo: String, id: Long) {
         mainActivityController.displayFilesFragment(fm, owner, repo, id)
     }
 

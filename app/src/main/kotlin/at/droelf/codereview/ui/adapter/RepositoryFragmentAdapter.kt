@@ -1,23 +1,33 @@
 package at.droelf.codereview.ui.adapter
 
+import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import at.droelf.codereview.R
-import at.droelf.codereview.model.GithubModel
+import at.droelf.codereview.model.Model
+import at.droelf.codereview.ui.fragment.RepositoryFragmentController
 import at.droelf.codereview.ui.viewholder.RepositoryFragmentViewHolder
 import rx.Observable
 
-class RepostioryFragmentAdapter(repos: Observable<List<GithubModel.Repository>>): RecyclerView.Adapter<RepositoryFragmentViewHolder>() {
+class RepositoryFragmentAdapter(
+        repos: Observable<List<Model.GithubSubscription>>,
+        val controller: RepositoryFragmentController,
+        swipeToRefresh: SwipeRefreshLayout
+): RecyclerView.Adapter<RepositoryFragmentViewHolder>() {
 
-    private var repoList: MutableList<GithubModel.Repository> = mutableListOf()
+    private var repoList: MutableList<Model.GithubSubscription> = mutableListOf()
 
     init {
+        swipeToRefresh.post({ swipeToRefresh.isRefreshing = true })
         repos.subscribe({
             repoList.addAll(it)
             notifyDataSetChanged()
         }, {
+            swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
             it.printStackTrace()
+        }, {
+            swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
         })
     }
 
@@ -31,6 +41,6 @@ class RepostioryFragmentAdapter(repos: Observable<List<GithubModel.Repository>>)
     }
 
     override fun onBindViewHolder(viewHolder: RepositoryFragmentViewHolder?, position: Int) {
-        viewHolder?.bind(repoList[position])
+        viewHolder?.bind(repoList[position], controller)
     }
 }

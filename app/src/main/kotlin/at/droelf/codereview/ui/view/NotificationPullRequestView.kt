@@ -28,9 +28,7 @@ class NotificationPullRequestView(context: Context, val fm: FragmentManager, val
     }
 
     fun init() {
-        //swipeToRefresh.isEnabled = false
         swipeToRefresh.setColorSchemeResources(R.color.colorAccent)
-
         swipeToRefresh.setOnRefreshListener {
             controller.observable = null
             controller.listMapCache = hashMapOf()

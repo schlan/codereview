@@ -3,8 +3,10 @@ package at.droelf.codereview.provider
 import android.util.LruCache
 import at.droelf.codereview.cache.GithubEndpointCache
 import at.droelf.codereview.model.GithubModel
+import at.droelf.codereview.model.Model
 import at.droelf.codereview.model.ResponseHolder
 import at.droelf.codereview.network.GithubService
+import at.droelf.codereview.storage.GithubUserStorage
 import at.droelf.codereview.storage.PersistantCache
 import com.google.gson.reflect.TypeToken
 import com.jakewharton.disklrucache.DiskLruCache
@@ -14,7 +16,11 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-class GithubProvider(val githubService: GithubService, val cache: LruCache<String, Any>, val diskCache: DiskLruCache): GithubCacheHelper {
+class GithubProvider(
+        val githubService: GithubService,
+        val githubUserStorage: GithubUserStorage,
+        val cache: LruCache<String, Any>,
+        val diskCache: DiskLruCache): GithubCacheHelper {
 
     private val githubPrCache = GithubEndpointCache<List<GithubModel.PullRequest>>(cache)
     private val githubPrStorage = PersistantCache<List<GithubModel.PullRequest>>(diskCache)
@@ -54,9 +60,19 @@ class GithubProvider(val githubService: GithubService, val cache: LruCache<Strin
         return genericLoadData(key, githubPrReviewComments, githubService.reviewCommentsRx(owner, repo, number), skipCache)
     }
 
-    fun subscriptions(participating: Boolean, skipCache: Boolean = false): Observable<List<GithubModel.Repository>> {
+    fun subscriptions(participating: Boolean, skipCache: Boolean = false): Observable<List<Model.GithubSubscription>> {
         val key = "subscriptions-$participating"
         return genericLoadData(key, githubSubscriptions, githubService.subscriptionsRx(participating), skipCache)
+                .map { repos ->
+                    val configs = githubUserStorage.getRepoConfigurations()
+                    repos.map { repo ->
+                        val c = configs.find { it.id == repo.id } ?: Model.RepoConfiguration(repo.id, Model.WatchType.All, Model.WatchType.All)
+                        Model.GithubSubscription(repo, c)
+                    }
+                }
+                .doOnNext { repos ->
+                    githubUserStorage.storeRepoConfiguration( repos.map{ it.config })
+                }
     }
 
     fun notifications(skipCache: Boolean = false): Observable<List<GithubModel.Notification>> {
