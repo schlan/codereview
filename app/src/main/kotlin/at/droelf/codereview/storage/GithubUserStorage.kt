@@ -28,8 +28,16 @@ class GithubUserStorage(private val context: Context): RealmHelper {
     }
 
     fun storeRepoConfiguration(repoConfiguration: List<Model.RepoConfiguration>){
-        transaction(realm()) {
-            val repoConfig = repoConfiguration.map { repoConfigurationToRealm(it) }.toMutableList()
+        val realm = realm()
+
+        val storedRepos = realm.allObjects(RealmRepoConfiguration::class.java)
+                    .map{ repoConfigurationToGithub(it) }
+        val reposToStore = repoConfiguration.filter { r -> storedRepos.find { it.id == r.id } == null }
+
+        println("Storing the following new repo configurations: $reposToStore")
+
+        transaction(realm) {
+            val repoConfig = reposToStore.map { repoConfigurationToRealm(it) }.toMutableList()
             it.copyToRealmOrUpdate(repoConfig)
         }
     }
@@ -47,8 +55,12 @@ class GithubUserStorage(private val context: Context): RealmHelper {
     fun updateRepoConfiguration(realm: Realm, repoId: Long, pr: Model.WatchType? = null, issue: Model.WatchType? = null) {
         transaction(realm) {
             val repoConfig = it.where(RealmRepoConfiguration::class.java).equalTo("id", repoId).findFirst()
-            if(pr != null) repoConfig.pullRequest = pr.id
-            if(issue != null) repoConfig.issues = issue.id
+            val config = RealmRepoConfiguration(
+                    repoId,
+                    pr?.id ?: repoConfig.pullRequest,
+                    issue?.id ?: repoConfig.issues
+            )
+            realm.copyToRealmOrUpdate(config)
         }
     }
 

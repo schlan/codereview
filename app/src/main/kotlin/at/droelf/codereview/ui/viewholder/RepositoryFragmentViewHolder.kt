@@ -37,6 +37,7 @@ class RepositoryFragmentViewHolder(val view: View) : RecyclerView.ViewHolder(vie
         issueToggleButton.value = config.issues.id
 
         prToggleButton.setOnValueChangedListener {
+            println("Changed: ${subscription.repo.fullName} ${Model.WatchType.fromId(it)}")
             controller.updateRepositoryConfig(subscription.repo.id, pr = Model.WatchType.fromId(it))
         }
 

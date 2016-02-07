@@ -12,8 +12,6 @@ import com.google.gson.reflect.TypeToken
 import com.jakewharton.disklrucache.DiskLruCache
 import rx.Observable
 import java.lang.reflect.Type
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 
 class GithubProvider(
@@ -71,6 +69,7 @@ class GithubProvider(
                     }
                 }
                 .doOnNext { repos ->
+                    println("Repos: (${repos.filter { it.config.id == 16692633L }})")
                     githubUserStorage.storeRepoConfiguration( repos.map{ it.config })
                 }
     }

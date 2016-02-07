@@ -57,8 +57,9 @@ class RepositoryFragment: BaseFragment<RepositoryFragmentComponent>() {
         list.adapter = RepositoryFragmentAdapter(controller.loadRepositories(), controller, swipeToRefresh)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStop() {
+        super.onStop()
         controller.realm.close()
     }
+
 }

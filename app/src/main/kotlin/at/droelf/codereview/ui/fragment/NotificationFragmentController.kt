@@ -2,6 +2,7 @@ package at.droelf.codereview.ui.fragment
 
 import android.support.v4.app.FragmentManager
 import at.droelf.codereview.model.GithubModel
+import at.droelf.codereview.model.Model
 import at.droelf.codereview.model.ResponseHolder
 import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivityController
@@ -19,8 +20,12 @@ class NotificationFragmentController(val mainActivityController: MainActivityCon
     fun loadPrs(skipCache: Boolean = false): Observable<ResponseHolder<List<GithubModel.PullRequest>>> {
         if (observable == null || skipCache) {
             observable = githubProvider.subscriptions(false, skipCache)
+                    .map{ repos ->
+                        repos.filter { it.config.pullRequests != Model.WatchType.Hide }
+                    }
                     .flatMap({ repos ->
                         //TODO filter
+                        println("Filtered Repos: (${repos.filter { it.config.id == 16692633L }})")
                         Observable.merge(repos.map { githubProvider.pullRequests(it.repo.owner.login, it.repo.name, skipCache) }, 100)
                     }, 100)
                     .compose(transformObservable<ResponseHolder<List<GithubModel.PullRequest>>>())

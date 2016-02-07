@@ -18,11 +18,8 @@ class RepositoryFragmentController(
     val realm = Realm.getDefaultInstance()
 
     fun loadRepositories(): Observable<List<Model.GithubSubscription>> {
-        if(observable == null){
-            observable = githubProvider.subscriptions(true, skipCache = true)
+        return githubProvider.subscriptions(true, skipCache = true)
                     .compose(transformObservable<List<Model.GithubSubscription>>())
-        }
-        return observable!!
     }
 
     fun repositoryConfig(repoId: Long): Model.RepoConfiguration {
