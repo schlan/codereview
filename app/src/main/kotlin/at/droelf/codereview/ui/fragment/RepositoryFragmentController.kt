@@ -15,7 +15,6 @@ class RepositoryFragmentController(
         val githubUserStorage: GithubUserStorage) : RxHelper {
 
     var observable: Observable<List<Model.GithubSubscription>>? = null
-    val realm = Realm.getDefaultInstance()
 
     fun loadRepositories(): Observable<List<Model.GithubSubscription>> {
         return githubProvider.subscriptions(true, skipCache = true)
@@ -23,10 +22,10 @@ class RepositoryFragmentController(
     }
 
     fun repositoryConfig(repoId: Long): Model.RepoConfiguration {
-        return githubUserStorage.getRepoConfiguration(realm, repoId)
+        return githubUserStorage.getRepoConfiguration(repoId)
     }
 
     fun updateRepositoryConfig(repoId: Long, pr: Model.WatchType? = null, issue: Model.WatchType? = null){
-        return githubUserStorage.updateRepoConfiguration(realm, repoId, pr, issue)
+        return githubUserStorage.updateRepoConfiguration(repoId, pr, issue)
     }
 }

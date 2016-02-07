@@ -7,70 +7,117 @@ import at.droelf.codereview.model.realm.RealmHelper
 import at.droelf.codereview.model.realm.RealmRepoConfiguration
 import io.realm.Realm
 
-class GithubUserStorage(private val context: Context): RealmHelper {
-
-    private val dataKey = "github_data"
+class GithubUserStorage(private val context: Context) : RealmHelper {
 
     fun userStored(): Boolean {
-        return realm().allObjects(RealmGithubAccount::class.java).count() > 0
+        return realmOpenCloseFun {
+            it.allObjects(RealmGithubAccount::class.java).count() > 0
+        }
     }
 
     fun storeUser(userData: Model.GithubAuth) {
-        transaction(realm()) {
-           it.copyToRealm(accountToRealm(userData))
+        return realmOpenCloseFun {
+            transaction(it) {
+                it.copyToRealm(accountToRealm(userData))
+            }
         }
     }
 
     fun getUserBlocking(): Model.GithubAuth? {
-        val realm = realm()
-        val auth = realm.allObjects(RealmGithubAccount::class.java).firstOrNull() ?: return null
-        return accountToGithub(auth)
+        return realmOpenCloseFun {
+            val auth = it.allObjects(RealmGithubAccount::class.java).firstOrNull()
+            if(auth != null) accountToGithub(auth) else null
+        } ?: throw RuntimeException("foorbar")
     }
 
-    fun storeRepoConfiguration(repoConfiguration: List<Model.RepoConfiguration>){
-        val realm = realm()
+    fun storeRepoConfiguration(repoConfiguration: List<Model.RepoConfiguration>) {
+        realmOpenCloseFun {
+            val storedRepos = it.allObjects(RealmRepoConfiguration::class.java)
+                    .map { repoConfigurationToGithub(it) }
+            val reposToStore = repoConfiguration.filter { r -> storedRepos.find { it.id == r.id } == null }
 
-        val storedRepos = realm.allObjects(RealmRepoConfiguration::class.java)
-                    .map{ repoConfigurationToGithub(it) }
-        val reposToStore = repoConfiguration.filter { r -> storedRepos.find { it.id == r.id } == null }
+            println("Storing the following new repo configurations: $reposToStore")
 
-        println("Storing the following new repo configurations: $reposToStore")
-
-        transaction(realm) {
-            val repoConfig = reposToStore.map { repoConfigurationToRealm(it) }.toMutableList()
-            it.copyToRealmOrUpdate(repoConfig)
+            transaction(it) {
+                val repoConfig = reposToStore.map { repoConfigurationToRealm(it) }.toMutableList()
+                it.copyToRealmOrUpdate(repoConfig)
+            }
         }
     }
 
     fun getRepoConfigurations(): List<Model.RepoConfiguration> {
-        return realm().allObjects(RealmRepoConfiguration::class.java)
-                .map{ repoConfigurationToGithub(it) }
-    }
-
-    fun getRepoConfiguration(realm: Realm, repoId: Long): Model.RepoConfiguration {
-        val config = realm.where(RealmRepoConfiguration::class.java).equalTo("id", repoId).findFirst()
-        return repoConfigurationToGithub(config)
-    }
-
-    fun updateRepoConfiguration(realm: Realm, repoId: Long, pr: Model.WatchType? = null, issue: Model.WatchType? = null) {
-        transaction(realm) {
-            val repoConfig = it.where(RealmRepoConfiguration::class.java).equalTo("id", repoId).findFirst()
-            val config = RealmRepoConfiguration(
-                    repoId,
-                    pr?.id ?: repoConfig.pullRequest,
-                    issue?.id ?: repoConfig.issues
-            )
-            realm.copyToRealmOrUpdate(config)
+        return realmOpenCloseFun {
+            it.allObjects(RealmRepoConfiguration::class.java).map { repoConfigurationToGithub(it) }
         }
     }
 
-    private fun realm(): Realm {
-        return Realm.getDefaultInstance()
+    fun getRepoConfiguration(repoId: Long): Model.RepoConfiguration {
+        return realmOpenCloseFun {
+            val config = it.where(RealmRepoConfiguration::class.java).equalTo("id", repoId).findFirst()
+            repoConfigurationToGithub(config)
+        }
     }
 
-    private fun transaction(realm: Realm, update: (realm: Realm) -> Unit){
-        realm.beginTransaction()
-        update(realm)
-        realm.commitTransaction()
+    fun updateRepoConfiguration(repoId: Long, pr: Model.WatchType? = null, issue: Model.WatchType? = null) {
+        realmOpenCloseFun {
+            transaction(it) {
+                val repoConfig = it.where(RealmRepoConfiguration::class.java).equalTo("id", repoId).findFirst()
+                val config = RealmRepoConfiguration(
+                        repoId,
+                        pr?.id ?: repoConfig.pullRequest,
+                        issue?.id ?: repoConfig.issues
+                )
+                it.copyToRealmOrUpdate(config)
+            }
+        }
     }
+
+    private fun transaction(realm: Realm, update: (realm: Realm) -> Unit) {
+        realm.beginTransaction()
+        try {
+            update(realm)
+            realm.commitTransaction()
+        } catch(e: Exception) {
+            realm.cancelTransaction()
+        }
+    }
+
+    private fun <E> realmOpenCloseFun(doStuff: (realm: Realm) -> E): E {
+        val realm = Realm.getDefaultInstance()
+        var result: E? = null
+        try {
+            result = doStuff(realm)
+        } catch (e: Exception){
+            result = null
+            println("Realm Error: ${e.message}")
+            e.printStackTrace()
+        } finally{
+            realm.close()
+            return result ?: throw RuntimeException("realm error :(")
+        }
+    }
+//
+//    private fun <E> readRx(realm: Realm, read: (realm: Realm) -> E): Observable<E> {
+//        return Observable.create {
+//            val data = read(realm)
+//            it.onNext(data)
+//            it.onCompleted()
+//        }
+//    }
+//
+//    private fun transactionRx(realm: Realm, update: (realm: Realm) -> Unit): Observable<Boolean> {
+//        return Observable.create({
+//            realm.executeTransaction({ update(it) },
+//                    object : Realm.Transaction.Callback() {
+//                        override fun onSuccess() {
+//                            it.onNext(true)
+//                            it.onCompleted()
+//                        }
+//
+//                        override fun onError(e: Exception?) {
+//                            it.onError(e)
+//                        }
+//                    })
+//        })
+//    }
 }
