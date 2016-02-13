@@ -17,7 +17,7 @@ class RepositoryFragmentController(
     var observable: Observable<List<Model.GithubSubscription>>? = null
 
     fun loadRepositories(): Observable<List<Model.GithubSubscription>> {
-        return githubProvider.subscriptions(true, skipCache = true)
+        return githubProvider.subscriptions(skipCache = true)
                     .compose(transformObservable<List<Model.GithubSubscription>>())
     }
 

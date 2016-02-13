@@ -1,22 +1,21 @@
 package at.droelf.codereview.storage
 
-import android.content.Context
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.model.realm.RealmGithubAccount
 import at.droelf.codereview.model.realm.RealmHelper
 import at.droelf.codereview.model.realm.RealmRepoConfiguration
 import io.realm.Realm
 
-class GithubUserStorage(private val context: Context) : RealmHelper {
+class GithubUserStorage() : RealmHelper {
 
     fun userStored(): Boolean {
-        return realmOpenCloseFun {
+        return realmCycleOfLife {
             it.allObjects(RealmGithubAccount::class.java).count() > 0
         }
     }
 
     fun storeUser(userData: Model.GithubAuth) {
-        return realmOpenCloseFun {
+        return realmCycleOfLife {
             transaction(it) {
                 it.copyToRealm(accountToRealm(userData))
             }
@@ -24,14 +23,14 @@ class GithubUserStorage(private val context: Context) : RealmHelper {
     }
 
     fun getUserBlocking(): Model.GithubAuth? {
-        return realmOpenCloseFun {
+        return realmCycleOfLife {
             val auth = it.allObjects(RealmGithubAccount::class.java).firstOrNull()
             if(auth != null) accountToGithub(auth) else null
-        } ?: throw RuntimeException("foorbar")
+        }
     }
 
     fun storeRepoConfiguration(repoConfiguration: List<Model.RepoConfiguration>) {
-        realmOpenCloseFun {
+        realmCycleOfLife {
             val storedRepos = it.allObjects(RealmRepoConfiguration::class.java)
                     .map { repoConfigurationToGithub(it) }
             val reposToStore = repoConfiguration.filter { r -> storedRepos.find { it.id == r.id } == null }
@@ -46,20 +45,20 @@ class GithubUserStorage(private val context: Context) : RealmHelper {
     }
 
     fun getRepoConfigurations(): List<Model.RepoConfiguration> {
-        return realmOpenCloseFun {
+        return realmCycleOfLife {
             it.allObjects(RealmRepoConfiguration::class.java).map { repoConfigurationToGithub(it) }
         }
     }
 
     fun getRepoConfiguration(repoId: Long): Model.RepoConfiguration {
-        return realmOpenCloseFun {
+        return realmCycleOfLife {
             val config = it.where(RealmRepoConfiguration::class.java).equalTo("id", repoId).findFirst()
             repoConfigurationToGithub(config)
         }
     }
 
     fun updateRepoConfiguration(repoId: Long, pr: Model.WatchType? = null, issue: Model.WatchType? = null) {
-        realmOpenCloseFun {
+        realmCycleOfLife {
             transaction(it) {
                 val repoConfig = it.where(RealmRepoConfiguration::class.java).equalTo("id", repoId).findFirst()
                 val config = RealmRepoConfiguration(
@@ -78,12 +77,15 @@ class GithubUserStorage(private val context: Context) : RealmHelper {
             update(realm)
             realm.commitTransaction()
         } catch(e: Exception) {
+            println("Abort realm transaction, error: ${e.message}")
+            e.printStackTrace()
             realm.cancelTransaction()
         }
     }
 
-    private fun <E> realmOpenCloseFun(doStuff: (realm: Realm) -> E): E {
+    private fun <E> realmCycleOfLife(doStuff: (realm: Realm) -> E): E {
         val realm = Realm.getDefaultInstance()
+        val time = System.currentTimeMillis()
         var result: E? = null
         try {
             result = doStuff(realm)
@@ -93,31 +95,8 @@ class GithubUserStorage(private val context: Context) : RealmHelper {
             e.printStackTrace()
         } finally{
             realm.close()
+            println("Realm was ${System.currentTimeMillis() - time}ms alive | Thread: ${Thread.currentThread().name}")
             return result ?: throw RuntimeException("realm error :(")
         }
     }
-//
-//    private fun <E> readRx(realm: Realm, read: (realm: Realm) -> E): Observable<E> {
-//        return Observable.create {
-//            val data = read(realm)
-//            it.onNext(data)
-//            it.onCompleted()
-//        }
-//    }
-//
-//    private fun transactionRx(realm: Realm, update: (realm: Realm) -> Unit): Observable<Boolean> {
-//        return Observable.create({
-//            realm.executeTransaction({ update(it) },
-//                    object : Realm.Transaction.Callback() {
-//                        override fun onSuccess() {
-//                            it.onNext(true)
-//                            it.onCompleted()
-//                        }
-//
-//                        override fun onError(e: Exception?) {
-//                            it.onError(e)
-//                        }
-//                    })
-//        })
-//    }
 }

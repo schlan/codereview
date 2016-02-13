@@ -49,7 +49,7 @@ class AppModule(private val app: Application) {
     @Singleton
     @Provides
     fun providesAuthRequest(@Named("client_secret") clientSecret: String): GithubModel.AuthRequest {
-        return GithubModel.AuthRequest(clientSecret, listOf("repo"), "Octosherlock in the house", "http://droelf.at")
+        return GithubModel.AuthRequest(clientSecret, listOf("repo"), "Octosherlock in the house", "http://droelf.at") //TODO
     }
 
     @Singleton
@@ -66,7 +66,7 @@ class AppModule(private val app: Application) {
 
     @Singleton
     @Provides
-    fun providesGithubUserStorage(context: Context): GithubUserStorage {
-        return GithubUserStorage(context)
+    fun providesGithubUserStorage(): GithubUserStorage {
+        return GithubUserStorage()
     }
 }

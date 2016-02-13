@@ -36,11 +36,10 @@ class NotificationPullRequestView(context: Context, val fm: FragmentManager, val
             list.adapter = listAdapter
         }
 
-        listAdapter = NotificationFragmentAdapter(controller.loadPrs(), controller, this, fm, swipeToRefresh)
-
         list.addItemDecoration(DividerItemDecoration(context, resources.getDimensionPixelOffset(R.dimen.row_notification_pull_request_divider_padding_left)))
         list.layoutManager = LinearLayoutManager(context)
         list.itemAnimator = SlideInUpAnimator()
+        listAdapter = NotificationFragmentAdapter(controller.loadPrs(), controller, this, fm, swipeToRefresh)
         list.adapter = listAdapter
 
         if(controller.scrollPos != null){

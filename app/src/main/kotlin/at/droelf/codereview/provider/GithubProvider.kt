@@ -7,7 +7,7 @@ import at.droelf.codereview.model.Model
 import at.droelf.codereview.model.ResponseHolder
 import at.droelf.codereview.network.GithubService
 import at.droelf.codereview.storage.GithubUserStorage
-import at.droelf.codereview.storage.PersistantCache
+import at.droelf.codereview.storage.PersistentCache
 import com.google.gson.reflect.TypeToken
 import com.jakewharton.disklrucache.DiskLruCache
 import rx.Observable
@@ -21,12 +21,17 @@ class GithubProvider(
         val diskCache: DiskLruCache): GithubCacheHelper {
 
     private val githubPrCache = GithubEndpointCache<List<GithubModel.PullRequest>>(cache)
-    private val githubPrStorage = PersistantCache<List<GithubModel.PullRequest>>(diskCache)
+    private val githubPrStorage = PersistentCache<List<GithubModel.PullRequest>>(diskCache)
 
     private val githubPrDetailCache = GithubEndpointCache<GithubModel.PullRequestDetail>(cache)
-    private val githubPrFiles = GithubEndpointCache<List<GithubModel.PullRequestFile>>(cache)
-    private val githubPrComments = GithubEndpointCache<List<GithubModel.Comment>>(cache)
-    private val githubPrReviewComments = GithubEndpointCache<List<GithubModel.ReviewComment>>(cache)
+    private val githubPrFilesCache = GithubEndpointCache<List<GithubModel.PullRequestFile>>(cache)
+
+    private val githubPrCommentsCache = GithubEndpointCache<List<GithubModel.Comment>>(cache)
+    private val githubPrCommentsStorage = PersistentCache<List<GithubModel.Comment>>(diskCache)
+
+    private val githubPrReviewCommentsCache = GithubEndpointCache<List<GithubModel.ReviewComment>>(cache)
+    private val githubPrReviewCommentsStorage = PersistentCache<List<GithubModel.ReviewComment>>(diskCache)
+
     private val githubSubscriptions = GithubEndpointCache<List<GithubModel.Repository>>(cache)
     private val githubNotifications = GithubEndpointCache<List<GithubModel.Notification>>(cache)
     private val githubFile = GithubEndpointCache<String>(cache)
@@ -45,22 +50,26 @@ class GithubProvider(
 
     fun pullRequestFiles(owner: String, repo: String, number: Long, skipCache: Boolean = false): Observable<List<GithubModel.PullRequestFile>> {
         val key = "pull_request_files-$owner-$repo-$number"
-        return genericLoadData(key, githubPrFiles, githubService.pullRequestFilesRx(owner, repo, number), skipCache)
+        return genericLoadData(key, githubPrFilesCache, githubService.pullRequestFilesRx(owner, repo, number), skipCache)
     }
 
     fun comments(owner: String, repo: String, number: Long, skipCache: Boolean = false): Observable<List<GithubModel.Comment>> {
         val key = "pull_request_comments-$owner-$repo-$number"
-        return genericLoadData(key, githubPrComments, githubService.commentsRx(owner, repo, number), skipCache)
+        val t: Type = object: TypeToken<ResponseHolder<List<GithubModel.Comment>>>(){}.type
+        return genericLoadDataV2(key, githubPrCommentsCache, githubPrCommentsStorage, githubService.commentsRx(owner, repo, number), t, skipCache)
+                .map { it.data }
     }
 
     fun reviewComments(owner: String, repo: String, number: Long, skipCache: Boolean = false): Observable<List<GithubModel.ReviewComment>> {
         val key = "pull_request_review_comments-$owner-$repo-$number"
-        return genericLoadData(key, githubPrReviewComments, githubService.reviewCommentsRx(owner, repo, number), skipCache)
+        val t: Type = object: TypeToken<ResponseHolder<List<GithubModel.ReviewComment>>>(){}.type
+        return genericLoadDataV2(key, githubPrReviewCommentsCache, githubPrReviewCommentsStorage, githubService.reviewCommentsRx(owner, repo, number), t, skipCache)
+                .map { it.data }
     }
 
-    fun subscriptions(participating: Boolean, skipCache: Boolean = false): Observable<List<Model.GithubSubscription>> {
-        val key = "subscriptions-$participating"
-        return genericLoadData(key, githubSubscriptions, githubService.subscriptionsRx(participating), skipCache)
+    fun subscriptions(skipCache: Boolean = false): Observable<List<Model.GithubSubscription>> {
+        val key = "subscriptions"
+        return genericLoadData(key, githubSubscriptions, githubService.subscriptionsRx(), skipCache)
                 .map { repos ->
                     val configs = githubUserStorage.getRepoConfigurations()
                     repos.map { repo ->
@@ -68,10 +77,7 @@ class GithubProvider(
                         Model.GithubSubscription(repo, c)
                     }
                 }
-                .doOnNext { repos ->
-                    println("Repos: (${repos.filter { it.config.id == 16692633L }})")
-                    githubUserStorage.storeRepoConfiguration( repos.map{ it.config })
-                }
+                .doOnNext { repos -> githubUserStorage.storeRepoConfiguration( repos.map{ it.config })}
     }
 
     fun notifications(skipCache: Boolean = false): Observable<List<GithubModel.Notification>> {

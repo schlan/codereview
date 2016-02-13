@@ -45,7 +45,6 @@ interface GithubApi {
     @GET("/user/subscriptions")
     fun subscriptionsRx(
             @Header("Authorization") auth: String,
-            @Query("participating") participating: Boolean,
             @Query("page") page: Int = 1
     ): Observable<Response<MutableList<GithubModel.Repository>>>
 

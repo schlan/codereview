@@ -4,13 +4,17 @@ import android.support.v4.app.FragmentManager
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.model.ResponseHolder
+import at.droelf.codereview.provider.GithubFilter
 import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivityController
 import at.droelf.codereview.utils.RxHelper
 import rx.Observable
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 
 
-class NotificationFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider, val user: GithubModel.User) : RxHelper {
+class NotificationFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider, val user: GithubModel.User)
+: RxHelper, GithubFilter {
 
     var observable: Observable<ResponseHolder<List<GithubModel.PullRequest>>>? = null
     var listMapCache: MutableMap<String, Observable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>>> = hashMapOf()
@@ -19,16 +23,19 @@ class NotificationFragmentController(val mainActivityController: MainActivityCon
 
     fun loadPrs(skipCache: Boolean = false): Observable<ResponseHolder<List<GithubModel.PullRequest>>> {
         if (observable == null || skipCache) {
-            observable = githubProvider.subscriptions(false, skipCache)
-                    .map{ repos ->
-                        repos.filter { it.config.pullRequests != Model.WatchType.Hide }
-                    }
+            observable = githubProvider.subscriptions(skipCache)
+                    .flatMap { repoFilter(it) }
                     .flatMap({ repos ->
-                        //TODO filter
-                        println("Filtered Repos: (${repos.filter { it.config.id == 16692633L }})")
-                        Observable.merge(repos.map { githubProvider.pullRequests(it.repo.owner.login, it.repo.name, skipCache) }, 100)
-                    }, 100)
-                    .compose(transformObservable<ResponseHolder<List<GithubModel.PullRequest>>>())
+                        Observable.from(repos)
+                            .flatMap {
+                                githubProvider.pullRequests(it.repo.owner.login, it.repo.name, skipCache)
+                            }
+//                                .flatMap { foobar ->
+//                                prFilter(repos, foobar, user, githubProvider)
+//                            }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
                     .cache()
         }
 

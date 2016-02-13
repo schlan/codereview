@@ -2,8 +2,9 @@ package at.droelf.codereview.provider
 
 import at.droelf.codereview.cache.GithubEndpointCache
 import at.droelf.codereview.model.ResponseHolder
-import at.droelf.codereview.storage.PersistantCache
+import at.droelf.codereview.storage.PersistentCache
 import rx.Observable
+import rx.schedulers.Schedulers
 import java.lang.reflect.Type
 
 interface GithubCacheHelper {
@@ -21,15 +22,26 @@ interface GithubCacheHelper {
         }
     }
 
-    fun <E> genericLoadDataV2(key: String, memory: GithubEndpointCache<E>, disc: PersistantCache<E>, network: Observable<ResponseHolder<E>>, clazz: Type, skipCache: Boolean): Observable<ResponseHolder<E>>
+    fun <E> genericLoadDataV2(key: String, memory: GithubEndpointCache<E>, disc: PersistentCache<E>, network: Observable<ResponseHolder<E>>, clazz: Type, skipCache: Boolean): Observable<ResponseHolder<E>>
             where E : Any {
 
-        val networkObservable = network.doOnNext { memory.put(key, it.data) }.doOnNext { disc.put(key, it.data) }
+        val networkObservable = network
+                .observeOn(Schedulers.io())
+                .doOnNext { memory.put(key, it.data) }
+                .doOnNext { disc.put(key, it.data) }
+
+        val memoryObservable = memory.get(key)
+                .observeOn(Schedulers.io())
+                .cache()
+
+        val discObservable = disc.get(key, clazz)
+                .observeOn(Schedulers.io())
+                .doOnNext { memory.put(key, it.data) }
+                .cache()
+
         val data: Observable<ResponseHolder<E>>
 
         if(!skipCache){
-            val memoryObservable = memory.get(key).cache()
-            val discObservable = disc.get(key, clazz).cache().doOnNext { memory.put(key, it.data) }
             data = Observable.concat(
                     memoryObservable.takeFirst { it.upToDate() },
                     memoryObservable.takeFirst { true },
@@ -48,8 +60,6 @@ interface GithubCacheHelper {
                         networkObservable
                     }
         } else {
-            val memoryObservable = memory.get(key).cache()
-            val discObservable = disc.get(key, clazz).cache().doOnNext { memory.put(key, it.data) }
             data = Observable.concat(
                     memoryObservable.takeFirst { true }.map { ResponseHolder(it.data, it.source, it.timeStamp, notUpToDate = true) },
                     discObservable.takeFirst { true }.map { ResponseHolder(it.data, it.source, it.timeStamp, notUpToDate = true) },

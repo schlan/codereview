@@ -31,7 +31,7 @@ class StartFragmentController(val mainActivityController: MainActivityController
 
     fun comments(owner: String, repo: String, number: Long): Observable<List<GithubModel.Comment>> {
         if(commentObservable == null){
-            commentObservable = githubProvider.comments(owner, repo, number)
+            commentObservable = githubProvider.comments(owner, repo, number, true)
                     .compose(transformObservable<List<GithubModel.Comment>>())
                     .cache()
         }

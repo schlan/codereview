@@ -30,9 +30,9 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): Githu
         }.flatten())
     }
 
-    fun subscriptionsRx(participating: Boolean): Observable<ResponseHolder<List<GithubModel.Repository>>> {
-        return wrap(pages(githubApi.subscriptionsRx(token(), participating)){
-            githubApi.subscriptionsRx(token(), participating, it)
+    fun subscriptionsRx(): Observable<ResponseHolder<List<GithubModel.Repository>>> {
+        return wrap(pages(githubApi.subscriptionsRx(token())){
+            githubApi.subscriptionsRx(token(), it)
         }.flatten())
     }
 
