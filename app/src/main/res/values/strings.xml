@@ -34,7 +34,6 @@
     <string-array name="repo_row_toggle_state">
         <item>Hide</item>
         <item>Mine</item>
-        <item>Part.</item>
         <item>All</item>
     </string-array>
 

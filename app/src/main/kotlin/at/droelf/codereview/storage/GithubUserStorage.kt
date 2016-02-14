@@ -5,17 +5,18 @@ import at.droelf.codereview.model.realm.RealmGithubAccount
 import at.droelf.codereview.model.realm.RealmHelper
 import at.droelf.codereview.model.realm.RealmRepoConfiguration
 import io.realm.Realm
+import java.sql.Wrapper
 
 class GithubUserStorage() : RealmHelper {
 
     fun userStored(): Boolean {
         return realmCycleOfLife {
             it.allObjects(RealmGithubAccount::class.java).count() > 0
-        }
+        }!!
     }
 
     fun storeUser(userData: Model.GithubAuth) {
-        return realmCycleOfLife {
+        realmCycleOfLife {
             transaction(it) {
                 it.copyToRealm(accountToRealm(userData))
             }
@@ -47,14 +48,14 @@ class GithubUserStorage() : RealmHelper {
     fun getRepoConfigurations(): List<Model.RepoConfiguration> {
         return realmCycleOfLife {
             it.allObjects(RealmRepoConfiguration::class.java).map { repoConfigurationToGithub(it) }
-        }
+        }!!
     }
 
     fun getRepoConfiguration(repoId: Long): Model.RepoConfiguration {
         return realmCycleOfLife {
             val config = it.where(RealmRepoConfiguration::class.java).equalTo("id", repoId).findFirst()
             repoConfigurationToGithub(config)
-        }
+        }!!
     }
 
     fun updateRepoConfiguration(repoId: Long, pr: Model.WatchType? = null, issue: Model.WatchType? = null) {
@@ -83,7 +84,7 @@ class GithubUserStorage() : RealmHelper {
         }
     }
 
-    private fun <E> realmCycleOfLife(doStuff: (realm: Realm) -> E): E {
+    private fun <E> realmCycleOfLife(doStuff: (realm: Realm) -> E): E? {
         val realm = Realm.getDefaultInstance()
         val time = System.currentTimeMillis()
         var result: E? = null
@@ -96,7 +97,7 @@ class GithubUserStorage() : RealmHelper {
         } finally{
             realm.close()
             println("Realm was ${System.currentTimeMillis() - time}ms alive | Thread: ${Thread.currentThread().name}")
-            return result ?: throw RuntimeException("realm error :(")
+            return result
         }
     }
 }

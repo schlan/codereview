@@ -27,8 +27,7 @@ object Model {
     enum class WatchType(val id: Int) {
         Hide(0),
         Mine(1),
-        Participate(2),
-        All(3);
+        All(2);
 
         companion object {
             fun fromId(id: Int): WatchType {

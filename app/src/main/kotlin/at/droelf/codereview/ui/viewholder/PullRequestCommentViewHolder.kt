@@ -43,4 +43,10 @@ class PullRequestCommentViewHolder(val view: View) : RecyclerView.ViewHolder(vie
             userComment.visibility = View.VISIBLE
         }
     }
+
+    fun showAvatar(show: Boolean) {
+        val showFlag = if(show) View.VISIBLE else View.GONE
+        avatar.visibility = showFlag
+        userName.visibility = showFlag
+    }
 }

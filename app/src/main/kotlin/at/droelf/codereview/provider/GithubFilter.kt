@@ -27,16 +27,16 @@ interface GithubFilter {
                 Model.WatchType.Mine -> {
                     Observable.just(Pair(pr, user.id == pr.user.id))
                 }
-                Model.WatchType.Participate -> {
-                    val owner = subscription.repo.owner.login
-                    val repo = subscription.repo.name
-                    val number = pr.number
-                    val reviewComments = githubProvider.reviewComments(owner, repo, number).map { it.filter{ it.user.id == user.id }.isNotEmpty() }
-                    val comments = githubProvider.comments(owner, repo, number).map { it.filter { it.user.id == user.id }.isNotEmpty() }
-
-                    Observable.combineLatest(reviewComments, comments, { a,b -> a || b})
-                            .map{ Pair(pr, it) }
-                }
+//                Model.WatchType.Participate -> {
+//                    val owner = subscription.repo.owner.login
+//                    val repo = subscription.repo.name
+//                    val number = pr.number
+//                    val reviewComments = githubProvider.reviewComments(owner, repo, number).map { it.filter{ it.user.id == user.id }.isNotEmpty() }
+//                    val comments = githubProvider.comments(owner, repo, number).map { it.filter { it.user.id == user.id }.isNotEmpty() }
+//
+//                    Observable.combineLatest(reviewComments, comments, { a,b -> a || b})
+//                            .map{ Pair(pr, it) }
+//                }
                 else -> {
                     Observable.just(Pair(pr, false))
                 }

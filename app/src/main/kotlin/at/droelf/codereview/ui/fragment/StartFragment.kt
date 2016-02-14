@@ -11,13 +11,17 @@ import android.view.LayoutInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.ProgressBar
+import android.widget.TextView
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.StartFragmentComponent
 import at.droelf.codereview.dagger.fragment.StartFragmentModule
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.activity.MainActivity
 import at.droelf.codereview.ui.adapter.PullRequestViewpagerAdapter
+import at.droelf.codereview.utils.CircleTransform
+import com.squareup.picasso.Picasso
 import rx.Subscription
 import javax.inject.Inject
 
@@ -29,6 +33,11 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
     lateinit var viewpager: ViewPager
     lateinit var progressbar: ProgressBar
     lateinit var swipeToRefresh: SwipeRefreshLayout
+
+    lateinit var toolbarImage: ImageView
+    lateinit var toolbarTitle: TextView
+    lateinit var toolbarSubtitle: TextView
+    lateinit var toolbarBackContainer: ViewGroup
 
     var subscription: Subscription? = null
     var viewPagerAdapter: PullRequestViewpagerAdapter? = null
@@ -52,12 +61,21 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         viewpager = view.findViewById(R.id.pr_viewpager) as ViewPager
         progressbar = view.findViewById(R.id.pr_progressbar) as ProgressBar
         swipeToRefresh = view.findViewById(R.id.pr_swipe_to_refresh) as SwipeRefreshLayout
+
+        toolbarImage = view.findViewById(R.id.pr_toolbar_avatar) as ImageView
+        toolbarTitle = view.findViewById(R.id.toolbar_title) as TextView
+        toolbarSubtitle = view.findViewById(R.id.toolbar_subtitle) as TextView
+        toolbarBackContainer = view.findViewById(R.id.pr_toolbar_back) as ViewGroup
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val actionbar = (activity as AppCompatActivity).supportActionBar
+        actionbar?.setDisplayShowHomeEnabled(false)
+        actionbar?.setDisplayShowCustomEnabled(true)
+        actionbar?.setDisplayShowTitleEnabled(false)
+        toolbarBackContainer.setOnClickListener{ activity.onBackPressed() }
         setHasOptionsMenu(true)
     }
 
@@ -84,6 +102,11 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         swipeToRefresh.post({ swipeToRefresh.isRefreshing = true })
         subscription = controller.prdetails(activity, owner, repo, id).subscribe({ pr ->
             initTabLayout(pr)
+
+            Picasso.with(context).load(pr.user.avatarUrl).transform(CircleTransform()).into(toolbarImage)
+            toolbarTitle.text = pr.title
+            toolbarSubtitle.text = "@${pr.user.login}"
+
             swipeToRefresh.post({ swipeToRefresh.isRefreshing = false })
         }, {
             Snackbar.make(view!!, "Error: ${it.message}", Snackbar.LENGTH_LONG).show()
@@ -102,12 +125,9 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
     fun initTabLayout(pr: GithubModel.PullRequestDetail) {
         tablayout.removeAllTabs()
         val commentsTab = tablayout.newTab()
-        commentsTab.setText("Comments")
+        commentsTab.text = "Comments"
         val filesTab = tablayout.newTab()
-        filesTab.setText("Files")
-
-        toolbar.subtitle = pr.title
-        toolbar.title = "Pull Request"
+        filesTab.text = "Files"
 
         tablayout.addTab(commentsTab, 0, true)
         tablayout.addTab(filesTab, 1, false)

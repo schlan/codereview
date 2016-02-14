@@ -14,7 +14,11 @@ import at.droelf.codereview.ui.adapter.UnsubscribeRx
 import at.droelf.codereview.ui.fragment.StartFragmentController
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
-class PullRequestCommentView(context: Context, val pr: GithubModel.PullRequestDetail, val fm: FragmentManager, val controller: StartFragmentController): FrameLayout(context), UnsubscribeRx {
+class PullRequestCommentView(
+        context: Context,
+        val pr: GithubModel.PullRequestDetail,
+        val fm: FragmentManager,
+        val controller: StartFragmentController): FrameLayout(context), UnsubscribeRx {
 
     val list: RecyclerView
     val swipeToRefresh: SwipeRefreshLayout
@@ -34,10 +38,9 @@ class PullRequestCommentView(context: Context, val pr: GithubModel.PullRequestDe
             swipeToRefresh.isRefreshing = false
         }
 
-        list.addItemDecoration(DividerItemDecoration(context, resources.getDimensionPixelOffset(R.dimen.row_notification_pull_request_divider_padding_left)))
+        list.addItemDecoration(DividerItemDecoration(context, 0))
         list.layoutManager = LinearLayoutManager(context)
         list.itemAnimator = SlideInUpAnimator()
-
 
         val owner = pr.base.repo.owner.login
         val repo = pr.base.repo.name

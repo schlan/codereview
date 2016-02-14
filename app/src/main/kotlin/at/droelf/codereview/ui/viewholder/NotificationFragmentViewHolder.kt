@@ -7,6 +7,7 @@ import android.support.v4.content.ContextCompat
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.RelativeLayout
 import android.widget.TextView
 import at.droelf.codereview.R
@@ -30,12 +31,18 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
     val issueCount: TextView = view.findViewById(R.id.row_notification_issue_count) as TextView
     val avatarBackground: RelativeLayout = view.findViewById(R.id.row_notification_avatar_background) as RelativeLayout
     val main: ViewGroup = view.findViewById(R.id.row_notification_background) as ViewGroup
+
+    val progressbarBackground: View = view.findViewById(R.id.row_notification_avatar_progressbar_background)
+    val progressbar: ProgressBar = view.findViewById(R.id.row_notification_avatar_progressbar) as ProgressBar
     val sourceIndicator: View = view.findViewById(R.id.row_notification_source_indicator)
 
     var subscription: Subscription? = null
 
     override fun bind(data: NotificationFragmentViewHolderData) {
-        Picasso.with(view.context).load(data.pr.user.avatarUrl).transform(CircleTransform()).into(avatar)
+        Picasso.with(view.context)
+                .load(data.pr.user.avatarUrl)
+                .transform(CircleTransform())
+                .into(avatar)
 
         title.text = data.pr.title
         secondLine.text = data.pr.base.repo.fullName
@@ -73,7 +80,7 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
         issueCount.visibility = View.GONE
         avatarBackground.background = null
         subscription = controller.lazyLoadDataForPr(pr)
-                .onErrorResumeNext { controller.lazyLoadDataForPr(pr) }
+                .retry()
                 .subscribe ({ data ->
             val prDetail = data.first
 
@@ -87,7 +94,7 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
             issueCount.text = issueCountString
 
             initAvatarBackground(data.second, prDetail)
-            main.background = ColorDrawable(ContextCompat.getColor(view.context, if(upToDate) R.color.bg_white else R.color.bg_gray))
+            setLoading(!upToDate)
         }, { error ->
             error.printStackTrace()
             println("Error during lazy loading data :(")
@@ -122,7 +129,9 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
 
 
     fun setLoading(loading: Boolean){
-        main.background = ColorDrawable(ContextCompat.getColor(view.context, if(loading) R.color.bg_gray else R.color.bg_white))
+        val flag = if(loading) View.VISIBLE else View.GONE
+        progressbar.visibility = flag
+        progressbarBackground.visibility = flag
     }
 
     fun pause() {

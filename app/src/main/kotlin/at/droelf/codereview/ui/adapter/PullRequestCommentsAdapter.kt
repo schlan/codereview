@@ -21,14 +21,14 @@ class PullRequestCommentsAdapter(
         pullRequestCommentView: PullRequestCommentView,
         fm: FragmentManager,
         val swipeToRefresh: SwipeRefreshLayout,
-        pr: GithubModel.PullRequestDetail) : RecyclerView.Adapter<PullRequestCommentViewHolder>(), UnsubscribeRx {
+        pr: GithubModel.PullRequestDetail) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), UnsubscribeRx {
 
-    var comments: MutableList<GithubModel.Comment> = arrayListOf()
+    var items: List<RecyclerItem> = listOf()
     var subscription: Subscription?
 
     init {
         swipeToRefresh.isRefreshing = true
-        comments.add(GithubModel.Comment(-1L, "", "", "", pr.user, pr.bodyHtml))
+        items = listOf(RecyclerItem(1, GithubModel.Comment(-1L, "", "", "", pr.user, pr.bodyHtml)))
         notifyItemInserted(0)
 
         subscription = commentsObserver.subscribe({ comments ->
@@ -41,22 +41,47 @@ class PullRequestCommentsAdapter(
         })
     }
 
-    fun update(comments: List<GithubModel.Comment>){
-        this.comments.addAll(comments)
-        notifyItemRangeInserted(1, comments.size)
+    fun update(newComments: List<GithubModel.Comment>){
+        var newItems = listOf(this.items.first())
+        if(newComments.isNotEmpty()){
+            newItems += listOf(RecyclerItem(3, Any()))
+        }
+        newItems += newComments.map{ RecyclerItem(2, it) }
+        items = newItems
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
-        return comments.size
+        return items.size
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PullRequestCommentViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.row_pr_comment, parent, false)
-        return PullRequestCommentViewHolder(view)
+
+    override fun getItemViewType(position: Int): Int {
+        return items[position].type
     }
 
-    override fun onBindViewHolder(holder: PullRequestCommentViewHolder, position: Int) {
-        holder.bind(comments[position], controller)
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+        return when(viewType){
+            1,2 -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.row_pr_comment, parent, false)
+                PullRequestCommentViewHolder(view)
+            }
+            3 -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.row_empty, parent, false)
+                object: RecyclerView.ViewHolder(view){}
+            }
+            else -> throw RuntimeException("unknown type")
+        }
+    }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when(items[position].type){
+            1,2 -> {
+                val p = (holder as PullRequestCommentViewHolder)
+                p.bind(items[position].data as GithubModel.Comment, controller)
+                p.showAvatar(position != 0)
+            }
+        }
     }
 
     override fun unsubscribeRx() {
@@ -64,4 +89,6 @@ class PullRequestCommentsAdapter(
         subscription = null
     }
 
+
+    data class RecyclerItem(val type: Int, val data: Any)
 }

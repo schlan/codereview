@@ -29,10 +29,9 @@ class NotificationFragmentController(val mainActivityController: MainActivityCon
                         Observable.from(repos)
                             .flatMap {
                                 githubProvider.pullRequests(it.repo.owner.login, it.repo.name, skipCache)
+                            }.flatMap { foobar ->
+                                prFilter(repos, foobar, user, githubProvider)
                             }
-//                                .flatMap { foobar ->
-//                                prFilter(repos, foobar, user, githubProvider)
-//                            }
                     })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())

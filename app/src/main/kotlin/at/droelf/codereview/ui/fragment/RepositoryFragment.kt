@@ -7,6 +7,7 @@ import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.support.v7.widget.Toolbar
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import at.droelf.codereview.R
@@ -38,6 +39,7 @@ class RepositoryFragment: BaseFragment<RepositoryFragmentComponent>() {
 
     override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         list = view?.findViewById(R.id.repository_fragment_list) as RecyclerView
         toolbar = view?.findViewById(R.id.repository_toolbar) as Toolbar
         swipeToRefresh = view?.findViewById(R.id.repository_fragment_swipe_to_refresh) as SwipeRefreshLayout
@@ -46,6 +48,17 @@ class RepositoryFragment: BaseFragment<RepositoryFragmentComponent>() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
+        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId){
+            android.R.id.home -> {
+                activity.onBackPressed()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onStart() {

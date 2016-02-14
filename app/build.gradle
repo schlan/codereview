@@ -1,5 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'realm-android'
+
 
 android {
     compileSdkVersion 23
@@ -11,7 +13,7 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName
-        multiDexEnabled true
+        multiDexEnabled false
     }
     buildTypes {
         release {
@@ -56,7 +58,7 @@ dependencies {
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
-    compile "org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"
+    //compile "org.jetbrains.kotlin:kotlin-reflect:${kotlin_version}"
 
     // Dagger
     compile "com.google.dagger:dagger:${dagger_version}"
@@ -110,5 +112,6 @@ buildscript {
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "io.realm:realm-gradle-plugin:$realm_version"
     }
 }

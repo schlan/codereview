@@ -1,11 +1,15 @@
 package at.droelf.codereview.ui.activity
 
+import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
+import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebView
 import at.droelf.codereview.R
@@ -18,6 +22,7 @@ import at.droelf.codereview.ui.fragment.*
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import java.net.URLEncoder
 
 class MainActivityController(val githubUserStorage: GithubUserStorage) {
 
@@ -112,11 +117,12 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
         val html = context.getString(R.string.github_webview_content).format(body)
 
         val wv: WebView = WebView(context)
-        //wv.settings.loadWithOverviewMode = true
+        wv.settings.loadWithOverviewMode = true
         wv.settings.useWideViewPort = true
         wv.settings.javaScriptEnabled = true
         wv.settings.builtInZoomControls = true
-        wv.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+        wv.settings.layoutAlgorithm = WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING
+
         wv.loadDataWithBaseURL("file:///android_asset/", html, "text/html", "utf-8", null)
 
         dialog.setView(wv);
