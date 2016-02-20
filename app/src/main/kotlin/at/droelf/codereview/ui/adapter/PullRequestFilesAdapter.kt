@@ -27,6 +27,7 @@ class PullRequestFilesAdapter(val commentsObserver: Observable<List<Triple<Githu
         swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = true })
         subscription = commentsObserver
                 .subscribe({
+                    files.clear()
                     files.addAll(it)
                     files.sortBy { it.first.filename }
                     files.sortByDescending { it.second }

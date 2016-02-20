@@ -45,6 +45,10 @@ class GithubAuthService(
         return githubAuthApi.getUser(token(token)).map { it.body() }
     }
 
+    fun email(token: String): Observable<List<GithubModel.UserEmail>> {
+        return githubAuthApi.getEmails(token(token)).map { it.body().toList() }
+    }
+
     fun token(token: String): String {
         return "token $token"
     }

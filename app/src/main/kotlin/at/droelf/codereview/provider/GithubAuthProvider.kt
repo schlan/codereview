@@ -18,4 +18,9 @@ class GithubAuthProvider(val githubAuthService: GithubAuthService) {
         return githubAuthService.user(token)
     }
 
+    fun emails(token: String): Observable<String> {
+        return githubAuthService.email(token)
+                    .map { email -> email.filter { it.primary }.firstOrNull()?.email ?: "<no email>" }
+    }
+
 }

@@ -16,9 +16,9 @@ import java.util.*
 
 class LoginFragmentController(val mainActivityController: MainActivityController,
                               val githubAuthProvider: GithubAuthProvider,
-                              val githubUserStorage: GithubUserStorage): RxHelper {
+                              val githubUserStorage: GithubUserStorage) : RxHelper {
 
-    fun initLogin(mainActivityComponent: MainActivityComponent, fm: FragmentManager, auth: Model.GithubAuth){
+    fun initLogin(mainActivityComponent: MainActivityComponent, fm: FragmentManager, auth: Model.GithubAuth) {
         mainActivityController.createUserComponent(mainActivityComponent, auth)
         mainActivityController.displayNotificationFragment(fm)
     }
@@ -31,15 +31,19 @@ class LoginFragmentController(val mainActivityController: MainActivityController
     }
 
     fun getUserAndStoreUserData(auth: GithubModel.AuthResponse, uuid: UUID): Observable<Model.GithubAuth> {
-        return githubAuthProvider.user(auth.token)
-                .flatMap { storeUserData(auth, it, uuid) }
-                .subscribeOn(Schedulers.io())
+        val data = Observable.combineLatest(
+                githubAuthProvider.user(auth.token), githubAuthProvider.emails(auth.token),
+                { u, e -> Pair(u, e) }
+        )
+        return data
+                .flatMap { storeUserData(auth, it.first, it.second, uuid) }
                 .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
     }
 
-    fun storeUserData(auth: GithubModel.AuthResponse, user: GithubModel.User, uuid: UUID): Observable<Model.GithubAuth> {
+    fun storeUserData(auth: GithubModel.AuthResponse, user: GithubModel.User, email: String, uuid: UUID): Observable<Model.GithubAuth> {
         return Observable.create {
-            val githubAuth = Model.GithubAuth(auth, user, uuid)
+            val githubAuth = Model.GithubAuth(auth, user, email, uuid)
             githubUserStorage.storeUser(githubAuth)
             it.onNext(githubAuth)
             it.onCompleted()

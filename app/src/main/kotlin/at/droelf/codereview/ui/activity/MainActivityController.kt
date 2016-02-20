@@ -1,15 +1,11 @@
 package at.droelf.codereview.ui.activity
 
-import android.content.ComponentName
 import android.content.Context
 import android.content.DialogInterface
-import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
-import android.view.View
 import android.webkit.WebSettings
 import android.webkit.WebView
 import at.droelf.codereview.R
@@ -19,10 +15,6 @@ import at.droelf.codereview.dagger.user.UserModule
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.storage.GithubUserStorage
 import at.droelf.codereview.ui.fragment.*
-import rx.Observable
-import rx.android.schedulers.AndroidSchedulers
-import rx.schedulers.Schedulers
-import java.net.URLEncoder
 
 class MainActivityController(val githubUserStorage: GithubUserStorage) {
 

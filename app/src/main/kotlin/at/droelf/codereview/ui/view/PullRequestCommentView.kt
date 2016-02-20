@@ -5,13 +5,19 @@ import android.support.v4.app.FragmentManager
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
-import android.widget.FrameLayout
+import android.view.View
+import android.view.ViewGroup
+import android.widget.*
 import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.adapter.PullRequestCommentsAdapter
 import at.droelf.codereview.ui.adapter.UnsubscribeRx
 import at.droelf.codereview.ui.fragment.StartFragmentController
+import com.jakewharton.rxbinding.widget.RxAutoCompleteTextView
+import com.jakewharton.rxbinding.widget.RxTextView
 import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
 class PullRequestCommentView(
@@ -22,6 +28,7 @@ class PullRequestCommentView(
 
     val list: RecyclerView
     val swipeToRefresh: SwipeRefreshLayout
+
     var listAdapter: PullRequestCommentsAdapter? = null
 
     init {

@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'realm-android'
+apply plugin: 'com.google.gms.google-services'
 
 
 android {
@@ -55,6 +56,7 @@ dependencies {
     compile "com.android.support:recyclerview-v7:${android_support_version}"
     compile "com.android.support:cardview-v7:${android_support_version}"
     compile 'com.android.support:multidex:1.0.1'
+    //compile "com.google.android.gms:play-services:8.3.0"
 
     // Kotlin
     compile "org.jetbrains.kotlin:kotlin-stdlib:${kotlin_version}"
@@ -66,8 +68,9 @@ dependencies {
     provided 'org.glassfish:javax.annotation:10.0-b28'
 
     // Rx
-    compile 'io.reactivex:rxjava:1.1.0'
+    compile 'io.reactivex:rxjava:1.1.1'
     compile 'io.reactivex:rxandroid:1.1.0'
+    compile 'com.jakewharton.rxbinding:rxbinding:0.3.0'
 
     // Realm
     compile "io.realm:realm-android-library:${realm_version}@aar"
@@ -98,11 +101,11 @@ dependencies {
 
 buildscript {
     ext{
-        kotlin_version = '1.0.0-rc-1036'
+        kotlin_version = '1.0.0'
         realm_version = '0.87.4'
         android_support_version = '23.1.1'
         retrofit_version = '2.0.0-beta4'
-        okhttp_version = '3.0.1'
+        okhttp_version = '3.1.2'
         dagger_version = '2.0.2'
     }
 

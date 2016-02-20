@@ -12,6 +12,7 @@ import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Browser
+import android.support.v4.content.ContextCompat
 import android.text.Html
 import android.text.SpannableString
 import android.text.style.ClickableSpan
@@ -133,7 +134,7 @@ object HtmlTextViewMagic {
 
             val extras: Bundle = Bundle()
             extras.putBinder(EXTRA_CUSTOM_TABS_SESSION, null)
-            extras.putInt(EXTRA_CUSTOM_TABS_COLOR, context.getColor(R.color.colorPrimary))
+            extras.putInt(EXTRA_CUSTOM_TABS_COLOR, ContextCompat.getColor(context, R.color.colorPrimary))
             intent.putExtras(extras);
 
             try {

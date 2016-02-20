@@ -56,12 +56,7 @@ class PatchParser {
     // tested
     fun parseCodeLines(list: List<CharSequence>, r: Pair<Patch.Range, Patch.Range>): List<Patch.Line> {
 
-        val newList: List<CharSequence>
-        if(list.last().startsWith("\\ No newline")) {
-            newList = list.subList(0, list.lastIndex)
-        }else {
-            newList = list
-        }
+        val newList: List<CharSequence> = list.filter { !it.startsWith("\\ No newline") }
 
         var iOri = r.first.start
         var iMod = r.second.start

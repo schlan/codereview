@@ -94,20 +94,22 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
             }
 
             controller.getToken(username, password, totp).subscribe({ data ->
-                loading(false)
                 when (data.first) {
                     GithubModel.AuthReturnType.TwoFactorApp, GithubModel.AuthReturnType.TwoFactorUnknown, GithubModel.AuthReturnType.TwoFactorSms -> {
+                        loading(false)
                         twoFactorContainer.visibility = View.VISIBLE
                         loginUsername.isEnabled = false
                         loginPassword.isEnabled = false
-                        loginUsername.error = "TOTP token needed"
+                        //loginUsername.error = "TOTP token needed"
                     }
                     GithubModel.AuthReturnType.Error -> {
                         twoFactorContainer.visibility = View.GONE
                         loginUsername.error = "Login Error"
+                        loading(false)
                     }
                     GithubModel.AuthReturnType.Success -> {
                         loadUser(data.second!!, data.third)
+                        //loading(false)
                     }
                 }
 
@@ -121,12 +123,14 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
     }
 
     fun loadUser(second: GithubModel.AuthResponse, uuid: UUID) {
-        loading(true)
-        controller.getUserAndStoreUserData(second, uuid).subscribe { data ->
+        //loading(true)
+        controller.getUserAndStoreUserData(second, uuid).subscribe({ data ->
             loading(false)
             Snackbar.make(view!!, "Hello @${data.user.login}", Snackbar.LENGTH_LONG).show()
             controller.initLogin((activity as MainActivity).mainComponent(), fragmentManager, data)
-        }
+        },{ error ->
+            Snackbar.make(view!!, "Error @${error.message}", Snackbar.LENGTH_LONG).show()
+        })
     }
 
     override fun injectComponent(component: LoginFragmentComponent) {

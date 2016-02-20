@@ -35,6 +35,7 @@
         <item>Hide</item>
         <item>Mine</item>
         <item>All</item>
+        <item>Part.</item>
     </string-array>
 
 </resources>

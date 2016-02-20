@@ -64,6 +64,7 @@ interface RealmHelper {
         return Model.GithubAuth(
                 authResponseToGithub(realmAccount.auth!!),
                 userToGithub(realmAccount.user!!),
+                realmAccount.email!!,
                 UUID.fromString(realmAccount.uuid)
         )
     }
@@ -72,7 +73,8 @@ interface RealmHelper {
         return RealmGithubAccount(
                 githubAuth.uuid.toString(),
                 authResponseToRealm(githubAuth.auth),
-                userToRealm(githubAuth.user)
+                userToRealm(githubAuth.user),
+                githubAuth.email
         )
     }
 

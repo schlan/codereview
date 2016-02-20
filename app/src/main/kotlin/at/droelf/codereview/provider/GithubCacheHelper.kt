@@ -22,8 +22,14 @@ interface GithubCacheHelper {
         }
     }
 
-    fun <E> genericLoadDataV2(key: String, memory: GithubEndpointCache<E>, disc: PersistentCache<E>, network: Observable<ResponseHolder<E>>, clazz: Type, skipCache: Boolean): Observable<ResponseHolder<E>>
-            where E : Any {
+    fun <E> genericLoadDataV2(
+            key: String,
+            memory: GithubEndpointCache<E>,
+            disc: PersistentCache<E>,
+            network: Observable<ResponseHolder<E>>,
+            clazz: Type,
+            skipCache: Boolean
+    ): Observable<ResponseHolder<E>> where E : Any {
 
         val networkObservable = network
                 .observeOn(Schedulers.io())

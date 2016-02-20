@@ -27,9 +27,11 @@ class PersistentCache<E>(val diskCache: DiskLruCache, val gson: Gson = Gson()) w
     }
 
     fun put(key: String, data: E){
-        val edit = diskCache.edit(normalizeKey(key))
-        edit.set(0, gson.toJson(ResponseHolder(data, ResponseHolder.Source.Disc)))
-        edit.commit()
+        synchronized(diskCache) {
+            val edit = diskCache.edit(normalizeKey(key))
+            edit.set(0, gson.toJson(ResponseHolder(data, ResponseHolder.Source.Disc)))
+            edit.commit()
+        }
     }
 
     fun byteArray2Hex(hash: ByteArray): String {

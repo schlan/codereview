@@ -27,7 +27,7 @@ class SquareModule() {
     @Singleton
     fun providesOkhttp(): OkHttpClient {
         val httpLogging = HttpLoggingInterceptor()
-        httpLogging.level = HttpLoggingInterceptor.Level.BASIC
+        httpLogging.level = HttpLoggingInterceptor.Level.BODY
 
         val okHttp = OkHttpClient.Builder()
         okHttp.addInterceptor(httpLogging)

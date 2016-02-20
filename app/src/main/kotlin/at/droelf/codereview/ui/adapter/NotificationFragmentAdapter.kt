@@ -34,12 +34,16 @@ class NotificationFragmentAdapter(
 
     var subscription: Subscription?
 
+    val lock = Any()
+
     init {
         setHasStableIds(true)
         swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = true })
         subscription = pullRequestsObservable
                 .subscribe({ d ->
-                    updateList(d)
+                    synchronized(lock){
+                        updateList(d)
+                    }
                 }, { error ->
                     error.printStackTrace()
                     swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = false })
@@ -61,7 +65,7 @@ class NotificationFragmentAdapter(
                     replaced = true
                     myPullRequests.remove(myPullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.first())
                 }
-                myPullRequests.add(HolderWrapper(1, pr.id + pr.number + pr.body.hashCode(), pr, prs.source, prs.upToDate()))
+                myPullRequests.add(HolderWrapper(1, pr.id + pr.number + (pr.body?.hashCode() ?: 123123), pr, prs.source, prs.upToDate()))
                 myPullRequests.sortByDescending { (it.data as GithubModel.PullRequest).createdAt }
 
             } else {
@@ -69,7 +73,7 @@ class NotificationFragmentAdapter(
                     replaced = true
                     pullRequests.remove(pullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.first())
                 }
-                pullRequests.add(HolderWrapper(1, pr.id + pr.number + pr.body.hashCode(), pr, prs.source, prs.upToDate()))
+                pullRequests.add(HolderWrapper(1, pr.id + pr.number + (pr.body?.hashCode() ?: 123123), pr, prs.source, prs.upToDate()))
                 pullRequests.sortByDescending { (it.data as GithubModel.PullRequest).createdAt }
             }
 
@@ -121,14 +125,15 @@ class NotificationFragmentAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolderBinder<*>, position: Int) {
-        if (holder is NotificationFragmentViewHolderHeader) {
-            holder.bind(holderWrapperList[position].data as String)
-
-        } else if (holder is NotificationFragmentViewHolder) {
-            val wrapper = holderWrapperList[position]
-            val pr = wrapper.data as GithubModel.PullRequest
-            holder.bind(NotificationFragmentViewHolder.NotificationFragmentViewHolderData(pr, fragmentManager, controller, wrapper.source!!, wrapper.updateToDate!!))
-
+        when(holder){
+            is NotificationFragmentViewHolderHeader -> {
+                holder.bind(holderWrapperList[position].data as String)
+            }
+            is NotificationFragmentViewHolder -> {
+                val wrapper = holderWrapperList[position]
+                val pr = wrapper.data as GithubModel.PullRequest
+                holder.bind(NotificationFragmentViewHolder.NotificationFragmentViewHolderData(pr, fragmentManager, controller, wrapper.source!!, wrapper.updateToDate!!))
+            }
         }
     }
 

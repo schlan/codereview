@@ -6,7 +6,7 @@ import java.util.*
 object GithubModel {
 
     data class PullRequest(
-            val id: Long, val number: Long, val state: String, val title: String, val body: String, val user: User,
+            val id: Long, val number: Long, val state: String, val title: String, val body: String?, val user: User,
             val head: Head, val base: Base, val updatedAt: Date, val createdAt: Date
     )
 
@@ -35,6 +35,8 @@ object GithubModel {
             val login: String, val id: Long, val avatarUrl: String, val gravatarId: String, val url: String,
             val htmlUrl: String, val followersUrl: String, val followingUrl: String, val type: String, val siteAdmin: Boolean
     )
+
+    data class UserEmail(val email: String, val primary: Boolean, val verified: Boolean)
 
     data class Repository(
             val id: Long, val name: String, val fullName: String, val owner: User, val private: Boolean, val htmlUrl: String, val description: String,

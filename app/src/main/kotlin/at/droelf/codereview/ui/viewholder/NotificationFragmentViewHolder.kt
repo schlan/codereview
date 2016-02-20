@@ -51,7 +51,10 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
         initTimeStamp(data)
         initSourceIndicator(data)
 
-        setLoading(true)
+        if(issueCount.visibility == View.GONE) {
+            setLoading(true)
+        }
+
         lazyLoadThings(data.pr, data.controller, data.upToDate)
         view.setOnClickListener {
             data.controller.displayFileFragment(data.fm, data.pr.base.repo.owner.login, data.pr.base.repo.name, data.pr.number)

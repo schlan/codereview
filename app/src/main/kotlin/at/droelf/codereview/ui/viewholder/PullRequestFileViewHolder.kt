@@ -1,8 +1,6 @@
 package at.droelf.codereview.ui.viewholder
 
-import android.graphics.drawable.ColorDrawable
 import android.support.v4.app.FragmentManager
-import android.support.v4.content.ContextCompat
 import android.view.Gravity
 import android.view.View
 import android.widget.FrameLayout
@@ -85,27 +83,14 @@ class PullRequestFileViewHolder(val view: View): ViewHolderBinder<PullRequestFil
 
         when(file.status) {
             "added" -> {
-                val view = ImageView(view.context)
-                val layout = FrameLayout.LayoutParams(size, size)
-                layout.rightMargin = margin
-                layout.gravity = Gravity.CENTER
-                view.layoutParams = layout
-                fileChangesContainer.addView(view)
-                Picasso.with(view.context).load(R.drawable.ic_add).into(view)
+                setIndicatorIcon(size, margin, R.drawable.ic_add)
             }
             "removed" -> {
-                val view = ImageView(view.context)
-                val layout = LinearLayout.LayoutParams(size, size)
-                layout.rightMargin = margin
-                layout.gravity = Gravity.CENTER
-                view.layoutParams = layout
-                fileChangesContainer.addView(view)
-                Picasso.with(view.context).load(R.drawable.ic_remove).into(view)
-
+                setIndicatorIcon(size, margin, R.drawable.ic_remove)
             }
             "renamed" -> {
                 if(file.changes > 0){
-                    // files that are moved && modified
+                    // files that are moved & modified
                     fileChangesContainer.addView(FileChangesView(view.context, file.additions, file.deletions, file.changes))
                 }
             }
@@ -115,6 +100,15 @@ class PullRequestFileViewHolder(val view: View): ViewHolderBinder<PullRequestFil
         }
     }
 
+    fun setIndicatorIcon(size: Int, margin: Int, drawable: Int){
+        val view = ImageView(view.context)
+        val layout = FrameLayout.LayoutParams(size, size)
+        layout.rightMargin = margin
+        layout.gravity = Gravity.CENTER
+        view.layoutParams = layout
+        fileChangesContainer.addView(view)
+        Picasso.with(view.context).load(drawable).into(view)
+    }
 
     fun initTitle(file: GithubModel.PullRequestFile) {
         val titleFileName = if(file.status == "renamed") file.previousFilename!! else file.filename

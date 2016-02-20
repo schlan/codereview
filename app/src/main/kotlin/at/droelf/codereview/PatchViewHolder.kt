@@ -81,7 +81,7 @@ class ViewHolderLine(val line: SpannableString, val lineType: LineType, val orig
 
     }
 
-    public enum class LineType{
+    enum class LineType{
         Add, Delete, Unmodified, Expanded, Comment;
 
         companion object {

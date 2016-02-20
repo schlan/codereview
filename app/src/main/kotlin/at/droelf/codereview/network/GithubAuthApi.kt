@@ -20,7 +20,13 @@ interface GithubAuthApi {
 
     @GET("/user")
     fun getUser(
-            @Header("Authorization") basicAuth: String
+            @Header("Authorization") token: String
     ): Observable<Response<GithubModel.User>>
+
+
+    @GET("/user/emails")
+    fun getEmails(
+            @Header("Authorization") token: String
+    ): Observable<Response<MutableList<GithubModel.UserEmail>>>
 
 }
