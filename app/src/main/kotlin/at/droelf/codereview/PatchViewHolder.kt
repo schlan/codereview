@@ -46,7 +46,7 @@ class ViewHolderHeader(val header: String, val method: String?, val originalRang
 
 }
 
-class ViewHolderLine(val line: SpannableString, val lineType: LineType, val originalNum: Int?, val modifiedNum: Int?): ViewHolderWrapper(PatchListType.Line){
+class ViewHolderLine(val line: SpannableString, val lineType: LineType, val originalNum: Int?, val modifiedNum: Int?, val diffPos: Int?) : ViewHolderWrapper(PatchListType.Line) {
 
     override fun bind(viewholder: RecyclerView.ViewHolder, patchController: PatchAdapterController, pos: Int) {
         val view = viewholder.itemView
@@ -58,43 +58,44 @@ class ViewHolderLine(val line: SpannableString, val lineType: LineType, val orig
         lineNumberOriginal.text = originalNum?.toString() ?: ""
         lineNumberModified.text = modifiedNum?.toString() ?: ""
 
-        when(lineType){
+        when (lineType) {
             LineType.Add -> view.background = ColorDrawable(Color.parseColor("#EAFFEA"))
             LineType.Delete -> view.background = ColorDrawable(Color.parseColor("#FFECEC"))
             LineType.Expanded -> view.background = ColorDrawable(Color.parseColor("#FAFAFA"))
             else -> view.background = ColorDrawable(Color.WHITE)
         }
     }
+}
 
-    class ViewHolderComment(val reviewComment: List<Model.ReviewComment>): ViewHolderWrapper(PatchListType.Comment){
+class ViewHolderComment(val reviewComment: List<Model.ReviewComment>): ViewHolderWrapper(PatchListType.Comment){
 
-        lateinit var container: LinearLayout
+    lateinit var container: LinearLayout
 
-        override fun bind(viewholder: RecyclerView.ViewHolder, patchController: PatchAdapterController, pos: Int) {
-            container = viewholder.itemView.findViewById(R.id.row_patch_comment_container) as LinearLayout
-            container.removeAllViews()
-            val commentViews = reviewComment.map { CommentView(it, viewholder.itemView.context) }
-            commentViews.first().first()
-            commentViews.last().last()
-            commentViews.forEach { container.addView(it) }
-        }
-
+    override fun bind(viewholder: RecyclerView.ViewHolder, patchController: PatchAdapterController, pos: Int) {
+        container = viewholder.itemView.findViewById(R.id.row_patch_comment_container) as LinearLayout
+        container.removeAllViews()
+        val commentViews = reviewComment.map { CommentView(it, viewholder.itemView.context) }
+        commentViews.first().first()
+        commentViews.last().last()
+        commentViews.forEach { container.addView(it) }
     }
 
-    enum class LineType{
-        Add, Delete, Unmodified, Expanded, Comment;
+}
 
-        companion object {
-            fun fromPatchType(patchType: Patch.Type): LineType {
-                return when(patchType){
-                    Patch.Type.Add -> Add
-                    Patch.Type.Delete -> Delete
-                    else -> Unmodified
-                }
+enum class LineType{
+    Add, Delete, Unmodified, Expanded, Comment;
+
+    companion object {
+        fun fromPatchType(patchType: Patch.Type): LineType {
+            return when(patchType){
+                Patch.Type.Add -> Add
+                Patch.Type.Delete -> Delete
+                else -> Unmodified
             }
         }
-
     }
+
 }
+
 
 

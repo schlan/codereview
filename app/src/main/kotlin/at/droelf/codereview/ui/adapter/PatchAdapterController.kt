@@ -2,9 +2,7 @@ package at.droelf.codereview.ui.adapter
 
 import android.text.SpannableString
 import android.text.SpannableStringBuilder
-import at.droelf.codereview.ViewHolderHeader
-import at.droelf.codereview.ViewHolderLine
-import at.droelf.codereview.ViewHolderWrapper
+import at.droelf.codereview.*
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.patch.Patch
 
@@ -118,7 +116,7 @@ class PatchSegmentController(
                         Patch.Type.Delete -> l.line
                         else -> rawCode[l.modifiedNum!! - 1 - offset].prefix(if(l.type == Patch.Type.Add) "+" else " ")
                     }
-                    ViewHolderLine(SpannableString(lineString), ViewHolderLine.LineType.fromPatchType(l.type), l.originalNum, l.modifiedNum)
+                    ViewHolderLine(SpannableString(lineString), LineType.fromPatchType(l.type), l.originalNum, l.modifiedNum, 1) // FIXME
                 }
 
 
@@ -133,7 +131,7 @@ class PatchSegmentController(
             val c = comments.filter { (it.position - visibleOffset) == i }
             wrapper.add(viewHolderWrapper)
             if(c.isNotEmpty()) {
-                wrapper.add(ViewHolderLine.ViewHolderComment(c))
+                wrapper.add(ViewHolderComment(c))
             }
         }
 
@@ -161,7 +159,7 @@ class PatchSegmentController(
             }
 
             val newList = codeToAdd.mapIndexed { i, spannableString ->
-                ViewHolderLine(spannableString.prefix(" "), ViewHolderLine.LineType.Expanded, oStart - codeToAdd.size + i, mStart - codeToAdd.size + i)
+                ViewHolderLine(spannableString.prefix(" "), LineType.Expanded, oStart - codeToAdd.size + i, mStart - codeToAdd.size + i, null)
             }
             viewHolderWrapper = newList + viewHolderWrapper.subList(1, viewHolderWrapper.size)
 

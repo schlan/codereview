@@ -58,46 +58,49 @@ class NotificationFragmentAdapter(
             val emptyMy = myPullRequests.isEmpty()
             val emptyOther = pullRequests.isEmpty()
 
-            var replaced = false
-
-            if (pr.user.id == controller.user.id) {
-                if(prs.upToDate() && myPullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.isNotEmpty()){
-                    replaced = true
-                    myPullRequests.remove(myPullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.first())
-                }
-                myPullRequests.add(HolderWrapper(1, pr.id + pr.number + (pr.body?.hashCode() ?: 123123), pr, prs.source, prs.upToDate()))
-                myPullRequests.sortByDescending { (it.data as GithubModel.PullRequest).createdAt }
-
+            var replaced = if(pr.user.id == controller.user.id) {
+                updateSectionList(pr, myPullRequests, prs.upToDate(), prs.source)
             } else {
-                if(prs.upToDate() && pullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.isNotEmpty()) {
-                    replaced = true
-                    pullRequests.remove(pullRequests.filter { (it.data as GithubModel.PullRequest).id == pr.id }.first())
-                }
-                pullRequests.add(HolderWrapper(1, pr.id + pr.number + (pr.body?.hashCode() ?: 123123), pr, prs.source, prs.upToDate()))
-                pullRequests.sortByDescending { (it.data as GithubModel.PullRequest).createdAt }
+                updateSectionList(pr, pullRequests, prs.upToDate(), prs.source)
             }
 
-            val tmpList: MutableList<HolderWrapper> = arrayListOf()
-            if (myPullRequests.size > 0) {
-                tmpList.add(subHeaderMine)
-                tmpList.addAll(myPullRequests)
-            }
-            if (pullRequests.size > 0) {
-                tmpList.add(subHeaderOther)
-                tmpList.addAll(pullRequests)
-            }
+           refreshList(pr, emptyMy, emptyOther, replaced)
+        }
+    }
 
-            holderWrapperList = tmpList
-            if (emptyMy != myPullRequests.isEmpty() || emptyOther != pullRequests.isEmpty()) {
-                notifyDataSetChanged()
+    fun updateSectionList(pr: GithubModel.PullRequest, list: MutableList<HolderWrapper>, upToDate: Boolean, source: ResponseHolder.Source): Boolean {
+        var replaced = false
+        if(upToDate && list.filter { (it.data as GithubModel.PullRequest).id == pr.id }.isNotEmpty()){
+            replaced = true
+            list.remove(list.filter { (it.data as GithubModel.PullRequest).id == pr.id }.first())
+        }
+        list.add(HolderWrapper(1, pr.id + pr.number + (pr.body?.hashCode() ?: 123123), pr, source, upToDate))
+        list.sortByDescending { (it.data as GithubModel.PullRequest).createdAt }
+
+        return replaced
+    }
+
+    fun refreshList(pr: GithubModel.PullRequest, myPullRequestsEmpty: Boolean, pullRequestEmpty: Boolean, replaced: Boolean){
+        val tmpList: MutableList<HolderWrapper> = arrayListOf()
+        if (myPullRequests.size > 0) {
+            tmpList.add(subHeaderMine)
+            tmpList.addAll(myPullRequests)
+        }
+        if (pullRequests.size > 0) {
+            tmpList.add(subHeaderOther)
+            tmpList.addAll(pullRequests)
+        }
+
+        holderWrapperList = tmpList
+        if (myPullRequestsEmpty != myPullRequests.isEmpty() || pullRequestEmpty != pullRequests.isEmpty()) {
+            notifyDataSetChanged()
+        } else {
+            val index = holderWrapperList.indexOfFirst { it.type == 1 && it.data.equals(pr) }
+
+            if(replaced){
+                notifyItemChanged(index)
             } else {
-                val index = holderWrapperList.indexOfFirst { it.type == 1 && it.data.equals(pr) }
-
-                if(replaced){
-                    notifyItemChanged(index)
-                } else {
-                    notifyItemInserted(index)
-                }
+                notifyItemInserted(index)
             }
         }
     }

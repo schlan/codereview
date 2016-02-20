@@ -40,10 +40,8 @@ object PrettyfyHighlighter {
             val newlinesIndex = prettyCode.mapIndexed { i, c ->  if(c.equals('\n')) i else Int.MIN_VALUE }.filter { it != Int.MIN_VALUE }
 
             var ranges: List<Pair<Int,Int>> = newlinesIndex.subList(0, newlinesIndex.lastIndex).zip(newlinesIndex.subList(1, newlinesIndex.lastIndex + 1))
+            ranges = listOf(Pair(0, newlinesIndex.first())) + ranges
 
-            if(newlinesIndex.first() != 0) {
-                ranges = listOf(Pair(0, newlinesIndex.first())) + ranges
-            }
             if(newlinesIndex.last() != prettyCode.lastIndex) {
                 ranges += listOf(Pair(newlinesIndex.last(), prettyCode.lastIndex))
             }
@@ -51,7 +49,14 @@ object PrettyfyHighlighter {
             val data = ranges.map { i ->
                 val start = if(prettyCode[i.first] == '\n') i.first + 1 else i.first
                 val end: Int = if(prettyCode[i.second] ==  '\n') i.second else i.second + 1
-                SpannableString(prettyCode.subSequence(start, end))
+
+                val string: CharSequence = if(start > end){
+                    ""
+                } else {
+                    prettyCode.subSequence(start, end)
+                }
+
+                SpannableString(string)
             }
 
             subscriber.onNext(data)

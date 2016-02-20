@@ -85,23 +85,24 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
         subscription = controller.lazyLoadDataForPr(pr)
                 .retry()
                 .subscribe ({ data ->
-            val prDetail = data.first
+                    val prDetail = data.first
 
-            val comments = prDetail.reviewComments + prDetail.comments
-            val issueCountString = when {
-                comments > 0 && comments < 100 -> "$comments"
-                comments > 99 -> "99+"
-                else -> null
-            }
-            issueCount.visibility = if(issueCountString != null) View.VISIBLE else View.GONE
-            issueCount.text = issueCountString
+                    val comments = prDetail.reviewComments + prDetail.comments
+                    val issueCountString = when {
+                        comments > 0 && comments < 100 -> "$comments"
+                        comments > 99 -> "99+"
+                        else -> null
+                    }
+                    issueCount.visibility = if (issueCountString != null) View.VISIBLE else View.GONE
+                    issueCount.text = issueCountString
+                    initAvatarBackground(data.second, prDetail)
 
-            initAvatarBackground(data.second, prDetail)
-            setLoading(!upToDate)
-        }, { error ->
-            error.printStackTrace()
-            println("Error during lazy loading data :(")
-        })
+                }, { error ->
+                    error.printStackTrace()
+                    println("Error during lazy loading data :(")
+                }, {
+                    setLoading(!upToDate)
+                })
     }
 
     private fun initAvatarBackground(status: List<GithubModel.Status>, prDetail: GithubModel.PullRequestDetail) {
