@@ -111,12 +111,12 @@ class PatchSegmentController(
     fun initWrapper(): List<ViewHolderWrapper> {
         val codeLines = listOf(
                 ViewHolderHeader(patchSegment.header, patchSegment.method, patchSegment.originalRange, patchSegment.newRange)) +
-                patchSegment.lines.map { l ->
+                patchSegment.lines.mapIndexed { i, l ->
                     val lineString = when(l.type){
                         Patch.Type.Delete -> l.line
                         else -> rawCode[l.modifiedNum!! - 1 - offset].prefix(if(l.type == Patch.Type.Add) "+" else " ")
                     }
-                    ViewHolderLine(SpannableString(lineString), LineType.fromPatchType(l.type), l.originalNum, l.modifiedNum, 1) // FIXME
+                    ViewHolderLine(SpannableString(lineString), LineType.fromPatchType(l.type), l.originalNum, l.modifiedNum, i + visibleOffset) // FIXME
                 }
 
 

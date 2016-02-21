@@ -1,12 +1,16 @@
 package at.droelf.codereview
 
+import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
+import android.widget.Toast
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.patch.Patch
 import at.droelf.codereview.ui.adapter.PatchAdapterController
@@ -50,6 +54,7 @@ class ViewHolderLine(val line: SpannableString, val lineType: LineType, val orig
 
     override fun bind(viewholder: RecyclerView.ViewHolder, patchController: PatchAdapterController, pos: Int) {
         val view = viewholder.itemView
+        val container = view.findViewById(R.id.row_patch_root) as RelativeLayout
         val lineNumberOriginal = view.findViewById(R.id.row_patch_number_original) as TextView
         val lineNumberModified = view.findViewById(R.id.row_patch_number_modified) as TextView
         val codeLineTextView = view.findViewById(R.id.row_patch_text) as TextView
@@ -63,6 +68,14 @@ class ViewHolderLine(val line: SpannableString, val lineType: LineType, val orig
             LineType.Delete -> view.background = ColorDrawable(Color.parseColor("#FFECEC"))
             LineType.Expanded -> view.background = ColorDrawable(Color.parseColor("#FAFAFA"))
             else -> view.background = ColorDrawable(Color.WHITE)
+        }
+
+        container.isEnabled = diffPos != null
+        container.setOnClickListener {
+            if(diffPos != null) {
+                val commentPos = diffPos + 1
+                Toast.makeText(view.context, "diffPos: $commentPos", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
