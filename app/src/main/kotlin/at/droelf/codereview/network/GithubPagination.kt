@@ -21,6 +21,7 @@ interface GithubPagination {
                 val pages = listOf<Observable<Response<T>>>() + Observable.just(data) + (2..lastPage).map(loadNextPage)
                 Observable.merge(pages)
             }
+
         }.map{ it.body() }.toList()
     }
 
@@ -29,7 +30,7 @@ interface GithubPagination {
         val lastPage = pages.split(',').filter{ it.contains("last") }.firstOrNull() ?: return null
         val start = lastPage.indexOf("<") + 1
         val end = lastPage.indexOf(">")
-        val page: String? = HttpUrl.parse(lastPage.substring(start, end)).queryParameter("page")
+        val page: String? = HttpUrl.parse(lastPage.substring(start, end))?.queryParameter("page")
 
         try {
             return page?.toInt()

@@ -10,6 +10,7 @@ class GithubEndpointCache<E>(val cache: LruCache<String, Any>) where E : Any {
         return Observable.create {
             val data = cache.get(key)
             if(data != null){
+                @Suppress("UNCHECKED_CAST")
                 it.onNext(data as ResponseHolder<E>)
             }
             it.onCompleted()

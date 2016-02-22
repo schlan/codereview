@@ -53,7 +53,6 @@ class PatchParser {
         return Patch.PatchSegment(r.first, r.second, parsedLines, header, list.first().toString().replace(header, ""))
     }
 
-    // tested
     fun parseCodeLines(list: List<CharSequence>, r: Pair<Patch.Range, Patch.Range>): List<Patch.Line> {
 
         val newList: List<CharSequence> = list.filter { !it.startsWith("\\ No newline") }
@@ -72,7 +71,6 @@ class PatchParser {
         }
     }
 
-    // tested
     fun parseHeader(header: String): Pair<Patch.Range, Patch.Range>? {
         val strippedHeader: List<String> = header.replace("@", "").trim().split(" ")
         val start = parseRange(strippedHeader.first()) ?: return null
@@ -80,7 +78,6 @@ class PatchParser {
         return Pair(start, end)
     }
 
-    //tested
     fun parseRange(range: String): Patch.Range? {
         if(!rangeRegex.matches(range)) return null
         val r: List<String> = range.substring(1).split(",")
@@ -94,12 +91,10 @@ class PatchParser {
         }
     }
 
-    //tested
     fun isHeader(line: CharSequence): Boolean {
         return headerRegex.containsMatchIn(line)
     }
 
-    //tested
     fun parseLineType(s: CharSequence): Patch.Type {
         when {
             s.startsWith("+") -> return Patch.Type.Add

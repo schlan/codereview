@@ -19,6 +19,7 @@ class MainActivity : BaseActivity<MainActivityComponent>(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
         mainContainer = findViewById(R.id.main_container) as FrameLayout
+        mainContainer.setBackgroundResource(R.color.bg_gray)
 
         if(controller!!.accountInstalled()){
             if(savedInstanceState == null) {

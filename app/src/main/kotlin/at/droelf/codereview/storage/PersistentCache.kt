@@ -34,13 +34,13 @@ class PersistentCache<E>(val diskCache: DiskLruCache, val gson: Gson = Gson()) w
         }
     }
 
-    fun byteArray2Hex(hash: ByteArray): String {
+    private fun byteArray2Hex(hash: ByteArray): String {
         val formatter = Formatter()
         hash.forEach { formatter.format("%02x", it) }
         return formatter.toString()
     }
 
-    fun normalizeKey(key: String): String {
+    private fun normalizeKey(key: String): String {
         return byteArray2Hex(md.digest(key.toByteArray(charset)))
     }
 }

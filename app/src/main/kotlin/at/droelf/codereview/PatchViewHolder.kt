@@ -1,9 +1,7 @@
 package at.droelf.codereview
 
-import android.content.res.TypedArray
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.text.SpannableString
 import android.view.View
