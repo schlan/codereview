@@ -1,5 +1,5 @@
 package at.droelf.codereview.ui.adapter
 
-public interface UnsubscribeRx{
+interface UnsubscribeRx{
     fun unsubscribeRx()
 }

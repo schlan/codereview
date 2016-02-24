@@ -23,7 +23,7 @@ class NotificationFragmentController(val mainActivityController: MainActivityCon
 
     fun loadPrs(skipCache: Boolean = false): Observable<ResponseHolder<List<GithubModel.PullRequest>>> {
         if (observable == null || skipCache) {
-            observable = githubProvider.subscriptions(skipCache)
+            observable = githubProvider.subscriptions(skipCache = false)
                     .flatMap { repoFilter(it) }
                     .flatMap({ repos ->
                         Observable.from(repos)

@@ -23,7 +23,8 @@ object GithubModel {
     )
 
     data class Comment(
-            val id: Long, val url: String, val htmlUrl: String, val body: String, val user: User, val bodyHtml: String
+            val id: Long, val url: String, val htmlUrl: String, val body: String, val user: User, val bodyHtml: String,
+            val updatedAt: Date, val createdAt: Date
     )
 
     data class ReviewComment(

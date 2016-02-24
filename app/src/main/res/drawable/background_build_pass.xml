@@ -3,11 +3,12 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="oval">
 
-    <solid
-        android:color="@color/build_pass"/>
+    <stroke
+        android:color="@color/build_pass"
+        android:width="@dimen/row_notification_pull_request_avatar_stroke"/>
 
     <size
-        android:width="44dp"
-        android:height="44dp"/>
+        android:width="@dimen/row_notification_pull_request_avatar_radius"
+        android:height="@dimen/row_notification_pull_request_avatar_radius"/>
 
 </shape>

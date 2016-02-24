@@ -24,72 +24,88 @@
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:contentInsetStart="0dp"
             app:contentInsetLeft="0dp">
-            
+
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize"
-                android:orientation="horizontal"
-                android:paddingRight="16dp">
-
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            
                 <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?attr/actionBarSize"
                     android:orientation="horizontal"
-                    android:layout_gravity="left"
-                    android:id="@+id/pr_toolbar_back">
+                    android:paddingRight="16dp">
 
-                    <ImageView
+                    <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:src="@drawable/ic_left"
-                        />
-
-                    <FrameLayout
-                        android:layout_width="36dp"
-                        android:layout_height="36dp"
-                        android:layout_gravity="center_vertical"
-                        android:background="@drawable/background_avatar_pr">
-
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal"
+                        android:layout_gravity="left"
+                        android:id="@+id/pr_toolbar_back">
 
                         <ImageView
-                            android:id="@+id/pr_toolbar_avatar"
-                            android:layout_width="34dp"
-                            android:layout_height="34dp"
-                            android:layout_gravity="center"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/ic_left"
                             />
 
-                    </FrameLayout>
+                        <FrameLayout
+                            android:layout_width="36dp"
+                            android:layout_height="36dp"
+                            android:layout_gravity="center_vertical"
+                            android:background="@drawable/background_avatar_pr">
+
+
+                            <ImageView
+                                android:id="@+id/pr_toolbar_avatar"
+                                android:layout_width="34dp"
+                                android:layout_height="34dp"
+                                android:layout_gravity="center"
+                                />
+
+                        </FrameLayout>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="16dp">
+
+                        <TextView
+                            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
+                            android:textSize="16sp"
+                            android:id="@+id/toolbar_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:lines="1"
+                            android:ellipsize="end"
+                            tools:text="Foo bar"/>
+
+                        <TextView
+                            style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
+                            android:textSize="14sp"
+                            android:id="@+id/toolbar_subtitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:lines="1"
+                            android:ellipsize="end"
+                            tools:text="Foo bar"/>
+
+                    </LinearLayout>
+
                 </LinearLayout>
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/toolbar_pr_status"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="16dp">
+                    android:visibility="gone"
+                    tools:text="asdfasdfasdf"/>
 
-                    <TextView
-                        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Title"
-                        android:textSize="16sp"
-                        android:id="@+id/toolbar_title"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:lines="1"
-                        android:ellipsize="end"
-                        tools:text="Foo bar"/>
-
-                    <TextView
-                        style="@style/TextAppearance.Widget.AppCompat.Toolbar.Subtitle"
-                        android:textSize="14sp"
-                        android:id="@+id/toolbar_subtitle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:lines="1"
-                        android:ellipsize="end"
-                        tools:text="Foo bar"/>
-
-                </LinearLayout>
             </LinearLayout>
 
         </android.support.v7.widget.Toolbar>

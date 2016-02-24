@@ -18,17 +18,16 @@ import rx.Subscription
 class PullRequestCommentsAdapter(
         val commentsObserver: Observable<List<GithubModel.Comment>>,
         val controller: StartFragmentController,
-        pullRequestCommentView: PullRequestCommentView,
-        fm: FragmentManager,
         val swipeToRefresh: SwipeRefreshLayout,
-        pr: GithubModel.PullRequestDetail) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), UnsubscribeRx {
+        pr: GithubModel.PullRequestDetail,
+        val status: GithubModel.Status?) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), UnsubscribeRx {
 
     var items: List<RecyclerItem> = listOf()
     var subscription: Subscription?
 
     init {
         swipeToRefresh.isRefreshing = true
-        items = listOf(RecyclerItem(1, GithubModel.Comment(-1L, "", "", "", pr.user, pr.bodyHtml)))
+        items = listOf(RecyclerItem(1, GithubModel.Comment(-1L, "", "", "", pr.user, pr.bodyHtml, pr.updatedAt, pr.updatedAt))) // TODO created at
         notifyItemInserted(0)
 
         subscription = commentsObserver.subscribe({ comments ->
@@ -80,6 +79,9 @@ class PullRequestCommentsAdapter(
                 val p = (holder as PullRequestCommentViewHolder)
                 p.bind(items[position].data as GithubModel.Comment, controller)
                 p.showAvatar(position != 0)
+                if(position == 0 && status != null){
+                    p.showBuildStatus(status)
+                }
             }
         }
     }

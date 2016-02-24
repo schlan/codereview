@@ -7,13 +7,15 @@
     <dimen name="row_patchadapter_comment_padding_bottom">8dp</dimen>
 
     <dimen name="row_notification_pull_request_divider_padding_left">72dp</dimen>
+    <dimen name="row_notification_pull_request_avatar_stroke">2dp</dimen>
+    <dimen name="row_notification_pull_request_avatar_radius">44dp</dimen>
 
     <dimen name="row_pr_file_avatar_size">20dp</dimen>
     <dimen name="row_pr_file_avatar_margin_left">2dp</dimen>
-
 
     <dimen name="row_pr_file_file_change_indicator_box_margin">2dp</dimen>
     <dimen name="row_pr_file_file_change_indicator_box_width">8dp</dimen>
     <dimen name="row_pr_file_file_change_indicator_box_height">12dp</dimen>
     <dimen name="row_pr_file_file_change_indicator_image">16dp</dimen>
+
 </resources>

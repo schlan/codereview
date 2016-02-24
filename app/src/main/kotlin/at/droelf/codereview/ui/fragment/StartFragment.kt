@@ -3,6 +3,7 @@ package at.droelf.codereview.ui.fragment
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.design.widget.TabLayout
+import android.support.v4.content.ContextCompat
 import android.support.v4.view.ViewPager
 import android.support.v4.widget.SwipeRefreshLayout
 import android.support.v7.app.AppCompatActivity
@@ -38,6 +39,7 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
     lateinit var toolbarTitle: TextView
     lateinit var toolbarSubtitle: TextView
     lateinit var toolbarBackContainer: ViewGroup
+    lateinit var toolbarPrStatus: TextView
 
     var subscription: Subscription? = null
     var viewPagerAdapter: PullRequestViewpagerAdapter? = null
@@ -66,6 +68,7 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         toolbarTitle = view.findViewById(R.id.toolbar_title) as TextView
         toolbarSubtitle = view.findViewById(R.id.toolbar_subtitle) as TextView
         toolbarBackContainer = view.findViewById(R.id.pr_toolbar_back) as ViewGroup
+        toolbarPrStatus = view.findViewById(R.id.toolbar_pr_status) as TextView
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -100,8 +103,10 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
 
         progressbar.visibility = View.GONE
         swipeToRefresh.post({ swipeToRefresh.isRefreshing = true })
-        subscription = controller.prdetails(activity, owner, repo, id).subscribe({ pr ->
-            initTabLayout(pr)
+        subscription = controller.prdetails(activity, owner, repo, id).subscribe({ data ->
+            val pr = data.first
+            val status = data.second.sortedBy { it.updatedAt }.lastOrNull()
+            initTabLayout(pr, status)
 
             Picasso.with(context).load(pr.user.avatarUrl).transform(CircleTransform()).into(toolbarImage)
             toolbarTitle.text = pr.title
@@ -122,12 +127,13 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         viewPagerAdapter?.unsubscribeRx()
     }
 
-    fun initTabLayout(pr: GithubModel.PullRequestDetail) {
+    fun initTabLayout(pr: GithubModel.PullRequestDetail, status: GithubModel.Status?) {
         tablayout.removeAllTabs()
         val commentsTab = tablayout.newTab()
-        commentsTab.text = "Comments"
         val filesTab = tablayout.newTab()
+        commentsTab.text = "Comments"
         filesTab.text = "Files"
+
 
         tablayout.addTab(commentsTab, 0, true)
         tablayout.addTab(filesTab, 1, false)
@@ -144,7 +150,7 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
             }
         })
 
-        viewPagerAdapter = PullRequestViewpagerAdapter(fragmentManager, controller, pr)
+        viewPagerAdapter = PullRequestViewpagerAdapter(fragmentManager, controller, pr, status)
         viewpager.adapter = viewPagerAdapter
         viewpager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tablayout))
     }

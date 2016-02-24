@@ -14,17 +14,18 @@ import java.util.concurrent.TimeUnit
 class StartFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider) : RxHelper {
 
     var observable:  Observable<List<Triple<GithubModel.PullRequestFile, Int, List<GithubModel.ReviewComment>>>>? = null
-    var prObservable: Observable<GithubModel.PullRequestDetail>? = null
+    var prObservable: Observable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>>? = null
     var commentObservable: Observable<List<GithubModel.Comment>>? = null
 
     var scrollPos: Int? = 0
 
-    fun prdetails(context: Context, owner: String, repo: String, number: Long): Observable<GithubModel.PullRequestDetail> {
+    fun prdetails(context: Context, owner: String, repo: String, number: Long): Observable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>> {
         if (prObservable == null) {
+
             prObservable = githubProvider.pullRequestDetail(owner, repo, number)
-                    .delay(context.resources.getInteger(R.integer.fragment_anim_duration).toLong(), TimeUnit.MILLISECONDS)
-                    .compose(transformObservable<GithubModel.PullRequestDetail>())
-                    .cache()
+                .flatMap { pr -> githubProvider.status(owner, repo, pr.head.ref, true).map { Pair(pr, it) }  }
+                .compose(transformObservable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>>())
+                .cache()
         }
         return prObservable!!
     }

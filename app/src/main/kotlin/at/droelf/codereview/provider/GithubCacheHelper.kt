@@ -8,7 +8,8 @@ import rx.schedulers.Schedulers
 import java.lang.reflect.Type
 
 interface GithubCacheHelper {
-    fun <E> genericLoadData(key: String, cache: GithubEndpointCache<E>, nwObservable: Observable<ResponseHolder<E>>, skipCache: Boolean): Observable<E>
+
+    fun <E> memoryCacheFlow(key: String, cache: GithubEndpointCache<E>, nwObservable: Observable<ResponseHolder<E>>, skipCache: Boolean): Observable<E>
             where E : Any {
         val network = nwObservable.doOnNext { cache.put(key, it.data) }
 
@@ -22,7 +23,7 @@ interface GithubCacheHelper {
         }
     }
 
-    fun <E> genericLoadDataV2(
+    fun <E> persistentCacheFlow(
             key: String,
             memory: GithubEndpointCache<E>,
             disc: PersistentCache<E>,

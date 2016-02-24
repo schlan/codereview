@@ -42,7 +42,7 @@ class UserModule(private val data: Model.GithubAuth) {
 
     @Provides
     @UserScope
-    fun providesGithubPersistantCache(@Named("cache_dir") cacheDir: File): DiskLruCache {
+    fun providesGithubPersistentCache(@Named("cache_dir") cacheDir: File): DiskLruCache {
         return DiskLruCache.open(cacheDir, 1, 1,1024 * 1024 * 10)
     }
 

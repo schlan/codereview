@@ -22,7 +22,8 @@ class NotificationFragmentAdapter(
         val controller: NotificationFragmentController,
         parent: View,
         val fragmentManager: FragmentManager,
-        val swipeRefreshLayout: SwipeRefreshLayout) : RecyclerView.Adapter<ViewHolderBinder<*>>(), UnsubscribeRx {
+        val swipeRefreshLayout: SwipeRefreshLayout)
+: RecyclerView.Adapter<ViewHolderBinder<*>>(), UnsubscribeRx, NotificationFragmentAdapterCommander {
 
     var holderWrapperList: List<HolderWrapper> = listOf()
 
@@ -135,7 +136,7 @@ class NotificationFragmentAdapter(
             is NotificationFragmentViewHolder -> {
                 val wrapper = holderWrapperList[position]
                 val pr = wrapper.data as GithubModel.PullRequest
-                holder.bind(NotificationFragmentViewHolder.NotificationFragmentViewHolderData(pr, fragmentManager, controller, wrapper.source!!, wrapper.updateToDate!!))
+                holder.bind(NotificationFragmentViewHolder.NotificationFragmentViewHolderData(pr, fragmentManager, controller, wrapper.source!!, wrapper.updateToDate!!, this))
             }
         }
     }
@@ -155,6 +156,18 @@ class NotificationFragmentAdapter(
     override fun unsubscribeRx() {
         subscription?.unsubscribe()
         subscription = null
+    }
+
+    override fun removeItem(wrapper: GithubModel.PullRequest) {
+        synchronized(lock){
+            myPullRequests.removeAll { it.data == wrapper }
+            pullRequests.removeAll { it.data == wrapper }
+            val indexOf = holderWrapperList.indexOfLast{ it.data == wrapper }
+            holderWrapperList = holderWrapperList.filterIndexed { i, holderWrapper -> indexOf != i }
+            if(indexOf >= 0){
+                notifyItemRemoved(indexOf)
+            }
+        }
     }
 
     data class HolderWrapper(val type: Int, val id: Long, val data: Any, var source: ResponseHolder.Source?, var updateToDate: Boolean?)

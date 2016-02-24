@@ -24,7 +24,8 @@ class PullRequestCommentView(
         context: Context,
         val pr: GithubModel.PullRequestDetail,
         val fm: FragmentManager,
-        val controller: StartFragmentController): FrameLayout(context), UnsubscribeRx {
+        val controller: StartFragmentController,
+        val status: GithubModel.Status?): FrameLayout(context), UnsubscribeRx {
 
     val list: RecyclerView
     val swipeToRefresh: SwipeRefreshLayout
@@ -53,7 +54,7 @@ class PullRequestCommentView(
         val repo = pr.base.repo.name
         val number = pr.number
         val comments = controller.comments(owner, repo, number)
-        listAdapter = PullRequestCommentsAdapter(comments, controller, this, fm, swipeToRefresh, pr)
+        listAdapter = PullRequestCommentsAdapter(comments, controller, swipeToRefresh, pr, status)
         list.adapter = listAdapter
     }
 

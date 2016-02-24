@@ -125,11 +125,12 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
     fun loadUser(second: GithubModel.AuthResponse, uuid: UUID) {
         //loading(true)
         controller.getUserAndStoreUserData(second, uuid).subscribe({ data ->
-            loading(false)
             Snackbar.make(view!!, "Hello @${data.user.login}", Snackbar.LENGTH_LONG).show()
             controller.initLogin((activity as MainActivity).mainComponent(), fragmentManager, data)
         },{ error ->
             Snackbar.make(view!!, "Error @${error.message}", Snackbar.LENGTH_LONG).show()
+        },{
+            loading(false)
         })
     }
 

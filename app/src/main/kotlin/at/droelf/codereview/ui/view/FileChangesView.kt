@@ -10,7 +10,7 @@ import at.droelf.codereview.R
 import java.nio.DoubleBuffer
 
 
-public class FileChangesView(context: Context, additions: Int, deletions: Int, changes: Int): LinearLayout(context) {
+class FileChangesView(context: Context, additions: Int, deletions: Int, changes: Int): LinearLayout(context) {
 
     val boxes: List<View>
 

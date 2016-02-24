@@ -49,6 +49,7 @@ abstract class BaseActivity<E> : AppCompatActivity() {
 
     private fun getHeadlessFragment(): HeadlessFragment<E> {
         if(supportFragmentManager.findFragmentByTag(tag) is HeadlessFragment<*>){
+            @Suppress("UNCHECKED_CAST")
             return supportFragmentManager.findFragmentByTag(tag) as HeadlessFragment<E>
         } else {
             return installHeadlessFragment()

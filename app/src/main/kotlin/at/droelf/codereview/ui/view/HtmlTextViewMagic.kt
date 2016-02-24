@@ -4,6 +4,7 @@ import android.app.ActivityOptions
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
+import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Rect
@@ -105,13 +106,15 @@ object HtmlTextViewMagic {
         }
     }
 
-    class HtmlDrawable : BitmapDrawable() {
+    @Suppress("DEPRECATION")
+    class HtmlDrawable() : BitmapDrawable() {
 
         var drawable: Drawable? = null
 
         override fun draw(canvas: Canvas?) {
             drawable?.draw(canvas)
         }
+
     }
 
     class CoolUrlSpan(url: String): URLSpan(url) {

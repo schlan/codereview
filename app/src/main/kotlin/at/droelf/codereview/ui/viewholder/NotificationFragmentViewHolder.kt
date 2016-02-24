@@ -1,9 +1,7 @@
 package at.droelf.codereview.ui.viewholder
 
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.support.v4.app.FragmentManager
-import android.support.v4.content.ContextCompat
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
@@ -13,6 +11,7 @@ import android.widget.TextView
 import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.ResponseHolder
+import at.droelf.codereview.ui.adapter.NotificationFragmentAdapterCommander
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import at.droelf.codereview.utils.CircleTransform
 import at.droelf.codereview.utils.HumanTime
@@ -55,7 +54,7 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
             setLoading(true)
         }
 
-        lazyLoadThings(data.pr, data.controller, data.upToDate)
+        lazyLoadThings(data.pr, data.controller, data.upToDate, data.commander)
         view.setOnClickListener {
             data.controller.displayFileFragment(data.fm, data.pr.base.repo.owner.login, data.pr.base.repo.name, data.pr.number)
         }
@@ -79,7 +78,7 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
         sourceIndicator.setBackgroundColor(color)
     }
 
-    fun lazyLoadThings(pr: GithubModel.PullRequest, controller: NotificationFragmentController, upToDate: Boolean){
+    fun lazyLoadThings(pr: GithubModel.PullRequest, controller: NotificationFragmentController, upToDate: Boolean, commander: NotificationFragmentAdapterCommander){
         issueCount.visibility = View.GONE
         avatarBackground.background = null
         subscription = controller.lazyLoadDataForPr(pr)
@@ -87,15 +86,22 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
                 .subscribe ({ data ->
                     val prDetail = data.first
 
-                    val comments = prDetail.reviewComments + prDetail.comments
-                    val issueCountString = when {
-                        comments > 0 && comments < 100 -> "$comments"
-                        comments > 99 -> "99+"
-                        else -> null
+                    if(prDetail.merged || prDetail.state == "closed"){
+                        commander.removeItem(pr)
+
+                    } else {
+                        prDetail.merged
+
+                        val comments = prDetail.reviewComments + prDetail.comments
+                        val issueCountString = when {
+                            comments > 0 && comments < 100 -> "$comments"
+                            comments > 99 -> "99+"
+                            else -> null
+                        }
+                        issueCount.visibility = if (issueCountString != null) View.VISIBLE else View.GONE
+                        issueCount.text = issueCountString
+                        initAvatarBackground(data.second, prDetail)
                     }
-                    issueCount.visibility = if (issueCountString != null) View.VISIBLE else View.GONE
-                    issueCount.text = issueCountString
-                    initAvatarBackground(data.second, prDetail)
 
                 }, { error ->
                     error.printStackTrace()
@@ -106,10 +112,9 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
     }
 
     private fun initAvatarBackground(status: List<GithubModel.Status>, prDetail: GithubModel.PullRequestDetail) {
-        val background: Int
-        if (status.isNotEmpty()) {
+        val background: Int = if (status.isNotEmpty()) {
             val lastStatus = status.sortedBy { it.updatedAt }.last()
-            background = when (lastStatus.state) {
+            when (lastStatus.state) {
                 "pending" -> R.drawable.background_build_pending
                 "failure" -> R.drawable.background_build_fail
                 "success" -> R.drawable.background_build_pass
@@ -122,12 +127,13 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
                 }
             }
         } else {
-            background = if (prDetail.mergeable.toBoolean()) {
+            if (prDetail.mergeable.toBoolean()) {
                 R.drawable.background_build_pass
             } else {
                 R.drawable.background_build_fail
             }
         }
+
         avatarBackground.setBackgroundResource(background)
     }
 
@@ -147,7 +153,8 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
             val fm: FragmentManager,
             val controller: NotificationFragmentController,
             val source: ResponseHolder.Source,
-            val upToDate: Boolean
+            val upToDate: Boolean,
+            val commander: NotificationFragmentAdapterCommander
     )
 
 }
