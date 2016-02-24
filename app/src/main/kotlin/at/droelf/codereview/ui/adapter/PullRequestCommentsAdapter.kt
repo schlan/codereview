@@ -10,6 +10,7 @@ import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.fragment.StartFragmentController
 import at.droelf.codereview.ui.view.PullRequestCommentView
+import at.droelf.codereview.ui.viewholder.PullRequestCommentInitViewHolder
 import at.droelf.codereview.ui.viewholder.PullRequestCommentViewHolder
 import rx.Observable
 import rx.Subscription
@@ -20,14 +21,18 @@ class PullRequestCommentsAdapter(
         val controller: StartFragmentController,
         val swipeToRefresh: SwipeRefreshLayout,
         pr: GithubModel.PullRequestDetail,
-        val status: GithubModel.Status?) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), UnsubscribeRx {
+        status: GithubModel.Status?) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), UnsubscribeRx {
 
     var items: List<RecyclerItem> = listOf()
     var subscription: Subscription?
 
+    val HEADER = 1
+    val SPACE = 2
+    val COMMENT = 3
+
     init {
         swipeToRefresh.isRefreshing = true
-        items = listOf(RecyclerItem(1, GithubModel.Comment(-1L, "", "", "", pr.user, pr.bodyHtml, pr.updatedAt, pr.updatedAt))) // TODO created at
+        items = listOf(RecyclerItem(HEADER, Pair(pr, status)))
         notifyItemInserted(0)
 
         subscription = commentsObserver.subscribe({ comments ->
@@ -43,9 +48,9 @@ class PullRequestCommentsAdapter(
     fun update(newComments: List<GithubModel.Comment>){
         var newItems = listOf(this.items.first())
         if(newComments.isNotEmpty()){
-            newItems += listOf(RecyclerItem(3, Any()))
+            newItems += listOf(RecyclerItem(SPACE, Any()))
         }
-        newItems += newComments.map{ RecyclerItem(2, it) }
+        newItems += newComments.map{ RecyclerItem(COMMENT, it) }
         items = newItems
         notifyDataSetChanged()
     }
@@ -61,11 +66,15 @@ class PullRequestCommentsAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType){
-            1,2 -> {
+            COMMENT -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.row_pr_comment, parent, false)
                 PullRequestCommentViewHolder(view)
             }
-            3 -> {
+            HEADER -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.row_pr_comment_init, parent, false)
+                PullRequestCommentInitViewHolder(view)
+            }
+            SPACE -> {
                 val view = LayoutInflater.from(parent.context).inflate(R.layout.row_empty, parent, false)
                 object: RecyclerView.ViewHolder(view){}
             }
@@ -75,13 +84,15 @@ class PullRequestCommentsAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(items[position].type){
-            1,2 -> {
+            HEADER -> {
+                val p = (holder as PullRequestCommentInitViewHolder)
+                @Suppress("UNCHECKED_CAST")
+                val data = items[position].data as Pair<GithubModel.PullRequestDetail, GithubModel.Status?>
+                p.bind(data.first, data.second)
+            }
+            COMMENT -> {
                 val p = (holder as PullRequestCommentViewHolder)
                 p.bind(items[position].data as GithubModel.Comment, controller)
-                p.showAvatar(position != 0)
-                if(position == 0 && status != null){
-                    p.showBuildStatus(status)
-                }
             }
         }
     }

@@ -15,12 +15,14 @@ import at.droelf.codereview.ui.adapter.NotificationFragmentAdapterCommander
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import at.droelf.codereview.utils.CircleTransform
 import at.droelf.codereview.utils.HumanTime
+import at.droelf.codereview.utils.UiHelper
 import com.squareup.picasso.Picasso
 import rx.Subscription
 import java.text.SimpleDateFormat
 import java.util.concurrent.TimeUnit
 
-class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<NotificationFragmentViewHolder.NotificationFragmentViewHolderData>(view) {
+class NotificationFragmentViewHolder(val view: View):
+        ViewHolderBinder<NotificationFragmentViewHolder.NotificationFragmentViewHolderData>(view), UiHelper {
 
     val avatar: ImageView = view.findViewById(R.id.row_notification_avatar) as ImageView
     val title: TextView = view.findViewById(R.id.row_notification_name) as TextView
@@ -70,12 +72,7 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
     }
 
     private fun initSourceIndicator(data: NotificationFragmentViewHolderData) {
-        val color = when (data.source) {
-            ResponseHolder.Source.Memory -> Color.GREEN
-            ResponseHolder.Source.Disc -> Color.YELLOW
-            ResponseHolder.Source.Network -> Color.RED
-        }
-        sourceIndicator.setBackgroundColor(color)
+        sourceIndicator.setBackgroundColor(colorForSource(data.source))
     }
 
     fun lazyLoadThings(pr: GithubModel.PullRequest, controller: NotificationFragmentController, upToDate: Boolean, commander: NotificationFragmentAdapterCommander){
@@ -112,29 +109,17 @@ class NotificationFragmentViewHolder(val view: View): ViewHolderBinder<Notificat
     }
 
     private fun initAvatarBackground(status: List<GithubModel.Status>, prDetail: GithubModel.PullRequestDetail) {
-        val background: Int = if (status.isNotEmpty()) {
-            val lastStatus = status.sortedBy { it.updatedAt }.last()
-            when (lastStatus.state) {
-                "pending" -> R.drawable.background_build_pending
-                "failure" -> R.drawable.background_build_fail
-                "success" -> R.drawable.background_build_pass
-                else -> {
-                    if (prDetail.mergeable.toBoolean()) {
-                        R.drawable.background_build_pass
-                    } else {
-                        R.drawable.background_build_fail
-                    }
-                }
-            }
+        val lastStatus = status.sortedBy { it.updatedAt }.lastOrNull()
+
+        val color = if(lastStatus != null) {
+            backgroundForBuildStatus(lastStatus.state)
+        } else if(prDetail.mergeable.toBoolean()){
+            R.drawable.background_build_pass
         } else {
-            if (prDetail.mergeable.toBoolean()) {
-                R.drawable.background_build_pass
-            } else {
-                R.drawable.background_build_fail
-            }
+            R.drawable.background_build_fail
         }
 
-        avatarBackground.setBackgroundResource(background)
+        avatarBackground.setBackgroundResource(color)
     }
 
 

@@ -1,99 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+    <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingBottom="16dp"
+    android:paddingRight="16dp"
+    android:paddingTop="16dp"
+    android:background="@color/bg_white">
+
+    <ImageView
+        android:id="@+id/row_pr_comment_avatar"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="2dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:paddingBottom="16dp"
-        android:paddingRight="16dp"
-        android:paddingTop="16dp"
-        android:background="@color/bg_white">
+        android:layout_marginLeft="16dp"
+        android:orientation="vertical"
+        android:layout_marginTop="0dp">
 
-        <ImageView
-            android:id="@+id/row_pr_comment_avatar"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="2dp"/>
-
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/row_pr_header_holder"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
-            android:orientation="vertical"
-            android:layout_marginTop="0dp">
+            android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:id="@+id/row_pr_header_holder"
+            <TextView
+                android:id="@+id/row_pr_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_marginBottom="6dp"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                tools:text="Bla bla bla bla"
+                />
+
+
+            <TextView
+                android:id="@+id/row_pr_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginBottom="6dp"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                tools:text="12.12.12"
+                />
+
+        </RelativeLayout>
+
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <org.sufficientlysecure.htmltextview.HtmlTextView
+                android:id="@+id/row_pr_comment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:minHeight="14dp"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                tools:text="foobasld jfalksdj fklasjdf lakjdf alskjdflas"/>
 
-                <TextView
-                    android:id="@+id/row_pr_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginBottom="6dp"
-                    android:textAppearance="@android:style/TextAppearance.Small"
-                    android:textColor="@color/text_primary"
-                    android:textSize="14sp"
-                    tools:text="Bla bla bla bla"
-                    />
-
-
-                <TextView
-                    android:id="@+id/row_pr_date"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginBottom="6dp"
-                    android:textAppearance="@android:style/TextAppearance.Small"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    tools:text="12.12.12"
-                    />
-
-            </RelativeLayout>
-
-
-            <FrameLayout
+            <Button
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:text="Show full comment"
+                android:id="@+id/row_pr_comment_button"
+                tools:visibility="gone"
+                android:foreground="?android:attr/selectableItemBackground"
+                />
 
-                <org.sufficientlysecure.htmltextview.HtmlTextView
-                    android:id="@+id/row_pr_comment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:minHeight="14dp"
-                    android:textAppearance="@android:style/TextAppearance.Small"
-                    android:textColor="@color/text_secondary"
-                    android:textSize="12sp"
-                    tools:text="foobasld jfalksdj fklasjdf lakjdf alskjdflas"/>
-
-                <Button
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Show full comment"
-                    android:id="@+id/row_pr_comment_button"
-                    tools:visibility="gone"
-                    android:foreground="?android:attr/selectableItemBackground"
-                    />
-
-            </FrameLayout>
-        </LinearLayout>
+        </FrameLayout>
     </LinearLayout>
-
-    <View
-        android:id="@+id/row_pr_build_indicator"
-        android:layout_height="match_parent"
-        android:layout_width="4dp"
-        android:layout_gravity="left"
-        android:visibility="invisible"
-        />
-
-</FrameLayout>
+</LinearLayout>
