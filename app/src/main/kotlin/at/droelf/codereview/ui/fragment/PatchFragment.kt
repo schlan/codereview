@@ -11,8 +11,6 @@ import android.support.v7.widget.Toolbar
 import android.text.SpannableString
 import android.util.DisplayMetrics
 import android.view.*
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.DecelerateInterpolator
 import android.widget.ProgressBar
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.PatchFragmentComponent
@@ -20,7 +18,6 @@ import at.droelf.codereview.dagger.fragment.PatchFragmentModule
 import at.droelf.codereview.ui.activity.MainActivity
 import at.droelf.codereview.ui.adapter.PatchAdapter
 import at.droelf.codereview.ui.adapter.PatchAdapterControllerImpl
-import at.droelf.codereview.ui.listener.HidingScrollListener
 import at.droelf.codereview.ui.view.HScrollView
 import javax.inject.Inject
 

@@ -4,9 +4,20 @@
     android:opacity="opaque">
 
     <item android:drawable="@color/bg_gray"/>
-    <item>
-        <bitmap
-            android:gravity="center"
-            android:src="@drawable/github_icon"/>
+
+    <item
+        android:gravity="top|left|right">
+        <shape
+            android:shape="rectangle">
+            <solid
+                android:color="@color/colorPrimary"
+                />
+            <size android:height="72dp" />
+        </shape>
     </item>
+
+    <item
+        android:gravity="center"
+        android:drawable="@drawable/github_octocat" />
+
 </layer-list>
