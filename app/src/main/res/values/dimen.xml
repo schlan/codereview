@@ -3,8 +3,8 @@
     <dimen name="code_text_size">10sp</dimen>
     <dimen name="code_text_margin_left">60dp</dimen>
 
-    <dimen name="row_patchadapter_comment_padding_top">8dp</dimen>
-    <dimen name="row_patchadapter_comment_padding_bottom">8dp</dimen>
+    <dimen name="row_patchadapter_comment_padding_top">4dp</dimen>
+    <dimen name="row_patchadapter_comment_padding_bottom">4dp</dimen>
 
     <dimen name="row_notification_pull_request_divider_padding_left">72dp</dimen>
     <dimen name="row_notification_pull_request_avatar_stroke">2dp</dimen>

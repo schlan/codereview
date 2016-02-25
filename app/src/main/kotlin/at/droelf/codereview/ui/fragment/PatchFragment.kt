@@ -55,7 +55,9 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
-        (activity as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        val actionbar = (activity as AppCompatActivity).supportActionBar
+        actionbar?.setDisplayHomeAsUpEnabled(true)
+        actionbar?.title = ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -102,7 +104,6 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
                     activity
             )
         }
-        println("Load code")
     }
 
     fun loadCode(contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long, context: Context) {

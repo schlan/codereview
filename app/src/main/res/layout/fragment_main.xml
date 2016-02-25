@@ -7,20 +7,10 @@
              android:background="#fff"
              android:orientation="vertical">
 
-    <LinearLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/patch_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"
-            android:minHeight="?attr/actionBarSize"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:layout_scrollFlags="scroll|enterAlways|snap"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
         <at.droelf.codereview.ui.view.HScrollView
             android:id="@+id/horizontalScrollView"
@@ -44,12 +34,25 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:splitMotionEvents="true"
+                        android:paddingTop="?attr/actionBarSize"
+                        android:clipToPadding="false"
                         />
 
                 </LinearLayout>
             </LinearLayout>
         </at.droelf.codereview.ui.view.HScrollView>
-    </LinearLayout>
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/patch_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:layout_scrollFlags="scroll|enterAlways|snap"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+
+    </FrameLayout>
 
 
     <ProgressBar

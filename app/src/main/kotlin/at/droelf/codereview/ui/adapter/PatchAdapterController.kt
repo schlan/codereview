@@ -119,7 +119,6 @@ class PatchSegmentController(
                     ViewHolderLine(SpannableString(lineString), LineType.fromPatchType(l.type), l.originalNum, l.modifiedNum, i + visibleOffset) // FIXME
                 }
 
-
         val comments = reviewComments.filter { comment ->
             val pos = comment.position
             pos > visibleOffset && pos < (visibleOffset + patchSegment.lines.size)

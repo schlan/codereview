@@ -17,6 +17,7 @@
         android:id="@+id/lineNumberHolder"
         android:orientation="horizontal"
         android:layout_alignParentTop="true"
+        android:visibility="gone"
         android:layout_alignBottom="@+id/row_patch_text">
         
         <TextView

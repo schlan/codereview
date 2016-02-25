@@ -9,6 +9,7 @@ import android.graphics.drawable.Drawable
 import android.support.v7.widget.CardView
 import android.text.Html
 import android.view.LayoutInflater
+import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -30,7 +31,9 @@ class CommentView(val comment: Model.ReviewComment, context: Context) : FrameLay
     lateinit var avatar: ImageView
 
     lateinit var container: LinearLayout
-    lateinit var cardView: CardView
+    lateinit var cardView: FrameLayout
+
+    lateinit var dividerBottom: View
 
     init {
         LayoutInflater.from(context).inflate(R.layout.row_patchadapter_comment_single, this, true)
@@ -38,8 +41,10 @@ class CommentView(val comment: Model.ReviewComment, context: Context) : FrameLay
         commentTitle = findViewById(R.id.row_patch_name) as TextView
         avatar = findViewById(R.id.row_patch_comment_avatar) as ImageView
         container = findViewById(R.id.row_patch_comment_card_container) as LinearLayout
-        cardView = findViewById(R.id.row_patch_comment_card) as CardView
+        cardView = findViewById(R.id.row_pr_comment_container) as FrameLayout
+        dividerBottom = findViewById(R.id.row_patch_comment_line_divider_bottom)
         commentTitle.text = comment.user.login
+        dividerBottom.visibility = View.GONE
 
         HtmlTextViewMagic.apply(commentView, comment.bodyHtml)
         Picasso.with(context)
@@ -48,14 +53,14 @@ class CommentView(val comment: Model.ReviewComment, context: Context) : FrameLay
                 .into(avatar)
     }
 
-
     fun first(){
-        val params = (cardView.layoutParams as FrameLayout.LayoutParams)
-        params.topMargin = context.resources.getDimensionPixelSize(R.dimen.row_patchadapter_comment_padding_top)
+        //val params = (cardView.layoutParams as FrameLayout.LayoutParams)
+        //params.topMargin = context.resources.getDimensionPixelSize(R.dimen.row_patchadapter_comment_padding_top)
     }
 
     fun last(){
-        val params = (cardView.layoutParams as FrameLayout.LayoutParams)
-        params.bottomMargin = context.resources.getDimensionPixelSize(R.dimen.row_patchadapter_comment_padding_bottom)
+        //val params = (cardView.layoutParams as FrameLayout.LayoutParams)
+        //params.bottomMargin = context.resources.getDimensionPixelSize(R.dimen.row_patchadapter_comment_padding_bottom)
+        dividerBottom.visibility = View.VISIBLE
     }
 }

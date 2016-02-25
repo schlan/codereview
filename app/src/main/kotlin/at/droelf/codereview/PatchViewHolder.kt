@@ -86,9 +86,9 @@ class ViewHolderComment(val reviewComment: List<Model.ReviewComment>): ViewHolde
         container = viewholder.itemView.findViewById(R.id.row_patch_comment_container) as LinearLayout
         container.removeAllViews()
         val commentViews = reviewComment.map { CommentView(it, viewholder.itemView.context) }
+        commentViews.forEach { container.addView(it) }
         commentViews.first().first()
         commentViews.last().last()
-        commentViews.forEach { container.addView(it) }
     }
 
 }

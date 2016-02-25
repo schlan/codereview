@@ -8,4 +8,10 @@
               android:paddingBottom="0dp"
               android:paddingLeft="0dp"
               android:paddingRight="0dp"
-              android:paddingTop="0dp"></LinearLayout>
+              android:paddingTop="0dp">
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
+</LinearLayout>
