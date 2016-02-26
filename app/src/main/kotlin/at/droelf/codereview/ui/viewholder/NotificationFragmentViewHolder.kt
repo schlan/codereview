@@ -1,6 +1,5 @@
 package at.droelf.codereview.ui.viewholder
 
-import android.graphics.Color
 import android.support.v4.app.FragmentManager
 import android.view.View
 import android.view.ViewGroup
@@ -104,7 +103,7 @@ class NotificationFragmentViewHolder(val view: View):
                     error.printStackTrace()
                     println("Error during lazy loading data :(")
                 }, {
-                    setLoading(!upToDate)
+                    setLoading(false)
                 })
     }
 

@@ -57,7 +57,7 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
         (activity as AppCompatActivity).setSupportActionBar(toolbar)
         val actionbar = (activity as AppCompatActivity).supportActionBar
         actionbar?.setDisplayHomeAsUpEnabled(true)
-        actionbar?.title = ""
+        actionbar?.title = arguments.getString("fname").split("/").lastOrNull() ?: ""
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

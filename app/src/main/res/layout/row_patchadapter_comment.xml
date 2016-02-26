@@ -5,10 +5,10 @@
               android:id="@+id/row_patch_comment_container"
               android:orientation="vertical"
               android:background="@color/bg_gray"
-              android:paddingBottom="0dp"
+              android:paddingBottom="2dp"
               android:paddingLeft="0dp"
               android:paddingRight="0dp"
-              android:paddingTop="0dp">
+              android:paddingTop="2dp">
 
     <View
         android:layout_width="0dp"

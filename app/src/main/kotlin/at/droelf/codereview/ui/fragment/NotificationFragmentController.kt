@@ -36,6 +36,7 @@ class NotificationFragmentController(val mainActivityController: MainActivityCon
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .cache()
+
         }
 
         return observable!!
