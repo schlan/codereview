@@ -2,20 +2,28 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="32dp"
+              xmlns:tools="http://schemas.android.com/tools"
               android:background="#F4F7FB"
               android:orientation="horizontal">
 
-    <View
-        android:layout_width="1px"
-        android:layout_height="match_parent"
-        android:background="@android:color/transparent"
-        />
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/row_patch_header_number">
 
-    <View
-        android:layout_width="1px"
-        android:layout_height="match_parent"
-        android:background="@color/divider"
-        android:layout_marginLeft="48dp"/>
+        <View
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="@android:color/transparent"
+            />
+
+        <View
+            android:layout_width="1px"
+            android:layout_height="match_parent"
+            android:background="@color/divider"
+            android:layout_marginLeft="48dp"/>
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/row_patch_header"
@@ -23,6 +31,7 @@
         android:gravity="center_vertical"
         android:layout_height="match_parent"
         android:layout_marginLeft="8dp"
-        android:textColor="#B3B3B3"/>
+        android:textColor="#B3B3B3"
+        tools:text="abasdlf jaskldf jaskjldf askldfj aklsdfj lkas klasf"/>
 
 </LinearLayout>

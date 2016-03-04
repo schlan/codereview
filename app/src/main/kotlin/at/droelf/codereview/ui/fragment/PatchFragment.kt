@@ -34,8 +34,6 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
 
     var maxWidth: Int = -1
     var minWidth: Int = -1
-    var hscrollEnabled: Boolean = false
-
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater?.inflate(R.layout.fragment_main, container, false)
@@ -78,8 +76,12 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.menu_code_hscroll -> {
-                hscroll(!hscrollEnabled)
+            R.id.menu_code_wrap -> {
+                item.isChecked = !hscroll(item.isChecked)
+                return true
+            }
+            R.id.menu_code_number -> {
+                item.isChecked = lineNumbers(!item.isChecked)
                 return true
             }
             android.R.id.home -> {
@@ -123,7 +125,7 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
                 else -> main.width
             }
 
-            hscroll(hscrollEnabled)
+            hscroll(false)
 
             recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             recyclerView.adapter = PatchAdapter(PatchAdapterControllerImpl(result))
@@ -134,17 +136,23 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
         })
     }
 
-    fun hscroll(active: Boolean) {
+    fun hscroll(active: Boolean): Boolean {
         if(active && maxWidth != -1){
             recyclerViewBounds.layoutParams.width = maxWidth
             horizontalScrollView.enableScrolling = true
-            hscrollEnabled = true
+            recyclerView.requestLayout()
+            return true
         } else {
             recyclerViewBounds.layoutParams.width = minWidth
             horizontalScrollView.enableScrolling = false
-            hscrollEnabled = false
+            recyclerView.requestLayout()
+            return false
         }
-        recyclerView.requestLayout()
+    }
+
+    fun lineNumbers(visible: Boolean): Boolean {
+        (recyclerView?.adapter as? PatchAdapter)?.lineNumbersVisbile = visible
+        return visible
     }
 
     fun SpannableString.lengthInPixel(context: Context): Int {

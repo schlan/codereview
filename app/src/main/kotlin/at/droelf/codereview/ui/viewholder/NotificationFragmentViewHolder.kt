@@ -13,12 +13,9 @@ import at.droelf.codereview.model.ResponseHolder
 import at.droelf.codereview.ui.adapter.NotificationFragmentAdapterCommander
 import at.droelf.codereview.ui.fragment.NotificationFragmentController
 import at.droelf.codereview.utils.CircleTransform
-import at.droelf.codereview.utils.HumanTime
 import at.droelf.codereview.utils.UiHelper
 import com.squareup.picasso.Picasso
 import rx.Subscription
-import java.text.SimpleDateFormat
-import java.util.concurrent.TimeUnit
 
 class NotificationFragmentViewHolder(val view: View):
         ViewHolderBinder<NotificationFragmentViewHolder.NotificationFragmentViewHolderData>(view), UiHelper {
@@ -45,10 +42,10 @@ class NotificationFragmentViewHolder(val view: View):
                 .into(avatar)
 
         title.text = data.pr.title
-        secondLine.text = data.pr.base.repo.fullName
+        secondLine.text = data.pr.base?.repo?.fullName ?: ""
         user.text = "@${data.pr.user.login}"
 
-        initTimeStamp(data)
+        timeStamp(timeStamp, data.pr.updatedAt)
         initSourceIndicator(data)
 
         if(issueCount.visibility == View.GONE) {
@@ -61,15 +58,6 @@ class NotificationFragmentViewHolder(val view: View):
         }
     }
 
-    private fun initTimeStamp(data: NotificationFragmentViewHolderData) {
-        val timeSpan = System.currentTimeMillis() - data.pr.updatedAt.time
-        if (timeSpan < TimeUnit.DAYS.toMillis(7)) {
-            timeStamp.text = HumanTime.approximately(System.currentTimeMillis() - data.pr.updatedAt.time)
-        } else {
-            timeStamp.text = SimpleDateFormat("dd MMM yyyy").format(data.pr.updatedAt)
-        }
-    }
-
     private fun initSourceIndicator(data: NotificationFragmentViewHolderData) {
         sourceIndicator.setBackgroundColor(colorForSource(data.source))
     }
@@ -77,6 +65,8 @@ class NotificationFragmentViewHolder(val view: View):
     fun lazyLoadThings(pr: GithubModel.PullRequest, controller: NotificationFragmentController, upToDate: Boolean, commander: NotificationFragmentAdapterCommander){
         issueCount.visibility = View.GONE
         avatarBackground.background = null
+        if(pr.base == null) return
+
         subscription = controller.lazyLoadDataForPr(pr)
                 .retry()
                 .subscribe ({ data ->
@@ -112,10 +102,13 @@ class NotificationFragmentViewHolder(val view: View):
 
         val color = if(lastStatus != null) {
             backgroundForBuildStatus(lastStatus.state)
+
         } else if(prDetail.mergeable.toBoolean()){
             R.drawable.background_build_pass
+
         } else {
             R.drawable.background_build_fail
+
         }
 
         avatarBackground.setBackgroundResource(color)

@@ -38,7 +38,7 @@ class PatchFragmentController(val mainActivityController: MainActivityController
                         list.filter { it.first.position != null }
                             .map { pair ->
                                 val c = pair.first
-                                Model.ReviewComment(c.id, c.body, c.user, c.position!!.toInt(), c.originalPosition.toInt(), pair.second, c.path, c.bodyHtml, c.bodyText)
+                                Model.ReviewComment(c.id, c.body, c.user, c.position!!.toInt(), c.originalPosition.toInt(), pair.second, c.path, c.bodyHtml, c.bodyText, c.createdAt)
                         }
                     }
             }

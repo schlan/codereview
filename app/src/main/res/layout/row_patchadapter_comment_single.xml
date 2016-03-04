@@ -48,16 +48,38 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/row_patch_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="14sp"
-                android:textStyle="normal"
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:textColor="@color/text_primary"
-                tools:text="Bla bla bla bla"
-                />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/row_patch_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textStyle="normal"
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:textColor="@color/text_primary"
+                    android:layout_alignParentLeft="true"
+                    tools:text="Bla bla bla bla"
+                    />
+
+                <TextView
+                    android:id="@+id/row_patch_timestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    android:textStyle="normal"
+                    android:textAppearance="@android:style/TextAppearance.Small"
+                    android:textColor="@color/text_secondary"
+                    android:layout_alignParentRight="true"
+                    tools:text="12.12.12"
+                    />
+
+
+
+            </RelativeLayout>
+
 
             <org.sufficientlysecure.htmltextview.HtmlTextView
                 android:id="@+id/row_patch_comment"

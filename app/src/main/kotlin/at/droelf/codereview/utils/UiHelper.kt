@@ -1,6 +1,7 @@
 package at.droelf.codereview.utils
 
 import android.graphics.Color
+import android.view.View
 import android.widget.TextView
 import at.droelf.codereview.R
 import at.droelf.codereview.model.GithubModel
@@ -46,5 +47,9 @@ interface UiHelper {
             ResponseHolder.Source.Disc -> Color.YELLOW
             ResponseHolder.Source.Network -> Color.RED
         }
+    }
+
+    fun booleanToViewVisibilityFlag(visible: Boolean): Int {
+        return if(visible) View.VISIBLE else View.GONE
     }
 }

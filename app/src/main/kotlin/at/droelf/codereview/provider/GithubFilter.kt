@@ -17,7 +17,7 @@ interface GithubFilter {
 
         val prList = prs.data
         if(prList.isEmpty()) return Observable.empty()
-        val subscription = subscriptions.find { it.repo.id == prList.first().base.repo.id } ?: return Observable.just(prs)
+        val subscription = subscriptions.find { it.repo.id == prList.firstOrNull()?.base?.repo?.id } ?: return Observable.just(prs)
 
         val filteredPrs = prList.map { pr ->
             when(subscription.config.pullRequests){

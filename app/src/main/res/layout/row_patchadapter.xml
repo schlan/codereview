@@ -14,7 +14,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:id="@+id/lineNumberHolder"
+        android:id="@+id/row_patch_number_container"
         android:orientation="horizontal"
         android:layout_alignParentTop="true"
         android:visibility="gone"
@@ -67,7 +67,7 @@
         android:breakStrategy="high_quality"
         android:elegantTextHeight="true"
         android:textSize="10sp"
-        android:layout_toRightOf="@+id/lineNumberHolder"
+        android:layout_toRightOf="@+id/row_patch_number_container"
         android:text="tet asdfasd asdf asd sd fadasdfasdfasdfasdfasdfasdfasdfasdfasdfasdfasd asdfasdfas"
         android:enabled="true"/>
 

@@ -7,6 +7,13 @@ import at.droelf.codereview.PatchListType
 
 class PatchAdapter(val patchController: PatchAdapterController) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), PatchAdapterControllerImpl.PatchAdapterInterface {
 
+
+    var lineNumbersVisbile: Boolean = false
+        set(value) {
+            field = value
+            update(0 to 0)
+        }
+
     init {
         patchController.patchAdapter = this
     }
@@ -25,10 +32,13 @@ class PatchAdapter(val patchController: PatchAdapterController) : RecyclerView.A
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        patchController.viewHolderWrapper(position).bind(holder, patchController, position)
+        patchController.viewHolderWrapper(position).bind(holder, patchController, ItemConfig(position, lineNumbersVisbile))
     }
 
-    override fun update(range: Pair<Int, Int>) {
+    override fun update(range: kotlin.Pair<Int, Int>) {
         notifyDataSetChanged()
     }
+
+    data class ItemConfig(val pos: Int, val linesNumbersVisible: Boolean)
+
 }

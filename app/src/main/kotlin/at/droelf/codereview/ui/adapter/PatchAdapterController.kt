@@ -109,7 +109,7 @@ class PatchSegmentController(
     var viewHolderWrapper: List<ViewHolderWrapper> = initWrapper()
 
     fun initWrapper(): List<ViewHolderWrapper> {
-        val codeLines = listOf(
+        val codeLines: List<ViewHolderWrapper> = listOf(
                 ViewHolderHeader(patchSegment.header, patchSegment.method, patchSegment.originalRange, patchSegment.newRange)) +
                 patchSegment.lines.mapIndexed { i, l ->
                     val lineString = when(l.type){

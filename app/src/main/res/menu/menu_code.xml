@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/menu_code_hscroll"
-          android:title="H-Scroll"/>
+    <item android:id="@+id/menu_code_wrap"
+          android:title="Wrap"
+          android:checkable="true"
+          android:checked="true"
+          />
+
+    <item android:id="@+id/menu_code_number"
+          android:title="Numbers"
+          android:titleCondensed="Line w."
+          android:checkable="true"
+        />
 </menu>

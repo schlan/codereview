@@ -29,7 +29,7 @@ object GithubModel {
 
     data class ReviewComment(
             val id: Long, val body: String, val user: User, val position: Long?, val originalPosition: Long, val diffHunk: String,
-            val path: String, val bodyHtml: String, val bodyText: String
+            val path: String, val bodyHtml: String, val bodyText: String, val createdAt: Date?
     )
 
     data class User(
