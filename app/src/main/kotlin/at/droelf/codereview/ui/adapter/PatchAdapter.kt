@@ -1,12 +1,13 @@
 package at.droelf.codereview.ui.adapter
 
+import android.content.Context
 import android.support.v7.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import at.droelf.codereview.PatchListType
 
-class PatchAdapter(val patchController: PatchAdapterController) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), PatchAdapterControllerImpl.PatchAdapterInterface {
-
+class PatchAdapter(val context: Context, val patchController: PatchAdapterController, val addComment: (line: Int) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), PatchAdapterControllerImpl.PatchAdapterInterface {
 
     var lineNumbersVisbile: Boolean = false
         set(value) {
@@ -37,6 +38,11 @@ class PatchAdapter(val patchController: PatchAdapterController) : RecyclerView.A
 
     override fun update(range: kotlin.Pair<Int, Int>) {
         notifyDataSetChanged()
+    }
+
+    override fun lineSelected(line: Int) {
+        Toast.makeText(context, "diffPos: $line", Toast.LENGTH_SHORT).show()
+        addComment(line)
     }
 
     data class ItemConfig(val pos: Int, val linesNumbersVisible: Boolean)

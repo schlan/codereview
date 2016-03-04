@@ -109,8 +109,7 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
     }
 
     fun loadCode(contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long, context: Context) {
-        controller
-                .data(activity, contentUrl, p, filename, owner, repo, pullRequest).subscribe({ result ->
+        controller.data(activity, contentUrl, p, filename, owner, repo, pullRequest).subscribe({ result ->
             progressbar.visibility = View.GONE
 
             val maxLengthLine = result.fileContent.maxBy { it.length }
@@ -128,7 +127,9 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
             hscroll(false)
 
             recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            recyclerView.adapter = PatchAdapter(PatchAdapterControllerImpl(result))
+            recyclerView.adapter = PatchAdapter(context, PatchAdapterControllerImpl(result)){ line ->
+                controller.mainActivityController.showCommentDialog(fragmentManager)
+            }
 
         }, { error ->
             println(error)

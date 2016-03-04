@@ -80,7 +80,7 @@ class ViewHolderLine(val line: SpannableString, val lineType: LineType, val orig
         container.setOnClickListener {
             if(diffPos != null) {
                 val commentPos = diffPos + 1
-                Toast.makeText(view.context, "diffPos: $commentPos", Toast.LENGTH_SHORT).show()
+                patchController.patchAdapter?.lineSelected(commentPos)
             }
         }
     }

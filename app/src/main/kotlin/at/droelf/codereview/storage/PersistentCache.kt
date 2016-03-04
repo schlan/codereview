@@ -9,7 +9,7 @@ import java.nio.charset.Charset
 import java.security.MessageDigest
 import java.util.*
 
-class PersistentCache<E>(val diskCache: DiskLruCache, val gson: Gson = Gson()) where E : Any {
+class PersistentCache<E>(val diskCache: DiskLruCache, val infiniteCache: Boolean = false, val gson: Gson = Gson()) where E : Any {
 
     private val md = MessageDigest.getInstance("MD5")
     private val charset = Charset.forName("UTF-8")
@@ -20,7 +20,13 @@ class PersistentCache<E>(val diskCache: DiskLruCache, val gson: Gson = Gson()) w
             if (data != null && data.getLength(0) > 0) {
                 val json = data.getString(0)
                 println("Load from disc: $clazz ${Thread.currentThread().name}")
-                it.onNext(gson.fromJson<ResponseHolder<E>>(json, clazz))
+
+                val responseholder = gson.fromJson<ResponseHolder<E>>(json, clazz)
+                if(!infiniteCache){
+                    it.onNext(responseholder)
+                } else {
+                    it.onNext(ResponseHolder(responseholder.data, responseholder.source, responseholder.timeStamp, true, responseholder.notUpToDate))
+                }
             }
             it.onCompleted()
         }

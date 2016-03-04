@@ -88,6 +88,7 @@ class PatchAdapterControllerImpl(val githubDataSet: Model.GithubDataSet) : Patch
 
     interface PatchAdapterInterface {
         fun update(range: Pair<Int, Int>)
+        fun lineSelected(line: Int)
     }
 }
 

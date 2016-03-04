@@ -14,6 +14,7 @@ import at.droelf.codereview.dagger.user.UserComponent
 import at.droelf.codereview.dagger.user.UserModule
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.storage.GithubUserStorage
+import at.droelf.codereview.ui.dialog.CommentDialog
 import at.droelf.codereview.ui.fragment.*
 
 class MainActivityController(val githubUserStorage: GithubUserStorage) {
@@ -122,6 +123,10 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
                 dialogInterface.dismiss()
         });
         dialog.show()
+    }
+
+    fun showCommentDialog(fm: FragmentManager){
+        CommentDialog.startPrComment(fm)
     }
 
 }

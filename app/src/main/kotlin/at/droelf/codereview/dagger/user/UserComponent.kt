@@ -14,4 +14,5 @@ interface UserComponent {
     fun plus(startFragmentModule: StartFragmentModule): StartFragmentComponent
     fun plus(repositoryFragmentModule: RepositoryFragmentModule): RepositoryFragmentComponent
     fun plus(notificationFragmentModule: NotificationFragmentModule): NotificationFragmentComponent
+    fun plus(commentDialogModule: CommentDialogModule): CommentDialogComponent
 }

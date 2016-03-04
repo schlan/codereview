@@ -58,6 +58,12 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): Githu
         }.flatten())
     }
 
+    fun emojiRx(): Observable<ResponseHolder<Map<String, String>>>{
+        val foo: Observable<Map<String, String>> = pages(githubApi.emojisRx(token())){ githubApi.emojisRx(token(), it) }
+                .map{ map -> map.fold(mutableMapOf<String, String>()){ foo, bar -> foo.putAll(bar); foo } }
+        return wrap(foo)
+    }
+
     fun token() = "token ${auth.auth.token}"
 
     fun <E> wrap(data: Observable<E>): Observable<ResponseHolder<E>> {

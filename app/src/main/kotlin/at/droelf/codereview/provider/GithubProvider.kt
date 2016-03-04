@@ -32,6 +32,9 @@ class GithubProvider(
     private val githubPrReviewCommentsCache = GithubEndpointCache<List<GithubModel.ReviewComment>>(cache)
     private val githubPrReviewCommentsStorage = PersistentCache<List<GithubModel.ReviewComment>>(diskCache)
 
+    private val githubEmojiCache = GithubEndpointCache<Map<String, String>>(cache)
+    private val githubEmojiStorage = PersistentCache<Map<String, String>>(diskCache, infiniteCache = true)
+
     private val githubSubscriptions = GithubEndpointCache<List<GithubModel.Repository>>(cache)
     private val githubNotifications = GithubEndpointCache<List<GithubModel.Notification>>(cache)
     private val githubFile = GithubEndpointCache<String>(cache)
@@ -94,4 +97,11 @@ class GithubProvider(
         val key = "status_$owner-$repo-$ref"
         return memoryCacheFlow(key, githubStatus, githubService.statusRx(owner, repo, ref), skipCache)
     }
+
+    fun emoji(): Observable<ResponseHolder<Map<String, String>>> {
+        val key = "emoji"
+        val t: Type = object: TypeToken<ResponseHolder<Map<String, String>>>(){}.type
+        return persistentCacheFlow(key, githubEmojiCache, githubEmojiStorage, githubService.emojiRx(), t, false)
+    }
+
 }

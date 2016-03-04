@@ -79,4 +79,9 @@ interface GithubApi {
             @Query("page") page: Int = 1
     ): Observable<Response<MutableList<GithubModel.Status>>>
 
+    @GET("/emojis")
+    fun emojisRx(
+            @Header("Authorization") auth: String,
+            @Query("page") page: Int = 1
+    ): Observable<Response<MutableMap<String, String>>>
 }
