@@ -1,15 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     >
 
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <EditText
             android:id="@+id/dialog_comment_input"
@@ -27,20 +28,38 @@
             android:layout_marginRight="16dp"
             />
 
-        <android.support.v7.widget.GridLayout
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:orientation="horizontal"
-            app:rowCount="3"
-            />
+            android:layout_height="144dp"
+            android:id="@+id/dialog_comment_list_container"
+            android:visibility="gone"
+            android:paddingTop="8dp">
 
+            <android.support.v7.widget.RecyclerView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/dialog_comment_list"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:clipToPadding="true"
+                />
 
-    </FrameLayout>
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:id="@+id/dialog_comment_list_progressbar"
+                style="?android:attr/progressBarStyleSmall"
+                />
+
+        </FrameLayout>
+    </LinearLayout>
 
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:minHeight="56dp"
         android:layout_marginLeft="16dp">
 
         <LinearLayout
@@ -52,6 +71,7 @@
             <ImageView
                 android:layout_width="42dp"
                 android:layout_height="42dp"
+                android:id="@+id/dialog_comment_emoji_button"
                 android:src="@drawable/ic_insert_emoticon"
                 android:scaleType="center"
                 android:clickable="true"
@@ -79,6 +99,7 @@
             <android.support.design.widget.FloatingActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/dialog_comment_send"
                 android:layout_gravity="center"
                 android:src="@drawable/ic_send"
                 android:clickable="true"

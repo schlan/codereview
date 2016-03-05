@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:id="@+id/row_notification_background"
-             android:layout_width="match_parent"
-             android:layout_height="72dp"
-             android:clickable="true"
-             android:focusable="true"
-             android:background="@color/bg_white"
-             android:foreground="?android:attr/selectableItemBackground">
+<FrameLayout
+    android:id="@+id/row_notification_background"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="72dp"
+    android:background="@color/bg_white"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground">
 
     <View
         android:id="@+id/row_notification_source_indicator"
@@ -146,9 +147,6 @@
 
             </RelativeLayout>
 
-
         </LinearLayout>
-
     </LinearLayout>
-
 </FrameLayout>
