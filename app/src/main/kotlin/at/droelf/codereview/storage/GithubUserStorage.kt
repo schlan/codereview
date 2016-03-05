@@ -7,6 +7,7 @@ import at.droelf.codereview.model.realm.RealmHelper
 import at.droelf.codereview.model.realm.RealmRepoConfiguration
 import io.realm.Realm
 import java.sql.Wrapper
+import java.util.*
 
 class GithubUserStorage() : RealmHelper {
 
@@ -80,10 +81,11 @@ class GithubUserStorage() : RealmHelper {
         } ?: listOf()
     }
 
-    fun addCommentPreset(commentPreset: Model.CommentPreset){
+    fun addCommentPreset(comment: String){
         realmCycleOfLife {
             transaction(it){
-                it.copyToRealm(commentPresetToRealm(commentPreset))
+                val realmComment = RealmCommentPreset(Random().nextLong(), comment)
+                it.copyToRealm(realmComment)
             }
         }
     }

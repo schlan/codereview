@@ -6,6 +6,7 @@ import at.droelf.codereview.storage.GithubUserStorage
 import rx.Observable
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import java.util.*
 
 class CommentDialogController(val githubProvider: GithubProvider, val githubUserStorage: GithubUserStorage) {
 
@@ -35,6 +36,10 @@ class CommentDialogController(val githubProvider: GithubProvider, val githubUser
 
     fun deletePreset(preset: Model.CommentPreset) {
         githubUserStorage.deletePreset(preset)
+    }
+
+    fun addPreset(comment: String) {
+        githubUserStorage.addCommentPreset(comment)
     }
 
 }

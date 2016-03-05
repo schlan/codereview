@@ -31,6 +31,7 @@ class CommentDialog: DialogFragment() {
 
     lateinit var emojiButton: ImageView
     lateinit var presetsButton: ImageView
+    lateinit var addPresetButton: ImageView
 
     lateinit var sendButton: FloatingActionButton
 
@@ -89,6 +90,7 @@ class CommentDialog: DialogFragment() {
 
         emojiButton = view.findViewById(R.id.dialog_comment_emoji_button) as ImageView
         presetsButton = view.findViewById(R.id.dialog_comment_presets_button) as ImageView
+        addPresetButton = view.findViewById(R.id.dialog_comment_add_presets_button) as ImageView
 
         input.onFocusChangeListener = View.OnFocusChangeListener { p0, focused ->
             if(focused){
@@ -117,30 +119,42 @@ class CommentDialog: DialogFragment() {
             }
         }
 
+        addPresetButton.setOnClickListener {
+            controller.addPreset(input.text.toString())
+            showListView(PresetAdapter::class.java, true) { list ->
+                list.layoutManager = LinearLayoutManager(context)
+                list.adapter = PresetAdapter(controller, input, listTextView)
+                listProgressBar.visibility = View.GONE
+            }
+        }
+
         RxTextView.textChangeEvents(input).subscribe { text ->
             if(text.text().length > 0){
                 sendButton.show()
+                addPresetButton.isEnabled = true
 
             } else {
                 sendButton.hide()
+                addPresetButton.isEnabled = false
+
             }
         }
     }
 
-    fun showListView(adapterType: Class<*>, install: (recycler: RecyclerView) -> Unit){
+    fun showListView(adapterType: Class<*>, refresh: Boolean = false, install: (recycler: RecyclerView) -> Unit){
         listTextView.visibility = View.GONE
         if(listContainer.visibility == View.GONE){
 
             listContainer.visibility = View.VISIBLE
 
-            if(!adapterType.isInstance(emojiList.adapter)) {
+            if(!adapterType.isInstance(emojiList.adapter) || refresh) {
                 listProgressBar.visibility = View.VISIBLE
                 install(emojiList)
             }
 
         } else {
 
-            if(!adapterType.isInstance(emojiList.adapter)) {
+            if(!adapterType.isInstance(emojiList.adapter) || refresh) {
                 listProgressBar.visibility = View.VISIBLE
                 install(emojiList)
 
