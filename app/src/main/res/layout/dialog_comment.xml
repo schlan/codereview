@@ -20,8 +20,8 @@
             android:minHeight="72dp"
             android:scrollbars="vertical"
             android:gravity="left|top"
-            android:minLines="5"
-            android:maxLines="5"
+            android:minLines="4"
+            android:maxLines="4"
             android:background="@null"
             android:hint="Comment"
             android:layout_marginLeft="16dp"
@@ -31,7 +31,7 @@
 
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="144dp"
+            android:layout_height="108dp"
             android:id="@+id/dialog_comment_list_container"
             android:visibility="gone"
             android:paddingTop="8dp">

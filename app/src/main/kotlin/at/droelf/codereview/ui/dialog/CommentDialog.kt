@@ -70,7 +70,7 @@ class CommentDialog: DialogFragment() {
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        dialog.window.attributes.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE
+        dialog.window.attributes.softInputMode = WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
         return inflater.inflate(R.layout.dialog_comment, container, false)
     }
 
@@ -103,7 +103,7 @@ class CommentDialog: DialogFragment() {
         emojiButton.setOnClickListener {
             showListView(EmojiAdapter::class.java) { list ->
                 controller.emojis().subscribe ({ emojis ->
-                    list.layoutManager = GridLayoutManager(context, 4, GridLayoutManager.HORIZONTAL, false)
+                    list.layoutManager = GridLayoutManager(context, 3, GridLayoutManager.HORIZONTAL, false)
                     list.adapter = EmojiAdapter(emojis, input)
                 },{},{
                     listProgressBar.visibility = View.GONE
@@ -177,7 +177,7 @@ class CommentDialog: DialogFragment() {
     private fun initHeight(d: Dialog){
         val params = d.window.attributes
         params.height = WindowManager.LayoutParams.MATCH_PARENT
-        params.gravity = Gravity.TOP
+        params.gravity = Gravity.CENTER
         params.y = context.resources.getDimensionPixelOffset(R.dimen.comment_dialog_margin_top)
         d.window.attributes = params
     }
