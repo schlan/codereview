@@ -94,4 +94,11 @@ interface RealmHelper {
         )
     }
 
+    fun commentPresetToModel(presetComment: RealmCommentPreset): Model.CommentPreset {
+        return Model.CommentPreset(presetComment.id, presetComment.comment!!)
+    }
+
+    fun commentPresetToRealm(presetComment: Model.CommentPreset): RealmCommentPreset {
+        return RealmCommentPreset(presetComment.id, presetComment.comment)
+    }
 }

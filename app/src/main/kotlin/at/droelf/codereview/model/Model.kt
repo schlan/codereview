@@ -36,4 +36,6 @@ object Model {
             }
         }
     }
+
+    data class CommentPreset(val id: Long, val comment: String)
 }

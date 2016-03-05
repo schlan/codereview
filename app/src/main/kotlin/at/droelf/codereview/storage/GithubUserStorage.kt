@@ -1,6 +1,7 @@
 package at.droelf.codereview.storage
 
 import at.droelf.codereview.model.Model
+import at.droelf.codereview.model.realm.RealmCommentPreset
 import at.droelf.codereview.model.realm.RealmGithubAccount
 import at.droelf.codereview.model.realm.RealmHelper
 import at.droelf.codereview.model.realm.RealmRepoConfiguration
@@ -68,6 +69,31 @@ class GithubUserStorage() : RealmHelper {
                         issue?.id ?: repoConfig.issues
                 )
                 it.copyToRealmOrUpdate(config)
+            }
+        }
+    }
+
+    fun getCommentPresets(): List<Model.CommentPreset> {
+        return realmCycleOfLife {
+            it.allObjects(RealmCommentPreset::class.java)
+                    .map { commentPresetToModel(it) }
+        } ?: listOf()
+    }
+
+    fun addCommentPreset(commentPreset: Model.CommentPreset){
+        realmCycleOfLife {
+            transaction(it){
+                it.copyToRealm(commentPresetToRealm(commentPreset))
+            }
+        }
+    }
+
+    fun deletePreset(commentPreset: Model.CommentPreset){
+        realmCycleOfLife {
+            transaction(it){
+                it.where(RealmCommentPreset::class.java).equalTo("id", commentPreset.id)
+                    .findFirst()
+                    .removeFromRealm()
             }
         }
     }

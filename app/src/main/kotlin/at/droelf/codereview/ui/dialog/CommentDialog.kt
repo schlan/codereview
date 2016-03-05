@@ -8,13 +8,13 @@ import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.widget.GridLayoutManager
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.*
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.ProgressBar
+import android.widget.*
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.CommentDialogModule
+import at.droelf.codereview.model.Model
 import at.droelf.codereview.ui.activity.MainActivity
 import com.jakewharton.rxbinding.widget.RxTextView
 import com.squareup.picasso.Picasso
@@ -27,8 +27,10 @@ class CommentDialog: DialogFragment() {
     lateinit var emojiList: RecyclerView
     lateinit var listContainer: View
     lateinit var listProgressBar: ProgressBar
+    lateinit var listTextView: TextView
 
     lateinit var emojiButton: ImageView
+    lateinit var presetsButton: ImageView
 
     lateinit var sendButton: FloatingActionButton
 
@@ -81,10 +83,12 @@ class CommentDialog: DialogFragment() {
         emojiList = view.findViewById(R.id.dialog_comment_list) as RecyclerView
         listContainer = view.findViewById(R.id.dialog_comment_list_container) as View
         listProgressBar = view.findViewById(R.id.dialog_comment_list_progressbar) as ProgressBar
+        listTextView = view.findViewById(R.id.dialog_comment_list_error_text) as TextView
 
         sendButton = view.findViewById(R.id.dialog_comment_send) as FloatingActionButton
 
         emojiButton = view.findViewById(R.id.dialog_comment_emoji_button) as ImageView
+        presetsButton = view.findViewById(R.id.dialog_comment_presets_button) as ImageView
 
         input.onFocusChangeListener = View.OnFocusChangeListener { p0, focused ->
             if(focused){
@@ -95,20 +99,21 @@ class CommentDialog: DialogFragment() {
         sendButton.hide()
 
         emojiButton.setOnClickListener {
-            if(listContainer.visibility == View.GONE){
-
-                listContainer.visibility = View.VISIBLE
-                listProgressBar.visibility = View.VISIBLE
-
-                controller.emojis().subscribe { fooBar ->
+            showListView(EmojiAdapter::class.java) { list ->
+                controller.emojis().subscribe ({ emojis ->
+                    list.layoutManager = GridLayoutManager(context, 4, GridLayoutManager.HORIZONTAL, false)
+                    list.adapter = EmojiAdapter(emojis, input)
+                },{},{
                     listProgressBar.visibility = View.GONE
-                    emojiList.layoutManager = GridLayoutManager(context, 4, GridLayoutManager.HORIZONTAL, false)
-                    emojiList.adapter = EmojiAdapter(fooBar, input)
-                }
+                })
+            }
+        }
 
-            } else {
-                listContainer.visibility = View.GONE
-
+        presetsButton.setOnClickListener{
+            showListView(PresetAdapter::class.java) { list ->
+                list.layoutManager = LinearLayoutManager(context)
+                list.adapter = PresetAdapter(controller, input, listTextView)
+                listProgressBar.visibility = View.GONE
             }
         }
 
@@ -122,6 +127,29 @@ class CommentDialog: DialogFragment() {
         }
     }
 
+    fun showListView(adapterType: Class<*>, install: (recycler: RecyclerView) -> Unit){
+        listTextView.visibility = View.GONE
+        if(listContainer.visibility == View.GONE){
+
+            listContainer.visibility = View.VISIBLE
+
+            if(!adapterType.isInstance(emojiList.adapter)) {
+                listProgressBar.visibility = View.VISIBLE
+                install(emojiList)
+            }
+
+        } else {
+
+            if(!adapterType.isInstance(emojiList.adapter)) {
+                listProgressBar.visibility = View.VISIBLE
+                install(emojiList)
+
+            } else {
+                listContainer.visibility = View.GONE
+            }
+        }
+    }
+
     override fun onDismiss(dialog: DialogInterface?) {
         screenLock(false)
         super.onDismiss(dialog)
@@ -129,7 +157,7 @@ class CommentDialog: DialogFragment() {
 
     private fun screenLock(enable: Boolean){
         val  flag = if(enable) ActivityInfo.SCREEN_ORIENTATION_NOSENSOR else ActivityInfo.SCREEN_ORIENTATION_SENSOR
-        activity.requestedOrientation = flag
+        activity?.requestedOrientation = flag
     }
 
     private fun initHeight(d: Dialog){
@@ -144,6 +172,53 @@ class CommentDialog: DialogFragment() {
         val params = d.window.attributes
         params.width = WindowManager.LayoutParams.MATCH_PARENT
         d.window.attributes = params
+    }
+
+    class PresetAdapter(val controller: CommentDialogController, val input: EditText, val error: TextView): RecyclerView.Adapter<RecyclerView.ViewHolder>(){
+
+        var preset: List<Model.CommentPreset> = listOf()
+
+        init{
+            loadData()
+        }
+
+        fun loadData(){
+            controller.presets().subscribe{
+                preset = it
+                notifyDataSetChanged()
+                if(preset.size == 0){
+                    error.text = "No presets available"
+                    error.visibility = View.VISIBLE
+                }else {
+                    error.visibility = View.GONE
+                }
+            }
+        }
+
+        override fun getItemCount(): Int {
+            return preset.size
+        }
+
+        override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
+            val p = preset[position]
+            val comment = viewHolder.itemView.findViewById(R.id.row_dialog_comment_text) as TextView
+            comment.text = p.comment
+
+            viewHolder.itemView.setOnClickListener {
+                input.append(p.comment)
+            }
+
+            viewHolder.itemView.findViewById(R.id.row_dialog_comment_delete).setOnClickListener{
+                Toast.makeText(input.context, "Delete: ${p.id} ${p.comment}", Toast.LENGTH_SHORT).show()
+                controller.deletePreset(p)
+                loadData()
+            }
+        }
+
+        override fun onCreateViewHolder(p0: ViewGroup?, p1: Int): RecyclerView.ViewHolder? {
+            val view = LayoutInflater.from(p0!!.context).inflate(R.layout.row_dialog_preset, p0, false)
+            return object : RecyclerView.ViewHolder(view) {}
+        }
     }
 
     class EmojiAdapter(val emoji: Map<String, String>, val input: EditText): RecyclerView.Adapter<RecyclerView.ViewHolder>(){

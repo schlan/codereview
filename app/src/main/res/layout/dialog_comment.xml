@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     >
 
@@ -50,6 +51,18 @@
                 android:layout_gravity="center"
                 android:id="@+id/dialog_comment_list_progressbar"
                 style="?android:attr/progressBarStyleSmall"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/dialog_comment_list_error_text"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:layout_gravity="center"
+                tools:text="No presets"
+
                 />
 
         </FrameLayout>
