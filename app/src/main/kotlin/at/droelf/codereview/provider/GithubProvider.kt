@@ -10,6 +10,8 @@ import at.droelf.codereview.storage.GithubUserStorage
 import at.droelf.codereview.storage.PersistentCache
 import com.google.gson.reflect.TypeToken
 import com.jakewharton.disklrucache.DiskLruCache
+import okhttp3.ResponseBody
+import retrofit2.Call
 import rx.Observable
 import java.lang.reflect.Type
 
@@ -104,4 +106,11 @@ class GithubProvider(
         return persistentCacheFlow(key, githubEmojiCache, githubEmojiStorage, githubService.emojiRx(), t, false)
     }
 
+    fun createReviewComment(owner: String, repo: String, number: Long, createReviewComment: GithubModel.CreateReviewComment): Call<ResponseBody> {
+        return githubService.createReviewComment(owner, repo, number, createReviewComment)
+    }
+
+    fun createReviewComment(owner: String, repo: String, number: Long, replyReviewComment: GithubModel.ReplyReviewComment): Call<ResponseBody> {
+        return githubService.createReviewComment(owner, repo, number, replyReviewComment)
+    }
 }

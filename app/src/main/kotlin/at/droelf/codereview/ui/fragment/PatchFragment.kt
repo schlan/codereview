@@ -1,6 +1,8 @@
 package at.droelf.codereview.ui.fragment
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Bundle
@@ -18,6 +20,7 @@ import at.droelf.codereview.dagger.fragment.PatchFragmentModule
 import at.droelf.codereview.ui.activity.MainActivity
 import at.droelf.codereview.ui.adapter.PatchAdapter
 import at.droelf.codereview.ui.adapter.PatchAdapterControllerImpl
+import at.droelf.codereview.ui.dialog.CommentDialog
 import at.droelf.codereview.ui.view.HScrollView
 import javax.inject.Inject
 
@@ -94,22 +97,38 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
 
     override fun onStart() {
         super.onStart()
-        if(recyclerView.adapter == null) {
+        extractDataAndLoadCode(skipCache = false)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        when(requestCode){
+            CommentDialog.requestId -> {
+                if(resultCode == Activity.RESULT_OK) extractDataAndLoadCode(true)
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    fun extractDataAndLoadCode(skipCache: Boolean){
+        if(recyclerView.adapter == null || skipCache) {
             progressbar.visibility = View.VISIBLE
             loadCode(
+                    activity,
                     arguments.getString("url"),
                     arguments.getString("patch"),
                     arguments.getString("fname"),
                     arguments.getString("owner"),
                     arguments.getString("repo"),
                     arguments.getLong("pr"),
-                    activity
+                    arguments.getString("path"),
+                    arguments.getString("commitid"),
+                    skipCache
             )
         }
     }
 
-    fun loadCode(contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long, context: Context) {
-        controller.data(activity, contentUrl, p, filename, owner, repo, pullRequest).subscribe({ result ->
+    fun loadCode(context: Context, contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long, path: String, commitId: String, skipCache: Boolean) {
+        controller.data(activity, contentUrl, p, filename, owner, repo, pullRequest, skipCache).subscribe({ result ->
             progressbar.visibility = View.GONE
 
             val maxLengthLine = result.fileContent.maxBy { it.length }
@@ -127,9 +146,15 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
             hscroll(false)
 
             recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
-            recyclerView.adapter = PatchAdapter(context, PatchAdapterControllerImpl(result)){ line ->
-                controller.mainActivityController.showCommentDialog(fragmentManager)
-            }
+            recyclerView.adapter = PatchAdapter(context, PatchAdapterControllerImpl(result), { line ->
+                controller.mainActivityController.showCommentDialogReviewComment(
+                        this, owner, repo, pullRequest, commitId, path, line
+                )
+            }, { commentId ->
+                controller.mainActivityController.showCommentDialogReviewCommentReply(
+                        this, owner, repo, pullRequest, commentId
+                )
+            })
 
         }, { error ->
             println(error)

@@ -2,6 +2,7 @@ package at.droelf.codereview.network
 
 import at.droelf.codereview.model.GithubModel
 import okhttp3.ResponseBody
+import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.*
 import rx.Observable
@@ -84,4 +85,22 @@ interface GithubApi {
             @Header("Authorization") auth: String,
             @Query("page") page: Int = 1
     ): Observable<Response<MutableMap<String, String>>>
+
+    @POST("/repos/{owner}/{repo}/pulls/{number}/comments")
+    fun createReviewComment(
+            @Header("Authorization") auth: String,
+            @Path("owner") owner: String,
+            @Path("repo") repo: String,
+            @Path("number") number: Long,
+            @Body createComment: GithubModel.CreateReviewComment
+    ): Call<ResponseBody>
+
+    @POST("/repos/{owner}/{repo}/pulls/{number}/comments")
+    fun replyReviewComment(
+            @Header("Authorization") auth: String,
+            @Path("owner") owner: String,
+            @Path("repo") repo: String,
+            @Path("number") number: Long,
+            @Body createComment: GithubModel.ReplyReviewComment
+    ): Call<ResponseBody>
 }

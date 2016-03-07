@@ -1,11 +1,13 @@
 package at.droelf.codereview.ui.dialog
 
+import android.app.Activity
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
 import android.support.v4.app.DialogFragment
+import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.LinearLayoutManager
@@ -14,10 +16,16 @@ import android.view.*
 import android.widget.*
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.fragment.CommentDialogModule
+import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
+import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.ui.activity.MainActivity
 import com.jakewharton.rxbinding.widget.RxTextView
 import com.squareup.picasso.Picasso
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import javax.inject.Inject
 
 class CommentDialog: DialogFragment() {
@@ -34,26 +42,42 @@ class CommentDialog: DialogFragment() {
     lateinit var addPresetButton: ImageView
 
     lateinit var sendButton: FloatingActionButton
+    lateinit var sendComment: SendComment
 
     @Inject lateinit var controller: CommentDialogController
 
     companion object {
-        fun startPrComment(fragmentManager: FragmentManager){
+
+        val requestId = 1343
+
+        fun startPrComment(fragmentManager: FragmentManager, owner: String, repo: String, number: Long){
             CommentDialog().show(fragmentManager, "comment_dialog")
         }
 
-        fun startReviewCommentReply(fragmentManager: FragmentManager){
-            CommentDialog().show(fragmentManager, "comment_dialog")
+        fun startReviewCommentReply(fragment: Fragment, owner: String, repo: String, number: Long,
+                                    commentId: Long){
+            val data = SendReviewCommentReply(owner, repo, number, commentId).bundle()
+            startComment(fragment, data)
         }
 
-        fun startReviewCommentLine(fragmentManager: FragmentManager){
-            CommentDialog().show(fragmentManager, "comment_dialog")
+        fun startReviewCommentLine(fragment: Fragment, owner: String, repo: String, number: Long,
+                                   commitId: String, path: String, position: Int){
+            val data = SendReviewComment(owner, repo, number, commitId, path, position).bundle()
+            startComment(fragment, data)
+        }
+
+        private fun startComment(fragment: Fragment, bundle: Bundle){
+            val dialog = CommentDialog()
+            dialog.arguments = bundle
+            dialog.setTargetFragment(fragment, requestId)
+            dialog.show(fragment.fragmentManager, "comment_dialog")
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         (activity as MainActivity).getOrInit().userComponent().plus(CommentDialogModule()).inject(this)
+        sendComment = SendComment.fromBundle(arguments)
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
@@ -128,14 +152,27 @@ class CommentDialog: DialogFragment() {
             }
         }
 
+        sendButton.setOnClickListener {
+            sendComment.sendComment(controller.githubProvider, input.text.toString()).enqueue(object : Callback<ResponseBody>{
+                override fun onResponse(p0: Call<ResponseBody>?, p1: Response<ResponseBody>?) {
+                    targetFragment.onActivityResult(targetRequestCode, Activity.RESULT_OK, activity.intent)
+                    dialog.dismiss()
+                }
+
+                override fun onFailure(p0: Call<ResponseBody>?, p1: Throwable?) {
+                    Toast.makeText(context, "Error: ${p1?.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
+
         RxTextView.textChangeEvents(input).subscribe { text ->
             if(text.text().length > 0){
                 sendButton.show()
-                addPresetButton.isEnabled = true
+                addPresetButton.visibility = View.VISIBLE
 
             } else {
                 sendButton.hide()
-                addPresetButton.isEnabled = false
+                addPresetButton.visibility = View.GONE
 
             }
         }
@@ -261,6 +298,100 @@ class CommentDialog: DialogFragment() {
             val view = LayoutInflater.from(p0!!.context).inflate(R.layout.row_dialog_emoji, p0, false)
             return object : RecyclerView.ViewHolder(view) {}
         }
+    }
+
+
+    abstract class SendComment(val type: Int, val owner: String, val repo: String, val number: Long){
+        abstract fun sendComment(githubProvider: GithubProvider, comment: String): Call<ResponseBody>
+
+        companion object {
+
+            val keyOwner = "OWNER"
+            val keyRepo = "REPO"
+            val keyNumber = "NUMBER"
+            val keyType = "TYPE"
+
+            fun fromBundle(bundle: Bundle): SendComment {
+                return when(bundle.getInt(keyType)){
+                    1 -> SendReviewComment.fromBundle(bundle)
+                    2 -> SendReviewCommentReply.fromBundle(bundle)
+                    else -> throw IllegalArgumentException()
+                }
+            }
+        }
+
+        open fun bundle(): Bundle{
+            val bundle = Bundle()
+            bundle.putString(keyRepo, repo)
+            bundle.putString(keyOwner, owner)
+            bundle.putLong(keyNumber, number)
+            bundle.putInt(keyType, type)
+            return bundle
+        }
+    }
+
+    class SendReviewComment(
+            owner: String, repo: String, number: Long,
+            val commitId: String, val path: String, val position: Int): SendComment(1, owner, repo, number){
+
+        companion object {
+
+            val keyCommitId = "COMMIT_ID"
+            val keyPath = "PATH"
+            val keyPosition = "POSITION"
+
+            fun fromBundle(bundle: Bundle): SendComment {
+                return SendReviewComment(
+                        bundle.getString(keyOwner),
+                        bundle.getString(keyRepo),
+                        bundle.getLong(keyNumber),
+                        bundle.getString(keyCommitId),
+                        bundle.getString(keyPath),
+                        bundle.getInt(keyPosition)
+                )
+            }
+        }
+
+        override fun sendComment(githubProvider: GithubProvider, comment: String): Call<ResponseBody> {
+            return githubProvider.createReviewComment(owner, repo, number, GithubModel.CreateReviewComment(comment, commitId, path, position))
+        }
+
+        override fun bundle(): Bundle {
+            val bundle = super.bundle()
+            bundle.putString(keyCommitId, commitId)
+            bundle.putString(keyPath, path)
+            bundle.putInt(keyPosition, position)
+            return bundle
+        }
+    }
+
+    class SendReviewCommentReply(
+            owner: String, repo: String, number: Long, val commentId: Long): SendComment(2, owner, repo, number){
+
+        companion object {
+
+            val keyCommentId = "COMMENT_ID"
+
+            fun fromBundle(bundle: Bundle): SendComment {
+                return SendReviewCommentReply(
+                        bundle.getString(keyOwner),
+                        bundle.getString(keyRepo),
+                        bundle.getLong(keyNumber),
+                        bundle.getLong(keyCommentId)
+                )
+            }
+        }
+
+        override fun sendComment(githubProvider: GithubProvider, comment: String): Call<ResponseBody> {
+            return githubProvider.createReviewComment(owner, repo, number, GithubModel.ReplyReviewComment(comment, commentId))
+        }
+
+        override fun bundle(): Bundle {
+            val bundle = super.bundle()
+            bundle.putLong(keyCommentId, commentId)
+            return bundle
+        }
+
     }
 
 }

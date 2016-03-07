@@ -140,7 +140,9 @@ class PullRequestFileViewHolder(val view: View): ViewHolderBinder<PullRequestFil
                         file.filename,
                         pr.base.repo.owner.login,
                         pr.base.repo.name,
-                        pr.number
+                        pr.number,
+                        pr.head.sha,
+                        file.filename
                 )
             }
         }else {

@@ -96,7 +96,11 @@ class ViewHolderComment(val reviewComment: List<Model.ReviewComment>): ViewHolde
         val commentViews = reviewComment.map { CommentView(it, viewholder.itemView.context) }
         commentViews.forEach { container.addView(it) }
         commentViews.first().first()
-        commentViews.last().last()
+
+        val id = commentViews.last().last()
+        viewholder.itemView.setOnClickListener {
+            patchController.patchAdapter?.commentSelected(id)
+        }
     }
 
 }

@@ -17,15 +17,15 @@ class PatchFragmentController(val mainActivityController: MainActivityController
 
     var observable: Observable<Model.GithubDataSet>? = null
 
-    fun data(context: Context, contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long): Observable<Model.GithubDataSet> {
-        if(observable == null) {
+    fun data(context: Context, contentUrl: String, p: String, filename: String, owner: String, repo: String, pullRequest: Long, skipCache: Boolean): Observable<Model.GithubDataSet> {
+        if(observable == null || skipCache) {
             val patchO = Patch.parse(p)
-            val contentO = githubProvider.file(contentUrl, "application/vnd.github.v3.raw").flatMap {
+            val contentO = githubProvider.file(contentUrl, "application/vnd.github.v3.raw", skipCache).flatMap {
                 PrettyfyHighlighter.highlight(it, filename.split(Regex("\\.")).last())
             }
 
-            val commentsO = githubProvider.comments(owner, repo, pullRequest)
-            val commentsReviewO = githubProvider.reviewComments(owner, repo, pullRequest)
+            val commentsO = githubProvider.comments(owner, repo, pullRequest, skipCache)
+            val commentsReviewO = githubProvider.reviewComments(owner, repo, pullRequest, skipCache)
                     .flatMap { comment ->
                         val pairPatch = comment.map { c ->
                             Observable.combineLatest(

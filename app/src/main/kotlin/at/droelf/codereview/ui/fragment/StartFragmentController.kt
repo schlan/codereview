@@ -53,8 +53,8 @@ class StartFragmentController(val mainActivityController: MainActivityController
         return observable!!
     }
 
-    fun showFile(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?, owner: String, repo: String, pullRequest: Long) {
-        mainActivityController.showFileFragment(fm, contentsUrl, patch, filename, owner, repo, pullRequest)
+    fun showFile(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?, owner: String, repo: String, pullRequest: Long, commitId: String, path: String) {
+        mainActivityController.showFileFragment(fm, contentsUrl, patch, filename, owner, repo, pullRequest, commitId, path)
     }
 
     fun showDialog(context: Context, title: String, body: String){

@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import at.droelf.codereview.PatchListType
 
-class PatchAdapter(val context: Context, val patchController: PatchAdapterController, val addComment: (line: Int) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), PatchAdapterControllerImpl.PatchAdapterInterface {
+class PatchAdapter(val context: Context, val patchController: PatchAdapterController, val addComment: (line: Int) -> Unit, val replyComment: (commentId: Long) -> Unit) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), PatchAdapterControllerImpl.PatchAdapterInterface {
 
     var lineNumbersVisbile: Boolean = false
         set(value) {
@@ -41,8 +41,11 @@ class PatchAdapter(val context: Context, val patchController: PatchAdapterContro
     }
 
     override fun lineSelected(line: Int) {
-        Toast.makeText(context, "diffPos: $line", Toast.LENGTH_SHORT).show()
         addComment(line)
+    }
+
+    override fun commentSelected(commentId: Long) {
+        replyComment(commentId)
     }
 
     data class ItemConfig(val pos: Int, val linesNumbersVisible: Boolean)

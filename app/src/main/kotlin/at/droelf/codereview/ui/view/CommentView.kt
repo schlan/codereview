@@ -49,14 +49,16 @@ class CommentView(val comment: Model.ReviewComment, context: Context) : FrameLay
                 .into(avatar)
     }
 
-    fun first(){
+    fun first(): Long {
         //val params = (cardView.layoutParams as FrameLayout.LayoutParams)
         //params.topMargin = context.resources.getDimensionPixelSize(R.dimen.row_patchadapter_comment_padding_top)
+        return comment.id
     }
 
-    fun last(){
+    fun last(): Long{
         //val params = (cardView.layoutParams as FrameLayout.LayoutParams)
         //params.bottomMargin = context.resources.getDimensionPixelSize(R.dimen.row_patchadapter_comment_padding_bottom)
         dividerBottom.visibility = View.VISIBLE
+        return comment.id
     }
 }

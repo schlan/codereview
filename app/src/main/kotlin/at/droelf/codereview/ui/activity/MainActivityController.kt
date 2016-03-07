@@ -3,6 +3,7 @@ package at.droelf.codereview.ui.activity
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
+import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
@@ -43,8 +44,10 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
         return userComponent ?: throw RuntimeException("it's dead jim 2")
     }
 
-    fun showFileFragment(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?, owner: String, repo: String, pullRequest: Long) {
-        displayFileDiffFragment(fm, contentsUrl, patch, filename, owner, repo, pullRequest)
+    fun showFileFragment(fm: FragmentManager, contentsUrl: String?, patch: String?,
+                         filename: String?, owner: String, repo: String, pullRequest: Long,
+                         commitId: String, path: String) {
+        displayFileDiffFragment(fm, contentsUrl, patch, filename, owner, repo, pullRequest, commitId, path)
     }
 
     fun displayRepositoryFragment(fm: FragmentManager, backstack: Boolean = false){
@@ -73,7 +76,10 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
         }
     }
 
-    fun displayFileDiffFragment(fm: FragmentManager, contentsUrl: String?, patch: String?, filename: String?, owner: String, repo: String, pullRequest: Long){
+    fun displayFileDiffFragment(fm: FragmentManager,
+                                contentsUrl: String?, patch: String?, filename: String?,
+                                owner: String, repo: String, pullRequest: Long, commitId: String,
+                                path: String){
         fragmentTransaction(fm, true) {
             val fragment = PatchFragment()
             val bundle = Bundle()
@@ -83,6 +89,8 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
             bundle.putString("owner", owner)
             bundle.putString("repo", repo)
             bundle.putLong("pr", pullRequest)
+            bundle.putString("commitid", commitId)
+            bundle.putString("path", path)
             fragment.arguments = bundle
             fragment
         }
@@ -126,7 +134,15 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
     }
 
     fun showCommentDialog(fm: FragmentManager){
-        CommentDialog.startPrComment(fm)
+    }
+
+    fun showCommentDialogReviewComment(fragment: Fragment, owner: String, repo: String, number: Long,
+                                       commitId: String, path: String, position: Int ){
+        CommentDialog.startReviewCommentLine(fragment, owner, repo, number, commitId, path, position)
+    }
+
+    fun showCommentDialogReviewCommentReply(fragment: Fragment, owner: String, repo: String, number: Long, commentId: Long){
+        CommentDialog.startReviewCommentReply(fragment, owner, repo, number, commentId)
     }
 
 }

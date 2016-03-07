@@ -3,8 +3,9 @@ package at.droelf.codereview.network
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
 import at.droelf.codereview.model.ResponseHolder
+import okhttp3.ResponseBody
+import retrofit2.Call
 import rx.Observable
-import java.util.concurrent.TimeUnit
 
 class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): GithubPagination {
 
@@ -62,6 +63,14 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): Githu
         val foo: Observable<Map<String, String>> = pages(githubApi.emojisRx(token())){ githubApi.emojisRx(token(), it) }
                 .map{ map -> map.fold(mutableMapOf<String, String>()){ foo, bar -> foo.putAll(bar); foo } }
         return wrap(foo)
+    }
+
+    fun createReviewComment(owner: String, repo: String, number: Long, createReviewComment: GithubModel.CreateReviewComment): Call<ResponseBody> {
+        return githubApi.createReviewComment(token(), owner, repo, number, createReviewComment)
+    }
+
+    fun createReviewComment(owner: String, repo: String, number: Long, replyReviewComment: GithubModel.ReplyReviewComment): Call<ResponseBody>{
+        return githubApi.replyReviewComment(token(), owner, repo, number, replyReviewComment)
     }
 
     fun token() = "token ${auth.auth.token}"

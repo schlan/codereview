@@ -61,11 +61,11 @@ object GithubModel {
     )
 
     data class Head(
-            val repo: Repository, val ref: String
+            val repo: Repository, val ref: String, val sha: String
     )
 
     data class Base(
-            val repo: Repository, val ref: String
+            val repo: Repository, val ref: String, val sha: String
     )
 
     data class Status(
@@ -86,6 +86,13 @@ object GithubModel {
             Error, Success, TwoFactorApp, TwoFactorSms, TwoFactorUnknown
     }
 
+    data class CreateReviewComment(
+            val body: String, val commitId: String, val path: String, val position: Int
+    )
+
+    data class ReplyReviewComment(
+            val body: String, val inReplyTo: Long
+    )
 }
 
 
