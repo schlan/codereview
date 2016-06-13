@@ -103,33 +103,4 @@ class GithubUserStorage() : RealmHelper {
             }
         }
     }
-
-    private fun transaction(realm: Realm, update: (realm: Realm) -> Unit) {
-        realm.beginTransaction()
-        try {
-            update(realm)
-            realm.commitTransaction()
-        } catch(e: Exception) {
-            println("Abort realm transaction, error: ${e.message}")
-            e.printStackTrace()
-            realm.cancelTransaction()
-        }
-    }
-
-    private fun <E> realmCycleOfLife(doStuff: (realm: Realm) -> E): E? {
-        val realm = Realm.getDefaultInstance()
-        val time = System.currentTimeMillis()
-        var result: E? = null
-        try {
-            result = doStuff(realm)
-        } catch (e: Exception){
-            result = null
-            println("Realm Error: ${e.message}")
-            e.printStackTrace()
-        } finally{
-            realm.close()
-            println("Realm was ${System.currentTimeMillis() - time}ms alive | Thread: ${Thread.currentThread().name}")
-            return result
-        }
-    }
 }

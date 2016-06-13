@@ -4,7 +4,7 @@ import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 
 open class RealmGithubUser(
-        @PrimaryKey public open var id: Long = -1,
+        @PrimaryKey open var id: Long = -1,
         open var login: String? = null,
         open var avatarUrl: String? = null,
         open var gravatarId: String? = null,
