@@ -13,7 +13,7 @@ class GithubUserStorage() : RealmHelper {
 
     fun userStored(): Boolean {
         return realmCycleOfLife {
-            it.allObjects(RealmGithubAccount::class.java).count() > 0
+            it.where(RealmGithubAccount::class.java).findAll().count() > 0
         }!!
     }
 
@@ -27,14 +27,15 @@ class GithubUserStorage() : RealmHelper {
 
     fun getUserBlocking(): Model.GithubAuth? {
         return realmCycleOfLife {
-            val auth = it.allObjects(RealmGithubAccount::class.java).firstOrNull()
+            val auth = it.where(RealmGithubAccount::class.java).findAll().firstOrNull()
             if(auth != null) accountToGithub(auth) else null
         }
     }
 
     fun storeRepoConfiguration(repoConfiguration: List<Model.RepoConfiguration>) {
         realmCycleOfLife {
-            val storedRepos = it.allObjects(RealmRepoConfiguration::class.java)
+            val storedRepos = it.where(RealmRepoConfiguration::class.java)
+                    .findAll()
                     .map { repoConfigurationToGithub(it) }
             val reposToStore = repoConfiguration.filter { r -> storedRepos.find { it.id == r.id } == null }
 
@@ -49,7 +50,9 @@ class GithubUserStorage() : RealmHelper {
 
     fun getRepoConfigurations(): List<Model.RepoConfiguration> {
         return realmCycleOfLife {
-            it.allObjects(RealmRepoConfiguration::class.java).map { repoConfigurationToGithub(it) }
+            it.where(RealmRepoConfiguration::class.java)
+                    .findAll()
+                    .map { repoConfigurationToGithub(it) }
         }!!
     }
 
@@ -76,7 +79,8 @@ class GithubUserStorage() : RealmHelper {
 
     fun getCommentPresets(): List<Model.CommentPreset> {
         return realmCycleOfLife {
-            it.allObjects(RealmCommentPreset::class.java)
+            it.where(RealmCommentPreset::class.java)
+                    .findAll()
                     .map { commentPresetToModel(it) }
         } ?: listOf()
     }
@@ -95,7 +99,7 @@ class GithubUserStorage() : RealmHelper {
             transaction(it){
                 it.where(RealmCommentPreset::class.java).equalTo("id", commentPreset.id)
                     .findFirst()
-                    .removeFromRealm()
+                    .deleteFromRealm()
             }
         }
     }
