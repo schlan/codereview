@@ -106,10 +106,10 @@ dependencies {
 
 buildscript {
     ext{
-        kotlin_version = '1.0.0'
-        realm_version = '0.87.5'
-        android_support_version = '23.2.0'
-        retrofit_version = '2.0.0-beta4'
+        kotlin_version = '1.0.2'
+        realm_version = '0.88.2'
+        android_support_version = '23.2.1'
+        retrofit_version = '2.0.0'
         okhttp_version = '3.2.0'
         dagger_version = '2.0.2'
     }

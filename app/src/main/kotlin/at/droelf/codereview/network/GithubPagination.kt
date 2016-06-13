@@ -5,20 +5,20 @@ import okhttp3.HttpUrl
 import retrofit2.Response
 import rx.Observable
 
-interface GithubPagination {
+interface GithubPagination: RetrofitHelper {
 
     fun <T> Observable<List<MutableList<T>>>.flatten(): Observable<List<T>> {
         return map { it.flatten() }
     }
 
     fun <T> pages(initialResponse: Observable<Response<T>>, loadNextPage: (page: Int) -> Observable<Response<T>>): Observable<List<T>> {
-        return initialResponse.flatMap { data ->
+        return validateResponse(initialResponse).flatMap { data ->
             val lastPage = parseHeader(data.headers())
 
             if(lastPage == null) {
                 Observable.just(data)
             } else {
-                val pages = listOf<Observable<Response<T>>>() + Observable.just(data) + (2..lastPage).map(loadNextPage)
+                val pages = listOf<Observable<Response<T>>>() + Observable.just(data) + (2..lastPage).map{ validateResponse(loadNextPage(it)) }
                 Observable.merge(pages)
             }
 

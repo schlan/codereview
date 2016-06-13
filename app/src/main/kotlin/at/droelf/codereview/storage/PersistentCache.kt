@@ -16,7 +16,9 @@ class PersistentCache<E>(val diskCache: DiskLruCache, val infiniteCache: Boolean
 
     fun get(key: String, clazz: Type): Observable<ResponseHolder<E>> {
         return Observable.create {
-            val data = diskCache.get(normalizeKey(key))
+            val data = synchronized(diskCache){
+                diskCache.get(normalizeKey(key))
+            }
             if (data != null && data.getLength(0) > 0) {
                 val json = data.getString(0)
                 println("Load from disc: $clazz ${Thread.currentThread().name}")

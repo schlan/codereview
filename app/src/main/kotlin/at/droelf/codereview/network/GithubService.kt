@@ -7,7 +7,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import rx.Observable
 
-class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): GithubPagination {
+class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): GithubPagination, RetrofitHelper {
 
     fun pullRequestFilesRx(owner: String, repo: String, number: Long): Observable<ResponseHolder<List<GithubModel.PullRequestFile>>> {
         return wrap(pages(githubApi.pullRequestFilesRx(owner, repo, number, token())){
@@ -50,7 +50,7 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): Githu
     }
 
     fun pullRequestDetailRx(owner: String, repo: String, number: Long): Observable<ResponseHolder<GithubModel.PullRequestDetail>> {
-        return wrap(githubApi.pullRequestDetailRx(token(), owner, repo, number).map { it.body() })
+        return wrap(validateResponse(githubApi.pullRequestDetailRx(token(), owner, repo, number)).map { it.body() })
     }
 
     fun statusRx(owner: String, repo: String, ref: String): Observable<ResponseHolder<List<GithubModel.Status>>> {

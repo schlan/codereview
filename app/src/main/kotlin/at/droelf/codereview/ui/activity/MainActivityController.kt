@@ -3,7 +3,6 @@ package at.droelf.codereview.ui.activity
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.support.v4.app.DialogFragment
 import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
@@ -131,9 +130,6 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
                 dialogInterface.dismiss()
         });
         dialog.show()
-    }
-
-    fun showCommentDialog(fm: FragmentManager){
     }
 
     fun showCommentDialogReviewComment(fragment: Fragment, owner: String, repo: String, number: Long,
