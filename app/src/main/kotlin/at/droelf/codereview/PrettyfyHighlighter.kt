@@ -35,7 +35,7 @@ object PrettyfyHighlighter {
     private val parser: Parser = PrettifyParser()
 
     fun highlight(sourceCode: String, fileExtension: String?): Observable<List<SpannableString>> {
-        return Observable.create<List<SpannableString>> { subscriber ->
+        return Observable.defer {
             val prettyCode = prettyfyCode(sourceCode, fileExtension)
             val newlinesIndex = prettyCode.mapIndexed { i, c ->  if(c.equals('\n')) i else Int.MIN_VALUE }.filter { it != Int.MIN_VALUE }
 
@@ -59,8 +59,7 @@ object PrettyfyHighlighter {
                 SpannableString(string)
             }
 
-            subscriber.onNext(data)
-            subscriber.onCompleted()
+            Observable.just(data)
         }
     }
 

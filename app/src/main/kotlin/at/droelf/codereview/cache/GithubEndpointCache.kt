@@ -7,13 +7,14 @@ import rx.Observable
 class GithubEndpointCache<E>(val cache: LruCache<String, Any>) where E : Any {
 
     fun get(key: String): Observable<ResponseHolder<E>> {
-        return Observable.create {
+        return Observable.defer {
             val data = cache.get(key)
-            if(data != null){
+            if (data != null) {
                 @Suppress("UNCHECKED_CAST")
-                it.onNext(data as ResponseHolder<E>)
+                Observable.just(data as ResponseHolder<E>)
+            } else {
+                Observable.empty()
             }
-            it.onCompleted()
         }
     }
 

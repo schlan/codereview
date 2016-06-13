@@ -42,11 +42,10 @@ class LoginFragmentController(val mainActivityController: MainActivityController
     }
 
     fun storeUserData(auth: GithubModel.AuthResponse, user: GithubModel.User, email: String, uuid: UUID): Observable<Model.GithubAuth> {
-        return Observable.create {
+        return Observable.defer {
             val githubAuth = Model.GithubAuth(auth, user, email, uuid)
             githubUserStorage.storeUser(githubAuth)
-            it.onNext(githubAuth)
-            it.onCompleted()
+            Observable.just(githubAuth)
         }
     }
 }

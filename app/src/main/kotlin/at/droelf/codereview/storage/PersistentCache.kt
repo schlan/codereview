@@ -15,22 +15,24 @@ class PersistentCache<E>(val diskCache: DiskLruCache, val infiniteCache: Boolean
     private val charset = Charset.forName("UTF-8")
 
     fun get(key: String, clazz: Type): Observable<ResponseHolder<E>> {
-        return Observable.create {
+        return Observable.defer {
             val data = synchronized(diskCache){
                 diskCache.get(normalizeKey(key))
             }
+
             if (data != null && data.getLength(0) > 0) {
                 val json = data.getString(0)
                 println("Load from disc: $clazz ${Thread.currentThread().name}")
 
                 val responseholder = gson.fromJson<ResponseHolder<E>>(json, clazz)
                 if(!infiniteCache){
-                    it.onNext(responseholder)
+                    Observable.just(responseholder)
                 } else {
-                    it.onNext(ResponseHolder(responseholder.data, responseholder.source, responseholder.timeStamp, true, responseholder.notUpToDate))
+                    Observable.just(ResponseHolder(responseholder.data, responseholder.source, responseholder.timeStamp, true, responseholder.notUpToDate))
                 }
+            } else {
+                Observable.empty()
             }
-            it.onCompleted()
         }
     }
 
