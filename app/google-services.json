@@ -1,42 +1,42 @@
 {
   "project_info": {
-    "project_id": "octosherlock-1cd0d",
-    "project_number": "947391311390",
-    "name": "Octosherlock"
+    "project_number": "123723781995",
+    "firebase_url": "https://codereview-server.firebaseio.com",
+    "project_id": "codereview-server",
+    "storage_bucket": "codereview-server.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:947391311390:android:fb5e77951e4bd23d",
-        "client_id": "android:at.droelf.codereview",
-        "client_type": 1,
+        "mobilesdk_app_id": "1:123723781995:android:fb5e77951e4bd23d",
         "android_client_info": {
           "package_name": "at.droelf.codereview"
         }
       },
-      "oauth_client": [],
-      "api_key": [],
+      "oauth_client": [
+        {
+          "client_id": "123723781995-qe1o9sg4g5jmu4venftat4aubvq0bns5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClasLqDH9lpw6CXPdXfebfFW2y2TFPBnE"
+        }
+      ],
       "services": {
         "analytics_service": {
           "status": 1
-        },
-        "cloud_messaging_service": {
-          "status": 2,
-          "apns_config": []
         },
         "appinvite_service": {
           "status": 1,
           "other_platform_oauth_client": []
         },
-        "google_signin_service": {
-          "status": 1
-        },
         "ads_service": {
-          "status": 1
+          "status": 2
         }
       }
     }
   ],
-  "client_info": [],
-  "ARTIFACT_VERSION": "1"
+  "configuration_version": "1"
 }

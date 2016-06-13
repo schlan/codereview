@@ -16,6 +16,12 @@ import at.droelf.codereview.model.Model
 import at.droelf.codereview.storage.GithubUserStorage
 import at.droelf.codereview.ui.dialog.CommentDialog
 import at.droelf.codereview.ui.fragment.*
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GithubAuthProvider
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class MainActivityController(val githubUserStorage: GithubUserStorage) {
 
@@ -33,6 +39,7 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
     fun tryToLoadAccount(appComponent: MainActivityComponent): Boolean {
         if(githubUserStorage.userStored()){
             val user = githubUserStorage.getUserBlocking() ?: return false
+            loginToFireBase(user.auth.token)
             createUserComponent(appComponent, user)
             return true
         }
@@ -41,6 +48,31 @@ class MainActivityController(val githubUserStorage: GithubUserStorage) {
 
     fun userComponent(): UserComponent {
         return userComponent ?: throw RuntimeException("it's dead jim 2")
+    }
+
+    fun loginToFireBase(githubToken: String): Unit {
+        FirebaseAuth
+                .getInstance()
+                .signInWithCredential(GithubAuthProvider.getCredential(githubToken))
+                .addOnCompleteListener { task ->
+                    println("FirebaseLogin fun: ${task.isSuccessful} ${task.exception.toString()}")
+
+                    FirebaseDatabase
+                            .getInstance()
+                            .reference.child("user")
+                            .addListenerForSingleValueEvent(object : ValueEventListener{
+                                override fun onCancelled(p0: DatabaseError?) {
+
+                                }
+
+                                override fun onDataChange(data: DataSnapshot?) {
+                                    val foobar = data?.value
+                                    println(foobar)
+                                }
+
+                            })
+
+                }
     }
 
     fun showFileFragment(fm: FragmentManager, contentsUrl: String?, patch: String?,
