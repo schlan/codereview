@@ -22,6 +22,7 @@ buildscript {
         classpath 'com.google.gms:google-services:3.0.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "io.realm:realm-gradle-plugin:$realm_version"
+        classpath 'com.getkeepsafe.dexcount:dexcount-gradle-plugin:0.5.3'
     }
 }
 

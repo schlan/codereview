@@ -2,6 +2,7 @@ package at.droelf.codereview.network
 
 import retrofit2.Response
 import rx.Observable
+import timber.log.Timber
 import java.io.IOException
 
 interface RetrofitHelper {
@@ -10,7 +11,9 @@ interface RetrofitHelper {
             if(t.isSuccessful){
                 Observable.just(t)
             } else {
-                Observable.error(IOException(t.errorBody().string()))
+                val e = IOException(t.errorBody().string())
+                Timber.w("Bad network call :(", e)
+                Observable.error(e)
             }
         }
     }

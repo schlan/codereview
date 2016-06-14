@@ -4,6 +4,7 @@ import okhttp3.Headers
 import okhttp3.HttpUrl
 import retrofit2.Response
 import rx.Observable
+import timber.log.Timber.w
 
 interface GithubPagination: RetrofitHelper {
 
@@ -17,8 +18,11 @@ interface GithubPagination: RetrofitHelper {
 
             if(lastPage == null) {
                 Observable.just(data)
+
             } else {
-                val pages = listOf<Observable<Response<T>>>() + Observable.just(data) + (2..lastPage).map{ validateResponse(loadNextPage(it)) }
+                val pages = listOf<Observable<Response<T>>>() +
+                        Observable.just(data) +
+                        (2..lastPage).map{ validateResponse(loadNextPage(it)) }
                 Observable.merge(pages)
             }
 
@@ -28,6 +32,7 @@ interface GithubPagination: RetrofitHelper {
     fun parseHeader(headers: Headers): Int? {
         val pages = headers.get("Link") ?: return null
         val lastPage = pages.split(',').filter{ it.contains("last") }.firstOrNull() ?: return null
+
         val start = lastPage.indexOf("<") + 1
         val end = lastPage.indexOf(">")
         val page: String? = HttpUrl.parse(lastPage.substring(start, end))?.queryParameter("page")
@@ -35,6 +40,7 @@ interface GithubPagination: RetrofitHelper {
         try {
             return page?.toInt()
         }catch(e: NumberFormatException){
+            w("Unable to parse pagination header", e)
             return null
         }
     }
