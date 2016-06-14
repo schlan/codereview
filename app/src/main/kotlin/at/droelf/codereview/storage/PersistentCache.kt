@@ -4,6 +4,7 @@ import at.droelf.codereview.model.ResponseHolder
 import com.google.gson.Gson
 import com.jakewharton.disklrucache.DiskLruCache
 import rx.Observable
+import timber.log.Timber.d
 import java.lang.reflect.Type
 import java.nio.charset.Charset
 import java.security.MessageDigest
@@ -22,7 +23,7 @@ class PersistentCache<E>(val diskCache: DiskLruCache, val infiniteCache: Boolean
 
             if (data != null && data.getLength(0) > 0) {
                 val json = data.getString(0)
-                println("Load from disc: $clazz ${Thread.currentThread().name}")
+                d("Load from disc: $clazz ${Thread.currentThread().name}")
 
                 val responseholder = gson.fromJson<ResponseHolder<E>>(json, clazz)
                 if(!infiniteCache){

@@ -16,6 +16,8 @@ import at.droelf.codereview.utils.CircleTransform
 import at.droelf.codereview.utils.UiHelper
 import com.squareup.picasso.Picasso
 import rx.Subscription
+import timber.log.Timber
+import timber.log.Timber.*
 
 class NotificationFragmentViewHolder(val view: View):
         ViewHolderBinder<NotificationFragmentViewHolder.NotificationFragmentViewHolderData>(view), UiHelper {
@@ -90,8 +92,7 @@ class NotificationFragmentViewHolder(val view: View):
                     }
 
                 }, { error ->
-                    error.printStackTrace()
-                    println("Error during lazy loading data :(")
+                    e("Error during lazy loading data :(", error)
                 }, {
                     setLoading(false)
                 })

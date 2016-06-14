@@ -6,6 +6,8 @@ import at.droelf.codereview.Global
 import at.droelf.codereview.R
 import at.droelf.codereview.dagger.activity.MainActivityComponent
 import at.droelf.codereview.dagger.activity.MainActivityModule
+import timber.log.Timber
+import timber.log.Timber.d
 import javax.inject.Inject
 
 class MainActivity : BaseActivity<MainActivityComponent>(){
@@ -23,7 +25,7 @@ class MainActivity : BaseActivity<MainActivityComponent>(){
 
         if(controller!!.accountInstalled()){
             if(savedInstanceState == null) {
-                println("Install fragment")
+                d("Install fragment")
                 controller!!.displayNotificationFragment(supportFragmentManager)
             }
         } else {

@@ -6,6 +6,8 @@ import at.droelf.codereview.model.realm.RealmGithubAccount
 import at.droelf.codereview.model.realm.RealmHelper
 import at.droelf.codereview.model.realm.RealmRepoConfiguration
 import io.realm.Realm
+import timber.log.Timber
+import timber.log.Timber.*
 import java.sql.Wrapper
 import java.util.*
 
@@ -39,7 +41,7 @@ class GithubUserStorage() : RealmHelper {
                     .map { repoConfigurationToGithub(it) }
             val reposToStore = repoConfiguration.filter { r -> storedRepos.find { it.id == r.id } == null }
 
-            println("Storing the following new repo configurations: $reposToStore")
+            d("Storing the following new repo configurations: $reposToStore")
 
             transaction(it) {
                 val repoConfig = reposToStore.map { repoConfigurationToRealm(it) }.toMutableList()

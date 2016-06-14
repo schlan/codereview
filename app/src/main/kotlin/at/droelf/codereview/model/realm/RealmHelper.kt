@@ -3,6 +3,7 @@ package at.droelf.codereview.model.realm
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.model.Model
 import io.realm.Realm
+import timber.log.Timber
 import java.util.*
 
 interface RealmHelper {
@@ -13,8 +14,7 @@ interface RealmHelper {
             update(realm)
             realm.commitTransaction()
         } catch(e: Exception) {
-            println("Abort realm transaction, error: ${e.message}")
-            e.printStackTrace()
+            Timber.e("Abort realm transaction", e)
             realm.cancelTransaction()
         }
     }
@@ -27,11 +27,10 @@ interface RealmHelper {
             result = doStuff(realm)
         } catch (e: Exception){
             result = null
-            println("Realm Error: ${e.message}")
-            e.printStackTrace()
+            Timber.e("Error during RealmCycleOfLife", e)
         } finally{
             realm.close()
-            println("Realm was ${System.currentTimeMillis() - time}ms alive | Thread: ${Thread.currentThread().name}")
+            Timber.d("Realm was ${System.currentTimeMillis() - time}ms alive | Thread: ${Thread.currentThread().name}")
             return result
         }
     }

@@ -11,6 +11,7 @@ import at.droelf.codereview.ui.fragment.RepositoryFragmentController
 import at.droelf.codereview.utils.CircleTransform
 import com.squareup.picasso.Picasso
 import org.honorato.multistatetogglebutton.MultiStateToggleButton
+import timber.log.Timber
 
 class RepositoryFragmentViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
@@ -37,7 +38,7 @@ class RepositoryFragmentViewHolder(val view: View) : RecyclerView.ViewHolder(vie
         issueToggleButton.value = config.issues.id
 
         prToggleButton.setOnValueChangedListener {
-            println("Changed: ${subscription.repo.fullName} ${Model.WatchType.fromId(it)}")
+            Timber.d("Changed: ${subscription.repo.fullName} ${Model.WatchType.fromId(it)}")
             controller.updateRepositoryConfig(subscription.repo.id, pr = Model.WatchType.fromId(it))
         }
 

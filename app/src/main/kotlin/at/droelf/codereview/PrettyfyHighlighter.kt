@@ -8,6 +8,7 @@ import android.text.style.ForegroundColorSpan
 import prettify.PrettifyParser
 import rx.Observable
 import syntaxhighlight.Parser
+import timber.log.Timber
 import kotlin.text.Regex
 
 object PrettyfyHighlighter {
@@ -78,7 +79,7 @@ object PrettyfyHighlighter {
         return when{
             colors.containsKey(keyWord) -> Color.parseColor("#${colors[keyWord]}")
             else -> {
-                println("------- Not found: $keyWord")
+                Timber.d("Keyword not found: $keyWord")
                 Color.parseColor("#${colors["pln"]}")
             }
         }

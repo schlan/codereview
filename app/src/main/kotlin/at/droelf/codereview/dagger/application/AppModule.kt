@@ -2,22 +2,28 @@ package at.droelf.codereview.dagger.application
 
 import android.app.Application
 import android.content.Context
-import android.content.SharedPreferences
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.network.GithubAuthApi
 import at.droelf.codereview.network.GithubAuthService
 import at.droelf.codereview.provider.GithubAuthProvider
-import at.droelf.codereview.provider.GithubProvider
 import at.droelf.codereview.storage.GithubUserStorage
-import com.google.gson.Gson
+import at.droelf.codereview.utils.ReleaseTree
 import dagger.Module
 import dagger.Provides
+import timber.log.Timber
 import java.io.File
 import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
-class AppModule(private val app: Application) {
+class AppModule(private val app: Application, private val debug: Boolean) {
+
+    @Singleton
+    @Provides
+    @Named("debug")
+    fun providesDebugMode(): Boolean {
+        return debug
+    }
 
     @Singleton
     @Provides
@@ -44,6 +50,16 @@ class AppModule(private val app: Application) {
     @Named("client_secret")
     fun providesClientSecret(): String {
         return "3659193694a19a37537040258af0ebd501f62e04"
+    }
+
+    @Singleton
+    @Provides
+    fun providesLoggingTree(@Named("debug") debug: Boolean): Timber.Tree {
+        if(debug) {
+            return Timber.DebugTree()
+        } else {
+            return ReleaseTree()
+        }
     }
 
     @Singleton

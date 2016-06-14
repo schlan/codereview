@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "at.droelf.codereview"
-        minSdkVersion 14
+        minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
         multiDexEnabled false
@@ -97,6 +97,7 @@ dependencies {
     compile 'jp.wasabeef:recyclerview-animators:2.2.0'
     compile 'org.sufficientlysecure:html-textview:1.4'
     compile 'org.honorato.multistatetogglebutton:multistatetogglebutton:0.2.1'
+    compile 'com.jakewharton.timber:timber:4.1.2'
 
     testCompile 'junit:junit:4.12'
     testCompile 'org.hamcrest:hamcrest-library:1.3'

@@ -4,19 +4,20 @@ import android.content.Context
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import at.droelf.codereview.ui.activity.MainActivity
+import timber.log.Timber.d
 
 abstract class BaseFragment<E> : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("${this.javaClass} onCreate")
+        d("${this.javaClass} onCreate")
 
         val component = createComponent((context as MainActivity))
         if(component != null){
             injectComponent(component)
-            println("${this.javaClass} injection done")
+            d("${this.javaClass} injection done")
         } else {
-            println("${this.javaClass} injection failed - null")
+            d("${this.javaClass} injection failed - null")
         }
     }
 

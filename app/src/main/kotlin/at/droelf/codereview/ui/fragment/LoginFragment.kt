@@ -20,6 +20,8 @@ import at.droelf.codereview.dagger.fragment.LoginFragmentComponent
 import at.droelf.codereview.dagger.fragment.LoginFragmentModule
 import at.droelf.codereview.model.GithubModel
 import at.droelf.codereview.ui.activity.MainActivity
+import timber.log.Timber
+import timber.log.Timber.*
 import java.util.*
 import javax.inject.Inject
 
@@ -113,11 +115,11 @@ class LoginFragment : BaseFragment<LoginFragmentComponent>() {
                     }
                 }
 
-                println("Success: $data")
+                d("Success: $data")
             }, { error ->
                 loading(false)
                 loginUsername.error = "Error"
-                println("Error: $error")
+                e("Unable to get token", error)
             })
         })
     }

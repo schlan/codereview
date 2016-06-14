@@ -10,10 +10,15 @@ import at.droelf.codereview.dagger.services.GithubApiModule
 import at.droelf.codereview.dagger.services.SquareModule
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import timber.log.Timber
+import javax.inject.Inject
 
 class Global : MultiDexApplication() {
 
     lateinit var appComponent: AppComponent
+
+    @Inject
+    lateinit var timberTree: Timber.Tree
 
     companion object Factory {
         fun get(activity: Activity): Global {
@@ -23,8 +28,13 @@ class Global : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
+        initDagger(debug = false)
+        Timber.d("Dagger initialized")
+
+        Timber.plant(timberTree)
+
         initRealm()
-        initDagger()
+        Timber.d("Realm initialized")
     }
 
     private fun initRealm() {
@@ -49,12 +59,13 @@ class Global : MultiDexApplication() {
         Realm.setDefaultConfiguration(realmConfig)
     }
 
-    private fun initDagger() {
+    private fun initDagger(debug: Boolean) {
         appComponent = DaggerAppComponent.builder()
-                .appModule(AppModule(this))
+                .appModule(AppModule(this, debug))
                 .squareModule(SquareModule())
                 .githubApiModule(GithubApiModule())
                 .dbModule(DbModule())
                 .build()
+        appComponent.inject(this)
     }
 }

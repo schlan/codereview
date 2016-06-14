@@ -3,6 +3,7 @@ package at.droelf.codereview.patch
 import android.text.SpannableString
 import at.droelf.codereview.PrettyfyHighlighter
 import rx.Observable
+import timber.log.Timber
 import kotlin.text.Regex
 
 
@@ -36,7 +37,7 @@ class PatchParser {
     fun parse(lines: List<SpannableString>): Patch.Patch? {
         val headerIndex = lines.filter { isHeader(it) }.map { lines.indexOf(it) }
         if(headerIndex.isEmpty()) {
-            println("Unable to find patch header")
+            Timber.w("Unable to find patch header")
             return null
         }
 

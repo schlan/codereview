@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import timber.log.Timber.*
 
 
 abstract class BaseActivity<E> : AppCompatActivity() {
@@ -15,7 +16,7 @@ abstract class BaseActivity<E> : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        println("    onCreate Base")
+        d("onCreate BaseActivity")
         init()
     }
 
@@ -25,7 +26,7 @@ abstract class BaseActivity<E> : AppCompatActivity() {
             fragment.data = createComponent()
         }
 
-        println("    inject Base")
+        d("inject BaseActivity")
         injectComponent(fragment.data!!)
     }
 

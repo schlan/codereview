@@ -22,6 +22,7 @@ import at.droelf.codereview.ui.adapter.PatchAdapter
 import at.droelf.codereview.ui.adapter.PatchAdapterControllerImpl
 import at.droelf.codereview.ui.dialog.CommentDialog
 import at.droelf.codereview.ui.view.HScrollView
+import timber.log.Timber
 import javax.inject.Inject
 
 class PatchFragment : BaseFragment<PatchFragmentComponent>() {
@@ -157,8 +158,7 @@ class PatchFragment : BaseFragment<PatchFragmentComponent>() {
             })
 
         }, { error ->
-            println(error)
-            error.printStackTrace()
+            Timber.e("Error loading code", error)
         })
     }
 

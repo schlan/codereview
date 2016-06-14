@@ -1,5 +1,6 @@
 package at.droelf.codereview.dagger.application
 
+import at.droelf.codereview.Global
 import at.droelf.codereview.dagger.activity.MainActivityComponent
 import at.droelf.codereview.dagger.activity.MainActivityModule
 import at.droelf.codereview.dagger.services.DbModule
@@ -20,4 +21,5 @@ import javax.inject.Singleton
 interface AppComponent {
     //fun plus(userModule: UserModule): UserComponent
     fun plus(mainActivityModule: MainActivityModule): MainActivityComponent
+    fun inject(application: Global): Global
 }

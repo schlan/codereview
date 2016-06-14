@@ -10,6 +10,8 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
+import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
@@ -25,12 +27,26 @@ class SquareModule() {
 
     @Provides
     @Singleton
-    fun providesOkhttp(): OkHttpClient {
-        val httpLogging = HttpLoggingInterceptor()
-        httpLogging.level = HttpLoggingInterceptor.Level.BODY
+    fun providesHttpLoggingInterceptor(@Named("debug") debug: Boolean): HttpLoggingInterceptor {
+        val httpLogging = HttpLoggingInterceptor(HttpLoggingInterceptor.Logger { log ->
+            Timber.tag("Network")
+            Timber.v(log)
+        })
 
+        httpLogging.level = if(debug) {
+            HttpLoggingInterceptor.Level.HEADERS
+        } else {
+            HttpLoggingInterceptor.Level.BASIC
+        }
+
+        return httpLogging
+    }
+
+    @Provides
+    @Singleton
+    fun providesOkhttp(loggingInterceptor: HttpLoggingInterceptor): OkHttpClient {
         val okHttp = OkHttpClient.Builder()
-        okHttp.addInterceptor(httpLogging)
+        okHttp.addInterceptor(loggingInterceptor)
         okHttp.addInterceptor({ chain ->
             val builder = chain.request().newBuilder()
             builder.addHeader("User-Agent", "CodeReview @dr03lf")
@@ -38,7 +54,6 @@ class SquareModule() {
             builder.addHeader("Accept", "application/vnd.github.VERSION.full+json")
             chain.proceed(builder.build())
         })
-
         return okHttp.build()
     }
 

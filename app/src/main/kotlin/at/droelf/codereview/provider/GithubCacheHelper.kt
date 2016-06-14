@@ -5,6 +5,8 @@ import at.droelf.codereview.model.ResponseHolder
 import at.droelf.codereview.storage.PersistentCache
 import rx.Observable
 import rx.schedulers.Schedulers
+import timber.log.Timber
+import timber.log.Timber.*
 import java.lang.reflect.Type
 
 interface GithubCacheHelper {
@@ -63,7 +65,7 @@ interface GithubCacheHelper {
                     }
                     .onErrorResumeNext { error ->
                         error.printStackTrace()
-                        println("Error! Trying to load data from network. `${error.message}`")
+                        w("Error! Trying to load data from network. `${error.message}`")
                         networkObservable
                     }
         } else {
@@ -79,7 +81,7 @@ interface GithubCacheHelper {
                     }
                     .onErrorResumeNext { error ->
                         error.printStackTrace()
-                        println("Error! Trying to load data from network. `${error.message}`")
+                        w("Error! Trying to load data from network. `${error.message}`")
                         networkObservable
                     }
         }
