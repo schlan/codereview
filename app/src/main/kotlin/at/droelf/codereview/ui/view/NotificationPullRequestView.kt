@@ -39,7 +39,7 @@ class NotificationPullRequestView(context: Context, val fm: FragmentManager, val
         list.layoutManager = LinearLayoutManager(context)
         list.itemAnimator = SlideInUpAnimator()
         listAdapter = NotificationFragmentAdapter(controller, this, fm, swipeToRefresh)
-        listAdapter?.loadData(controller.loadPrs(true))
+        listAdapter?.loadData(controller.loadPrs(false))
         list.adapter = listAdapter
 
         if(controller.scrollPos != null){

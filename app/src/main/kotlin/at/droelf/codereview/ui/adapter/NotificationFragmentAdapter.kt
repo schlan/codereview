@@ -45,7 +45,7 @@ class NotificationFragmentAdapter(
         subscription?.unsubscribe()
         subscription = pullRequestsObservable
                 .subscribe({ d ->
-                    synchronized(lock){
+                    synchronized(lock) {
                         updateList(d)
                     }
                 }, { error ->
@@ -62,19 +62,21 @@ class NotificationFragmentAdapter(
             val emptyMy = myPullRequests.isEmpty()
             val emptyOther = pullRequests.isEmpty()
 
-            val replaced = if(pr.user.id == controller.user.id) {
+            val replaced = if (pr.user.id == controller.user.id) {
                 updateSectionList(pr, myPullRequests, prs.upToDate(), prs.source)
+
             } else {
                 updateSectionList(pr, pullRequests, prs.upToDate(), prs.source)
+
             }
 
-           refreshList(pr, emptyMy, emptyOther, replaced)
+            refreshList(pr, emptyMy, emptyOther, replaced)
         }
     }
 
     fun updateSectionList(pr: GithubModel.PullRequest, list: MutableList<HolderWrapper>, upToDate: Boolean, source: ResponseHolder.Source): Boolean {
         var replaced = false
-        if(list.filter { (it.data as GithubModel.PullRequest).id == pr.id }.isNotEmpty()){ //FIXME ???? update stuff??
+        if (list.filter { (it.data as GithubModel.PullRequest).id == pr.id }.isNotEmpty()) { //FIXME ???? update stuff??
             replaced = true
             list.remove(list.filter { (it.data as GithubModel.PullRequest).id == pr.id }.first())
         }
@@ -84,7 +86,7 @@ class NotificationFragmentAdapter(
         return replaced
     }
 
-    fun refreshList(pr: GithubModel.PullRequest, myPullRequestsEmpty: Boolean, pullRequestEmpty: Boolean, replaced: Boolean){
+    fun refreshList(pr: GithubModel.PullRequest, myPullRequestsEmpty: Boolean, pullRequestEmpty: Boolean, replaced: Boolean) {
         val tmpList: MutableList<HolderWrapper> = arrayListOf()
         if (myPullRequests.size > 0) {
             tmpList.add(subHeaderMine)
@@ -101,7 +103,7 @@ class NotificationFragmentAdapter(
         } else {
             val index = holderWrapperList.indexOfFirst { it.type == 1 && it.data.equals(pr) }
 
-            if(replaced){
+            if (replaced) {
                 notifyItemChanged(index)
             } else {
                 notifyItemInserted(index)
@@ -132,7 +134,7 @@ class NotificationFragmentAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolderBinder<*>, position: Int) {
-        when(holder){
+        when (holder) {
             is NotificationFragmentViewHolderHeader -> {
                 holder.bind(holderWrapperList[position].data as String)
             }
@@ -146,7 +148,7 @@ class NotificationFragmentAdapter(
 
     override fun onViewDetachedFromWindow(holder: ViewHolderBinder<*>) {
         super.onViewDetachedFromWindow(holder)
-        if(holder is NotificationFragmentViewHolder){
+        if (holder is NotificationFragmentViewHolder) {
             holder.pause()
         }
     }
@@ -162,12 +164,12 @@ class NotificationFragmentAdapter(
     }
 
     override fun removeItem(wrapper: GithubModel.PullRequest) {
-        synchronized(lock){
+        synchronized(lock) {
             myPullRequests.removeAll { it.data == wrapper }
             pullRequests.removeAll { it.data == wrapper }
-            val indexOf = holderWrapperList.indexOfLast{ it.data == wrapper }
+            val indexOf = holderWrapperList.indexOfLast { it.data == wrapper }
             holderWrapperList = holderWrapperList.filterIndexed { i, holderWrapper -> indexOf != i }
-            if(indexOf >= 0){
+            if (indexOf >= 0) {
                 notifyItemRemoved(indexOf)
             }
         }

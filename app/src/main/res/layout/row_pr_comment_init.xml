@@ -58,7 +58,7 @@
             android:layout_marginLeft="16dp"
             >
 
-            <TextVie w
+            <TextView
                 android:id="@+id/row_pr_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
