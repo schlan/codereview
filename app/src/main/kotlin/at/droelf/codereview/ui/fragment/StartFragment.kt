@@ -103,10 +103,9 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
 
         progressbar.visibility = View.GONE
         swipeToRefresh.post({ swipeToRefresh.isRefreshing = true })
-        subscription = controller.prdetails(activity, owner, repo, id).subscribe({ data ->
-            val pr = data.first
-            val status = data.second.sortedBy { it.updatedAt }.lastOrNull()
-            initTabLayout(pr, status)
+        subscription = controller.prdetails(owner, repo, id).subscribe({ data ->
+            val pr = data.githubPrDetails
+            initTabLayout(data)
 
             Picasso.with(context).load(pr.user.avatarUrl).transform(CircleTransform()).into(toolbarImage)
             toolbarTitle.text = pr.title
@@ -127,7 +126,7 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
         viewPagerAdapter?.unsubscribeRx()
     }
 
-    fun initTabLayout(pr: GithubModel.PullRequestDetail, status: GithubModel.Status?) {
+    fun initTabLayout(data: StartFragmentController.PullRequestDetails) {
         tablayout.removeAllTabs()
         val commentsTab = tablayout.newTab()
         val filesTab = tablayout.newTab()
@@ -150,7 +149,7 @@ class StartFragment : BaseFragment<StartFragmentComponent>() {
             }
         })
 
-        viewPagerAdapter = PullRequestViewpagerAdapter(fragmentManager, controller, pr, status)
+        viewPagerAdapter = PullRequestViewpagerAdapter(fragmentManager, controller, data)
         viewpager.adapter = viewPagerAdapter
         viewpager.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(tablayout))
     }

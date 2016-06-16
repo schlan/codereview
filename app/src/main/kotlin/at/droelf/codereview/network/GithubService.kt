@@ -73,6 +73,12 @@ class GithubService(val auth: Model.GithubAuth, val githubApi: GithubApi): Githu
         return githubApi.replyReviewComment(token(), owner, repo, number, replyReviewComment)
     }
 
+    fun issueReactions(owner: String, repo: String, number: Long): Observable<ResponseHolder<List<GithubModel.RawReaction>>> {
+        return wrap(pages(githubApi.issueReactionRx(token(), owner, repo, number)){
+            githubApi.issueReactionRx(token(), owner, repo, number, it)
+        }.flatten())
+    }
+
     fun token() = "token ${auth.auth.token}"
 
     fun <E> wrap(data: Observable<E>): Observable<ResponseHolder<E>> {

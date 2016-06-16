@@ -34,7 +34,7 @@ class SquareModule() {
         })
 
         httpLogging.level = if(debug) {
-            HttpLoggingInterceptor.Level.HEADERS
+            HttpLoggingInterceptor.Level.BASIC
         } else {
             HttpLoggingInterceptor.Level.BASIC
         }
@@ -51,7 +51,7 @@ class SquareModule() {
             val builder = chain.request().newBuilder()
             builder.addHeader("User-Agent", "CodeReview @dr03lf")
             builder.addHeader("Content-Type", "application/json; charset=utf-8")
-            builder.addHeader("Accept", "application/vnd.github.VERSION.full+json")
+            builder.addHeader("Accept", "application/vnd.github.squirrel-girl-preview.full+json")
             chain.proceed(builder.build())
         })
         return okHttp.build()

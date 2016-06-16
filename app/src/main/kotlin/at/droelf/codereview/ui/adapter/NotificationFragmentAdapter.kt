@@ -18,9 +18,8 @@ import rx.Observable
 import rx.Subscription
 
 class NotificationFragmentAdapter(
-        pullRequestsObservable: Observable<ResponseHolder<List<GithubModel.PullRequest>>>,
         val controller: NotificationFragmentController,
-        parent: View,
+        val parent: View,
         val fragmentManager: FragmentManager,
         val swipeRefreshLayout: SwipeRefreshLayout)
 : RecyclerView.Adapter<ViewHolderBinder<*>>(), UnsubscribeRx, NotificationFragmentAdapterCommander {
@@ -33,13 +32,17 @@ class NotificationFragmentAdapter(
     val subHeaderMine = HolderWrapper(0, 0L, "Mine", null, null)
     val subHeaderOther = HolderWrapper(0, 1L, "All Pull Requests", null, null)
 
-    var subscription: Subscription?
+    var subscription: Subscription? = null
 
     val lock = Any()
 
     init {
         setHasStableIds(true)
+    }
+
+    fun loadData(pullRequestsObservable: Observable<ResponseHolder<List<GithubModel.PullRequest>>>) {
         swipeRefreshLayout.post({ swipeRefreshLayout.isRefreshing = true })
+        subscription?.unsubscribe()
         subscription = pullRequestsObservable
                 .subscribe({ d ->
                     synchronized(lock){
@@ -59,7 +62,7 @@ class NotificationFragmentAdapter(
             val emptyMy = myPullRequests.isEmpty()
             val emptyOther = pullRequests.isEmpty()
 
-            var replaced = if(pr.user.id == controller.user.id) {
+            val replaced = if(pr.user.id == controller.user.id) {
                 updateSectionList(pr, myPullRequests, prs.upToDate(), prs.source)
             } else {
                 updateSectionList(pr, pullRequests, prs.upToDate(), prs.source)
@@ -71,7 +74,7 @@ class NotificationFragmentAdapter(
 
     fun updateSectionList(pr: GithubModel.PullRequest, list: MutableList<HolderWrapper>, upToDate: Boolean, source: ResponseHolder.Source): Boolean {
         var replaced = false
-        if(upToDate && list.filter { (it.data as GithubModel.PullRequest).id == pr.id }.isNotEmpty()){
+        if(list.filter { (it.data as GithubModel.PullRequest).id == pr.id }.isNotEmpty()){ //FIXME ???? update stuff??
             replaced = true
             list.remove(list.filter { (it.data as GithubModel.PullRequest).id == pr.id }.first())
         }

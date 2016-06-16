@@ -14,17 +14,25 @@ import java.util.concurrent.TimeUnit
 class StartFragmentController(val mainActivityController: MainActivityController, val githubProvider: GithubProvider) : RxHelper {
 
     var observable:  Observable<List<Triple<GithubModel.PullRequestFile, Int, List<GithubModel.ReviewComment>>>>? = null
-    var prObservable: Observable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>>? = null
+    var prObservable: Observable<PullRequestDetails>? = null
     var commentObservable: Observable<List<GithubModel.Comment>>? = null
 
     var scrollPos: Int? = 0
 
-    fun prdetails(context: Context, owner: String, repo: String, number: Long): Observable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>> {
+    fun prdetails(owner: String, repo: String, number: Long): Observable<PullRequestDetails> {
         if (prObservable == null) {
 
             prObservable = githubProvider.pullRequestDetail(owner, repo, number)
-                .flatMap { pr -> githubProvider.status(owner, repo, pr.head.ref, true).map { Pair(pr, it) }  }
-                .compose(transformObservable<Pair<GithubModel.PullRequestDetail, List<GithubModel.Status>>>())
+                .flatMap { pr ->
+                    Observable.zip(
+                            githubProvider.status(owner, repo, pr.head.ref, true),
+                            githubProvider.issueReactions(owner, repo, number),
+                            { status, reactions ->
+                                PullRequestDetails(pr, status.sortedBy { it.updatedAt }.lastOrNull(), reactions)
+                            }
+                    )
+                }
+                .compose(transformObservable<PullRequestDetails>())
                 .cache()
         }
         return prObservable!!
@@ -60,4 +68,7 @@ class StartFragmentController(val mainActivityController: MainActivityController
     fun showDialog(context: Context, title: String, body: String){
         mainActivityController.showWebViewDialog(context, title, body)
     }
+
+
+    data class PullRequestDetails(val githubPrDetails: GithubModel.PullRequestDetail, val status: GithubModel.Status?, val reactions: Map<GithubModel.ReactionItem, Int>)
 }

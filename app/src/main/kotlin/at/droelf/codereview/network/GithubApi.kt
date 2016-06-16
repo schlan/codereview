@@ -103,4 +103,13 @@ interface GithubApi {
             @Path("number") number: Long,
             @Body createComment: GithubModel.ReplyReviewComment
     ): Call<ResponseBody>
+
+    @GET("/repos/{owner}/{repo}/issues/{number}/reactions")
+    fun issueReactionRx(
+            @Header("Authorization") auth: String,
+            @Path("owner") owner: String,
+            @Path("repo") repo: String,
+            @Path("number") number: Long,
+            @Query("page") page: Int = 1
+    ): Observable<Response<MutableList<GithubModel.RawReaction>>>
 }

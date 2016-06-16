@@ -20,18 +20,18 @@
             android:paddingTop="16dp"
             >
 
-            <TextView
-                android:id="@+id/row_pr_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginBottom="6dp"
-                android:textAppearance="@android:style/TextAppearance.Small"
-                android:textColor="@color/text_secondary"
-                android:textSize="12sp"
-                tools:text="12.12.12"
-                />
+            <!--<TextView-->
+                <!--android:id="@+id/row_pr_date"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:layout_alignParentTop="true"-->
+                <!--android:layout_marginBottom="6dp"-->
+                <!--android:textAppearance="@android:style/TextAppearance.Small"-->
+                <!--android:textColor="@color/text_secondary"-->
+                <!--android:textSize="12sp"-->
+                <!--tools:text="12.12.12"-->
+                <!--/>-->
 
             <org.sufficientlysecure.htmltextview.HtmlTextView
                 android:id="@+id/row_pr_comment"
@@ -44,6 +44,83 @@
                 tools:text="foobasld jfalksdj fklasjdf lakjdf alskjdflas"/>
 
         </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1px"
+            android:background="@color/divider"/>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="4dp"
+            android:paddingTop="4dp"
+            android:layout_marginLeft="16dp"
+            >
+
+            <TextVie w
+                android:id="@+id/row_pr_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="@android:style/TextAppearance.Small"
+                android:textColor="@color/text_secondary"
+                android:layout_gravity="left"
+                android:textSize="12sp"
+                tools:text="12.12.12"
+                />
+
+            <LinearLayout
+                android:id="@+id/row_pr_comment_reactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:paddingRight="8dp">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:id="@+id/row_pr_comment_reaction_plus"
+                    android:layout_marginLeft="8dp"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:id="@+id/row_pr_comment_reaction_minus"
+                    android:layout_marginLeft="8dp"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:id="@+id/row_pr_comment_reaction_laugh"
+                    android:layout_marginLeft="8dp"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:id="@+id/row_pr_comment_reaction_confused"
+                    android:layout_marginLeft="8dp"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:id="@+id/row_pr_comment_reaction_heart"
+                    android:layout_marginLeft="8dp"/>
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:visibility="gone"
+                    android:id="@+id/row_pr_comment_reaction_hooray"
+                    android:layout_marginLeft="8dp"/>
+
+            </LinearLayout>
+
+        </FrameLayout>
 
     </LinearLayout>
 

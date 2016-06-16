@@ -13,7 +13,10 @@ class LoginFragmentModule {
 
     @Provides
     @FragmentScope
-    fun providesLoginFragmentController(mainActivityController: MainActivityController, githubAuthProvider: GithubAuthProvider, githubUserStorage: GithubUserStorage): LoginFragmentController {
+    fun providesLoginFragmentController(mainActivityController: MainActivityController,
+                                        githubAuthProvider: GithubAuthProvider,
+                                        githubUserStorage: GithubUserStorage): LoginFragmentController {
+
         return LoginFragmentController(mainActivityController, githubAuthProvider, githubUserStorage)
     }
 

@@ -14,6 +14,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import rx.Observable
 import java.lang.reflect.Type
+import java.util.*
 
 
 class GithubProvider(
@@ -39,8 +40,13 @@ class GithubProvider(
 
     private val githubSubscriptions = GithubEndpointCache<List<GithubModel.Repository>>(cache)
     private val githubNotifications = GithubEndpointCache<List<GithubModel.Notification>>(cache)
+
     private val githubFile = GithubEndpointCache<String>(cache)
     private val githubStatus = GithubEndpointCache<List<GithubModel.Status>>(cache)
+
+    private val reactionItemCache = GithubEndpointCache<List<GithubModel.ReactionItem>>(cache)
+    private val issueReactionCache = GithubEndpointCache<Map<GithubModel.ReactionItem, Int>>(cache)
+
 
     fun pullRequests(owner: String, repo: String, skipCache: Boolean = false): Observable<ResponseHolder<List<GithubModel.PullRequest>>> {
         val key = "pull_requests-$owner-$repo"
@@ -106,11 +112,45 @@ class GithubProvider(
         return persistentCacheFlow(key, githubEmojiCache, githubEmojiStorage, githubService.emojiRx(), t, false)
     }
 
+    fun reactions(): Observable<List<GithubModel.ReactionItem>> {
+        val key = "reaction_items"
+        val reactions = Observable.zip(
+                emoji(), Observable.just(GithubModel.ReactionType.values()),
+                { emojiMap, reactions ->
+                    reactions.map { GithubModel.ReactionItem(it, emojiMap.data[it.emojiName].orEmpty()) }
+                })
+                .map { ResponseHolder(it, ResponseHolder.Source.Network) }
+
+        return memoryCacheFlow(key, reactionItemCache, reactions, false)
+    }
+
     fun createReviewComment(owner: String, repo: String, number: Long, createReviewComment: GithubModel.CreateReviewComment): Call<ResponseBody> {
         return githubService.createReviewComment(owner, repo, number, createReviewComment)
     }
 
     fun createReviewComment(owner: String, repo: String, number: Long, replyReviewComment: GithubModel.ReplyReviewComment): Call<ResponseBody> {
         return githubService.createReviewComment(owner, repo, number, replyReviewComment)
+    }
+
+    fun issueReactions(owner: String, repo: String, number: Long, skipCache: Boolean = false): Observable<Map<GithubModel.ReactionItem, Int>> {
+        val key = "issue_reaction_$owner-$repo-$number"
+        val issueReactions = extractReactions(githubService.issueReactions(owner, repo, number))
+        return memoryCacheFlow(key, issueReactionCache, issueReactions, skipCache)
+    }
+
+    private fun extractReactions(rawReactions: Observable<ResponseHolder<List<GithubModel.RawReaction>>>): Observable<ResponseHolder<Map<GithubModel.ReactionItem, Int>>> {
+        return Observable.zip(reactions(), rawReactions,
+                { baseReactions, rawReactionsResult ->
+                    val data = baseReactions.mapNotNull { reaction ->
+                        val count = rawReactionsResult.data.count { it.content == reaction.type.content }
+                        if(count > 0){
+                            (reaction to rawReactionsResult.data.count { it.content == reaction.type.content })
+                        } else {
+                            null
+                        }
+                    }.toMap()
+                    ResponseHolder(data, rawReactionsResult.source, rawReactionsResult.timeStamp, rawReactionsResult.alwaysUpToDate, rawReactionsResult.notUpToDate)
+                }
+        )
     }
 }
