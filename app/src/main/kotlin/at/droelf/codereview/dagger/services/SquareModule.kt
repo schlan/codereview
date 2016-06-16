@@ -34,7 +34,7 @@ class SquareModule() {
         })
 
         httpLogging.level = if(debug) {
-            HttpLoggingInterceptor.Level.HEADERS
+            HttpLoggingInterceptor.Level.BASIC
         } else {
             HttpLoggingInterceptor.Level.BASIC
         }
