@@ -11,6 +11,7 @@ import at.droelf.codereview.dagger.services.SquareModule
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import timber.log.Timber
+import timber.log.Timber.*
 import javax.inject.Inject
 
 class Global : MultiDexApplication() {
@@ -28,13 +29,13 @@ class Global : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()
-        initDagger(debug = false)
-        Timber.d("Dagger initialized")
+        initDagger(BuildConfig.DEBUG)
+        plant(timberTree)
+        d("Dagger initialized")
 
-        Timber.plant(timberTree)
 
         initRealm()
-        Timber.d("Realm initialized")
+        d("Realm initialized")
     }
 
     private fun initRealm() {

@@ -17,6 +17,7 @@ class PersistentCache<E>(val diskCache: DiskLruCache, val infiniteCache: Boolean
 
     fun get(key: String, clazz: Type): Observable<ResponseHolder<E>> {
         return Observable.defer {
+
             val data = synchronized(diskCache){
                 diskCache.get(normalizeKey(key))
             }
