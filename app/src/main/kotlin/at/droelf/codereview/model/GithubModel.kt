@@ -94,10 +94,6 @@ object GithubModel {
             val body: String, val inReplyTo: Long
     )
 
-    data class Reaction(
-            val id: Long, val user: User, val item: ReactionItem?, val createdAt: Date
-    )
-
     data class RawReaction(
             val id: Long, val user: User, val content: String, val createdAt: Date
     )
