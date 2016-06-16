@@ -20,8 +20,7 @@ class PullRequestCommentsAdapter(
         val commentsObserver: Observable<List<GithubModel.Comment>>,
         val controller: StartFragmentController,
         val swipeToRefresh: SwipeRefreshLayout,
-        pr: GithubModel.PullRequestDetail,
-        status: GithubModel.Status?) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), UnsubscribeRx {
+        data: StartFragmentController.PullRequestDetails) : RecyclerView.Adapter<RecyclerView.ViewHolder>(), UnsubscribeRx {
 
     var items: List<RecyclerItem> = listOf()
     var subscription: Subscription?
@@ -32,7 +31,7 @@ class PullRequestCommentsAdapter(
 
     init {
         swipeToRefresh.isRefreshing = true
-        items = listOf(RecyclerItem(HEADER, Pair(pr, status)))
+        items = listOf(RecyclerItem(HEADER, data))
         notifyItemInserted(0)
 
         subscription = commentsObserver.subscribe({ comments ->
@@ -87,8 +86,8 @@ class PullRequestCommentsAdapter(
             HEADER -> {
                 val p = (holder as PullRequestCommentInitViewHolder)
                 @Suppress("UNCHECKED_CAST")
-                val data = items[position].data as Pair<GithubModel.PullRequestDetail, GithubModel.Status?>
-                p.bind(data.first, data.second)
+                val data = items[position].data as StartFragmentController.PullRequestDetails
+                p.bind(data)
             }
             COMMENT -> {
                 val p = (holder as PullRequestCommentViewHolder)

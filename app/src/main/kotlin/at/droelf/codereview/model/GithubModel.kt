@@ -93,6 +93,27 @@ object GithubModel {
     data class ReplyReviewComment(
             val body: String, val inReplyTo: Long
     )
+
+    data class Reaction(
+            val id: Long, val user: User, val item: ReactionItem?, val createdAt: Date
+    )
+
+    data class RawReaction(
+            val id: Long, val user: User, val content: String, val createdAt: Date
+    )
+
+    data class ReactionItem(
+            val type: ReactionType, val url: String
+    )
+
+    enum class ReactionType(val content: String, val emojiName: String) {
+        Laugh("laugh", "smile"),
+        Plus("+1", "+1"),
+        Minus("-1", "-1"),
+        Confused("confused", "confused"),
+        Hooray("hooray", "tada"),
+        Heart("heart", "heart"),
+    }
 }
 
 

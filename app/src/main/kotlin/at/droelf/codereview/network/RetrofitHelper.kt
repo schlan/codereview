@@ -3,6 +3,7 @@ package at.droelf.codereview.network
 import retrofit2.Response
 import rx.Observable
 import timber.log.Timber
+import timber.log.Timber.*
 import java.io.IOException
 
 interface RetrofitHelper {
@@ -12,7 +13,7 @@ interface RetrofitHelper {
                 Observable.just(t)
             } else {
                 val e = IOException(t.errorBody().string())
-                Timber.w("Bad network call :(", e)
+                w("Bad network call :(", e)
                 Observable.error(e)
             }
         }

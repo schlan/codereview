@@ -13,8 +13,7 @@ import at.droelf.codereview.ui.view.PullRequestFileView
 class PullRequestViewpagerAdapter(
         val fm: FragmentManager,
         val controller: StartFragmentController,
-        val pr: GithubModel.PullRequestDetail,
-        val status: GithubModel.Status?): PagerAdapter(), UnsubscribeRx {
+        val data: StartFragmentController.PullRequestDetails): PagerAdapter(), UnsubscribeRx {
 
 
     var commentView : PullRequestCommentView? = null
@@ -28,13 +27,13 @@ class PullRequestViewpagerAdapter(
         val view: View = when(position){
             0 -> {
                 if(commentView == null){
-                    commentView = PullRequestCommentView(container.context, pr, fm, controller, status)
+                    commentView = PullRequestCommentView(container.context, data, fm, controller)
                 }
                 commentView!!
             }
             1 -> {
                 if(fileView == null){
-                    fileView = PullRequestFileView(container.context, pr, fm, controller)
+                    fileView = PullRequestFileView(container.context, data.githubPrDetails, fm, controller)
                 }
                 fileView!!
             }

@@ -22,14 +22,12 @@ import jp.wasabeef.recyclerview.animators.SlideInUpAnimator
 
 class PullRequestCommentView(
         context: Context,
-        val pr: GithubModel.PullRequestDetail,
+        val data: StartFragmentController.PullRequestDetails,
         val fm: FragmentManager,
-        val controller: StartFragmentController,
-        val status: GithubModel.Status?): FrameLayout(context), UnsubscribeRx {
+        val controller: StartFragmentController): FrameLayout(context), UnsubscribeRx {
 
     val list: RecyclerView
     val swipeToRefresh: SwipeRefreshLayout
-
     var listAdapter: PullRequestCommentsAdapter? = null
 
     init {
@@ -50,11 +48,12 @@ class PullRequestCommentView(
         list.layoutManager = LinearLayoutManager(context)
         list.itemAnimator = SlideInUpAnimator()
 
-        val owner = pr.base.repo.owner.login
-        val repo = pr.base.repo.name
-        val number = pr.number
+        val owner = data.githubPrDetails.base.repo.owner.login
+        val repo = data.githubPrDetails.base.repo.name
+        val number = data.githubPrDetails.number
         val comments = controller.comments(owner, repo, number)
-        listAdapter = PullRequestCommentsAdapter(comments, controller, swipeToRefresh, pr, status)
+
+        listAdapter = PullRequestCommentsAdapter(comments, controller, swipeToRefresh, data)
         list.adapter = listAdapter
     }
 
